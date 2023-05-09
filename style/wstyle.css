@@ -9,24 +9,41 @@ img {
   border-radius: 50%;
 }
 
-p {
-  color: rgb(0, 0, 0);
-  background-color: rgb(219, 247, 128);
-  font-family: "Noto Sans KR", sans-serif;
-  width: 400px;
-  border-radius: 50%;
-  margin: auto;
-  font-size: 26px;
-}
+/*
+ol태그보다 li태그의 선택자가 우선됨
+*/
 
 a {
   color: rgb(0, 0, 0);
   text-decoration: none;
+  background-color: aliceblue;
+  font-size: 20px;
+  border-radius: 4px;
+  padding: 8px;
 }
 
 a:hover {
   text-decoration: underline;
   background-color: rgb(255, 0, 0);
+}
+
+ol {
+  list-style-type: none;
+  padding: 0;
+}
+
+li {
+  color: rgb(0, 0, 0);
+  list-style-type: square;
+  list-style-type: none;
+  background-color: rgb(219, 247, 128);
+  font-family: "Noto Sans KR", sans-serif;
+  width: 400px;
+  height: 50px;
+  padding: 50px, 80px;
+  border-radius: 3%;
+  margin: 30px auto;
+  font-size: 26px;
 }
 
 #today-goal {

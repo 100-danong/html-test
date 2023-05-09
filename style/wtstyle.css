@@ -1,0 +1,47 @@
+body {
+  text-align: center;
+  background-color: rgb(118, 253, 106);
+}
+
+img {
+  width: 200px;
+  height: 200px;
+  border-radius: 50%;
+}
+
+li {
+  color: rgb(0, 0, 0);
+  background-color: rgb(219, 247, 128);
+  font-family: "Noto Sans KR", sans-serif;
+  width: 400px;
+  height: 50px;
+  padding: 50px, 80px;
+  border-radius: 3%;
+  margin: 80px auto;
+  font-size: 26px;
+}
+
+a {
+  color: rgb(0, 0, 0);
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+  background-color: rgb(255, 0, 0);
+}
+
+#today-goal {
+  color: rgb(0, 0, 0);
+  font-size: 32px;
+  font-weight: bold;
+}
+
+li {
+  list-style-type: square;
+  list-style-type: none;
+}
+
+ol {
+  list-style-type: none;
+}
