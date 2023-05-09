@@ -1,0 +1,26 @@
+body {
+  text-align: center;
+  background-color: rgb(255, 0, 0);
+}
+
+img {
+  width: 200px;
+  height: 200px;
+  border-radius: 50%;
+}
+
+a {
+  color: rgb(0, 0, 0);
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+  background-color: rgb(151, 4, 4);
+}
+
+#today-goal {
+  color: rgb(0, 0, 0);
+  font-size: 32px;
+  font-weight: bold;
+}
