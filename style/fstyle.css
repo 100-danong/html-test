@@ -1,0 +1,52 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+}
+
+body {
+  font-family: "Roboto", sans-serif;
+  letter-spacing: -0.02em;
+}
+
+a {
+  background-color: aqua;
+  padding: 16px 20px 16px 20px;
+  font-size: 18px;
+  color: #8492a6;
+  text-decoration: none;
+}
+a:hover {
+  background-color: rgb(255, 255, 255);
+  border-bottom: 2px solid black;
+  padding: 16px 20px 16px 20px;
+}
+
+ul {
+  background-color: aquamarine;
+  width: 70%;
+  height: 100px;
+  margin: 50px auto;
+  list-style-type: none;
+  overflow: hidden;
+}
+
+.parent::after {
+  clear: left;
+}
+
+.red {
+  float: left;
+}
+.yellow {
+  float: left;
+}
+.blue {
+  float: left;
+}
+.green {
+  float: left;
+}
+
+li {
+  margin: 30px auto;
+}
