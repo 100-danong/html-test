@@ -34,19 +34,9 @@ ul {
   clear: left;
 }
 
-.red {
-  float: left;
-}
-.yellow {
-  float: left;
-}
-.blue {
-  float: left;
-}
-.green {
-  float: left;
-}
-
-li {
-  margin: 30px auto;
+ul {
+  display: flex;
+  justify-content: center;
+  flex-direction: row;
+  flex-direction: column;
 }

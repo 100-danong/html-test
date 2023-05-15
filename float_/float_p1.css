@@ -26,27 +26,12 @@ a:hover {
 
 ul {
   background-color: rgb(160, 160, 160);
-  width: 100%;
+  width: 70%;
   height: 100px;
   margin: 50px auto;
   list-style-type: none;
-}
-
-li {
-  margin: 25px auto;
-}
-
-.red {
-  float: left;
-}
-.yellow {
-  float: left;
-}
-.blue {
-  float: left;
-}
-.green {
-  float: left;
+  display: flex;
+  justify-content: center;
 }
 
 /* ▼ WHERE YOUR CODE BEGINS */
