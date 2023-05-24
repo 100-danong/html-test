@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="style.css" />
+    <title>시험 연습</title>
+  </head>
+  <body>
+    <header>
+      <img src="./laptop.png" alt="adf" />
+      <h1>HTML, CSS 마지막 실습하기</h1>
+    </header>
+    <nav>
+      <ul>
+        <li>
+          <a href="">홈</a>
+          <a href="https://www.google.co.kr">구글링하기</a>
+          <a href="" id="click">로그인</a>
+        </li>
+      </ul>
+    </nav>
+
+    <main>
+      <section>
+        <h2>오늘의 시간표</h2>
+        <table>
+          <tr>
+            <td></td>
+            <th>5월 17일 화요일</th>
+          </tr>
+          <tr>
+            <th>1교시</th>
+            <td>HRML 코드 작성</td>
+          </tr>
+          <tr>
+            <th>2교시</th>
+            <td>css 코드 작성</td>
+          </tr>
+          <tr>
+            <th>3교시</th>
+            <td rowspan="2">화면 완성하기</td>
+          </tr>
+          <tr>
+            <th>4교시</th>
+          </tr>
+          <tr>
+            <th colspan="2">점심시간</th>
+          </tr>
+          <tr>
+            <th>5교시</th>
+            <td rowspan="2">jacvascript 공부</td>
+          </tr>
+          <tr>
+            <th>6교시</th>
+          </tr>
+        </table>
+      </section>
+      <section class="key">
+        <h2>회원가입하기</h2>
+        <form action="#">
+          <label for="id">아이디</label>
+          <input
+            type="text"
+            name="id"
+            id="id"
+            placeholder="아이디를 입력하시오"
+            required
+          />
+          <label for="pw">비밀번호</label>
+          <input
+            type="password"
+            name="pw"
+            id="pw"
+            placeholder="비밀번호를 입력하시오"
+            required
+          />
+          <button>제출</button>
+        </form>
+      </section>
+    </main>
+    <footer>깐도에 의해 작성됨</footer>
+    <script src="add.js"></script>
+  </body>
+</html>
