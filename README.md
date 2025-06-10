@@ -1,9 +1,9 @@
-java.lang.NullPointerException: null
-	at com.gogofnd.kb.partner.call.service.CallService.kb11th(CallService.java:529)
+com.gogofnd.kb.global.error.exception.BusinessException: �����ͺ��̽� UPDATE�� �����Ͽ����ϴ�
+	at com.gogofnd.kb.partner.call.service.CallService.kb11th(CallService.java:539)
 	at com.gogofnd.kb.partner.call.service.CallService$$FastClassBySpringCGLIB$$b36d461c.invoke(<generated>)
 	at org.springframework.cglib.proxy.MethodProxy.invoke(MethodProxy.java:218)
 	at org.springframework.aop.framework.CglibAopProxy$DynamicAdvisedInterceptor.intercept(CglibAopProxy.java:687)
-	at com.gogofnd.kb.partner.call.service.CallService$$EnhancerBySpringCGLIB$$daaa6b5.kb11th(<generated>)
+	at com.gogofnd.kb.partner.call.service.CallService$$EnhancerBySpringCGLIB$$9800dbc8.kb11th(<generated>)
 	at com.gogofnd.kb.partner.call.api.CallApi.api11(CallApi.java:48)
 	at jdk.internal.reflect.GeneratedMethodAccessor172.invoke(Unknown Source)
 	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
