@@ -1,5 +1,6 @@
-2025-06-30 14:51:03.562  INFO 20895 --- [nio-9800-exec-5] c.g.g.global.config.LogInterceptor       : REQUEST [67d80d1b-c341-4c99-8c90-8c7c2c636c2a][/api/gogorental/googleOAuth/login]
-2025-06-30 14:51:03.702 ERROR 20895 --- [nio-9800-exec-5] c.g.g.g.user.api.GoogleOAuthController   : ID 토큰 인증 에러
+2025-06-30 14:55:25.368  INFO 26812 --- [nio-9800-exec-4] c.g.g.global.config.LogInterceptor       : REQUEST [405f2891-459f-468d-ac86-0f12d62947e9][/api/gogorental/googleOAuth/login]
+2025-06-30 14:55:25.432  INFO 26812 --- [nio-9800-exec-4] c.g.g.g.user.api.GoogleOAuthController   : 전달된 idTokenString: MTEwMjAwMTI5MTk0ODUxOTM2OTE2
+2025-06-30 14:55:25.482 ERROR 26812 --- [nio-9800-exec-4] c.g.g.g.user.api.GoogleOAuthController   : ID 토큰 인증 에러
 
 java.lang.IllegalArgumentException: null
         at com.google.common.base.Preconditions.checkArgument(Preconditions.java:131)
@@ -8,7 +9,7 @@ java.lang.IllegalArgumentException: null
         at com.google.api.client.googleapis.auth.oauth2.GoogleIdToken.parse(GoogleIdToken.java:53)
         at com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier.verify(GoogleIdTokenVerifier.java:187)
         at com.gogofnd.gogorent.global.user.service.GoogleOauth.verifyIdToken(GoogleOauth.java:47)
-        at com.gogofnd.gogorent.global.user.api.GoogleOAuthController.googleLogin(GoogleOAuthController.java:63)
+        at com.gogofnd.gogorent.global.user.api.GoogleOAuthController.googleLogin(GoogleOAuthController.java:65)
         at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
         at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
         at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
@@ -111,11 +112,5 @@ java.lang.IllegalArgumentException: null
         at org.apache.tomcat.util.threads.TaskThread$WrappingRunnable.run(TaskThread.java:61)
         at java.base/java.lang.Thread.run(Thread.java:834)
 
-2025-06-30 14:51:03.751  INFO 20895 --- [nio-9800-exec-5] c.g.g.global.config.LogInterceptor       : postHandle [188]
-2025-06-30 14:51:03.751  INFO 20895 --- [nio-9800-exec-5] c.g.g.global.config.LogInterceptor       : RESPONSE [67d80d1b-c341-4c99-8c90-8c7c2c636c2a][/api/gogorental/googleOAuth/login]
-2025-06-30 14:51:46.185  INFO 20895 --- [nio-9800-exec-2] c.g.g.global.config.LogInterceptor       : REQUEST [f7312154-38b8-4712-bf54-87477088e790][/api/gogorental/swagger-ui/]
-2025-06-30 14:51:46.186  INFO 20895 --- [nio-9800-exec-2] c.g.g.global.config.LogInterceptor       : postHandle [1]
-2025-06-30 14:51:46.204  INFO 20895 --- [nio-9800-exec-2] c.g.g.global.config.LogInterceptor       : REQUEST [b7efae4d-5c88-483e-9ca1-fe2d2d473714][/api/gogorental/swagger-ui/index.html]
-2025-06-30 14:51:46.213  INFO 20895 --- [nio-9800-exec-2] c.g.g.global.config.LogInterceptor       : postHandle [9]
-2025-06-30 14:51:46.214  INFO 20895 --- [nio-9800-exec-2] c.g.g.global.config.LogInterceptor       : RESPONSE [b7efae4d-5c88-483e-9ca1-fe2d2d473714][/api/gogorental/swagger-ui/index.html]
-2025-06-30 14:51:46.215  INFO 20895 --- [nio-9800-exec-2] c.g.g.global.config.LogInterceptor       : RESPONSE [b7efae4d-5c88-483e-9ca1-fe2d2d473714][/api/gogorental/swagger-ui/]
+2025-06-30 14:55:25.495  INFO 26812 --- [nio-9800-exec-4] c.g.g.global.config.LogInterceptor       : postHandle [127]
+2025-06-30 14:55:25.495  INFO 26812 --- [nio-9800-exec-4] c.g.g.global.config.LogInterceptor       : RESPONSE [405f2891-459f-468d-ac86-0f12d62947e9][/api/gogorental/googleOAuth/login]
