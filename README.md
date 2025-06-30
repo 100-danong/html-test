@@ -1,74 +1,121 @@
-package com.gogofnd.gogorent.global.user.service;
+2025-06-30 14:51:03.562  INFO 20895 --- [nio-9800-exec-5] c.g.g.global.config.LogInterceptor       : REQUEST [67d80d1b-c341-4c99-8c90-8c7c2c636c2a][/api/gogorental/googleOAuth/login]
+2025-06-30 14:51:03.702 ERROR 20895 --- [nio-9800-exec-5] c.g.g.g.user.api.GoogleOAuthController   : ID 토큰 인증 에러
 
-import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
-import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
-import com.google.api.client.googleapis.util.Utils;
-import com.google.api.client.http.javanet.NetHttpTransport;
-import com.google.api.client.json.JsonFactory;
-import com.nimbusds.jwt.JWTClaimsSet;
-import com.nimbusds.jwt.SignedJWT;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import net.minidev.json.JSONObject;
-import org.springframework.stereotype.Component;
+java.lang.IllegalArgumentException: null
+        at com.google.common.base.Preconditions.checkArgument(Preconditions.java:131)
+        at com.google.api.client.util.Preconditions.checkArgument(Preconditions.java:35)
+        at com.google.api.client.json.webtoken.JsonWebSignature$Parser.parse(JsonWebSignature.java:544)
+        at com.google.api.client.googleapis.auth.oauth2.GoogleIdToken.parse(GoogleIdToken.java:53)
+        at com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier.verify(GoogleIdTokenVerifier.java:187)
+        at com.gogofnd.gogorent.global.user.service.GoogleOauth.verifyIdToken(GoogleOauth.java:47)
+        at com.gogofnd.gogorent.global.user.api.GoogleOAuthController.googleLogin(GoogleOAuthController.java:63)
+        at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+        at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+        at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+        at java.base/java.lang.reflect.Method.invoke(Method.java:566)
+        at org.springframework.web.method.support.InvocableHandlerMethod.doInvoke(InvocableHandlerMethod.java:190)
+        at org.springframework.web.method.support.InvocableHandlerMethod.invokeForRequest(InvocableHandlerMethod.java:138)
+        at org.springframework.web.servlet.mvc.method.annotation.ServletInvocableHandlerMethod.invokeAndHandle(ServletInvocableHandlerMethod.java:105)
+        at org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter.invokeHandlerMethod(RequestMappingHandlerAdapter.java:878)
+        at org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter.handleInternal(RequestMappingHandlerAdapter.java:792)
+        at org.springframework.web.servlet.mvc.method.AbstractHandlerMethodAdapter.handle(AbstractHandlerMethodAdapter.java:87)
+        at org.springframework.web.servlet.DispatcherServlet.doDispatch(DispatcherServlet.java:1040)
+        at org.springframework.web.servlet.DispatcherServlet.doService(DispatcherServlet.java:943)
+        at org.springframework.web.servlet.FrameworkServlet.processRequest(FrameworkServlet.java:1006)
+        at org.springframework.web.servlet.FrameworkServlet.doPost(FrameworkServlet.java:909)
+        at javax.servlet.http.HttpServlet.service(HttpServlet.java:652)
+        at org.springframework.web.servlet.FrameworkServlet.service(FrameworkServlet.java:883)
+        at javax.servlet.http.HttpServlet.service(HttpServlet.java:733)
+        at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:227)
+        at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:162)
+        at org.apache.tomcat.websocket.server.WsFilter.doFilter(WsFilter.java:53)
+        at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:189)
+        at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:162)
+        at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:113)
+        at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:189)
+        at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:162)
+        at com.gogofnd.gogorent.global.config.JwtRequestFilter.doFilterInternal(JwtRequestFilter.java:80)
+        at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:119)
+        at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:189)
+        at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:162)
+        at com.gogofnd.gogorent.global.config.JwtExceptionFilter.doFilterInternal(JwtExceptionFilter.java:24)
+        at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:119)
+        at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:189)
+        at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:162)
+        at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:320)
+        at org.springframework.security.web.access.intercept.FilterSecurityInterceptor.invoke(FilterSecurityInterceptor.java:126)
+        at org.springframework.security.web.access.intercept.FilterSecurityInterceptor.doFilter(FilterSecurityInterceptor.java:90)
+        at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:334)
+        at org.springframework.security.web.access.ExceptionTranslationFilter.doFilter(ExceptionTranslationFilter.java:118)
+        at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:334)
+        at org.springframework.security.web.session.SessionManagementFilter.doFilter(SessionManagementFilter.java:137)
+        at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:334)
+        at org.springframework.security.web.authentication.AnonymousAuthenticationFilter.doFilter(AnonymousAuthenticationFilter.java:111)
+        at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:334)
+        at org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter.doFilter(SecurityContextHolderAwareRequestFilter.java:158)
+        at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:334)
+        at org.springframework.security.web.savedrequest.RequestCacheAwareFilter.doFilter(RequestCacheAwareFilter.java:63)
+        at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:334)
+        at com.gogofnd.gogorent.global.config.JwtRequestFilter.doFilterInternal(JwtRequestFilter.java:80)
+        at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:119)
+        at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:334)
+        at com.gogofnd.gogorent.global.config.JwtExceptionFilter.doFilterInternal(JwtExceptionFilter.java:24)
+        at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:119)
+        at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:334)
+        at org.springframework.security.web.authentication.logout.LogoutFilter.doFilter(LogoutFilter.java:116)
+        at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:334)
+        at org.springframework.web.filter.CorsFilter.doFilterInternal(CorsFilter.java:92)
+        at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:119)
+        at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:334)
+        at org.springframework.security.web.header.HeaderWriterFilter.doHeadersAfter(HeaderWriterFilter.java:92)
+        at org.springframework.security.web.header.HeaderWriterFilter.doFilterInternal(HeaderWriterFilter.java:77)
+        at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:119)
+        at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:334)
+        at org.springframework.security.web.context.SecurityContextPersistenceFilter.doFilter(SecurityContextPersistenceFilter.java:105)
+        at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:334)
+        at org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter.doFilterInternal(WebAsyncManagerIntegrationFilter.java:56)
+        at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:119)
+        at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:334)
+        at org.springframework.security.web.FilterChainProxy.doFilterInternal(FilterChainProxy.java:215)
+        at org.springframework.security.web.FilterChainProxy.doFilter(FilterChainProxy.java:178)
+        at org.springframework.web.filter.DelegatingFilterProxy.invokeDelegate(DelegatingFilterProxy.java:358)
+        at org.springframework.web.filter.DelegatingFilterProxy.doFilter(DelegatingFilterProxy.java:271)
+        at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:189)
+        at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:162)
+        at org.springframework.web.filter.RequestContextFilter.doFilterInternal(RequestContextFilter.java:100)
+        at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:119)
+        at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:189)
+        at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:162)
+        at org.springframework.web.filter.FormContentFilter.doFilterInternal(FormContentFilter.java:93)
+        at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:119)
+        at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:189)
+        at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:162)
+        at org.springframework.web.filter.CharacterEncodingFilter.doFilterInternal(CharacterEncodingFilter.java:201)
+        at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:119)
+        at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:189)
+        at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:162)
+        at org.apache.catalina.core.StandardWrapperValve.invoke(StandardWrapperValve.java:202)
+        at org.apache.catalina.core.StandardContextValve.invoke(StandardContextValve.java:97)
+        at org.apache.catalina.authenticator.AuthenticatorBase.invoke(AuthenticatorBase.java:542)
+        at org.apache.catalina.core.StandardHostValve.invoke(StandardHostValve.java:143)
+        at org.apache.catalina.valves.ErrorReportValve.invoke(ErrorReportValve.java:92)
+        at org.apache.catalina.core.StandardEngineValve.invoke(StandardEngineValve.java:78)
+        at org.apache.catalina.connector.CoyoteAdapter.service(CoyoteAdapter.java:346)
+        at org.apache.coyote.http11.Http11Processor.service(Http11Processor.java:374)
+        at org.apache.coyote.AbstractProcessorLight.process(AbstractProcessorLight.java:65)
+        at org.apache.coyote.AbstractProtocol$ConnectionHandler.process(AbstractProtocol.java:887)
+        at org.apache.tomcat.util.net.NioEndpoint$SocketProcessor.doRun(NioEndpoint.java:1684)
+        at org.apache.tomcat.util.net.SocketProcessorBase.run(SocketProcessorBase.java:49)
+        at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1128)
+        at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:628)
+        at org.apache.tomcat.util.threads.TaskThread$WrappingRunnable.run(TaskThread.java:61)
+        at java.base/java.lang.Thread.run(Thread.java:834)
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-
-
-@Component
-@RequiredArgsConstructor
-@Slf4j
-public class GoogleOauth {
-
-    private static final String WEB_CLIENT_ID = "GoGoRent.GoGo.io";
-    private static final String AND_CLIENT_ID = "com.gogofnd.gogorental_and";
-
-    private final JsonFactory jsonFactory = Utils.getDefaultJsonFactory();
-
-    private final NetHttpTransport transport = new NetHttpTransport();
-
-    public String getClientId(String clientType) throws Exception{
-        if ("web".equalsIgnoreCase(clientType)){
-            return WEB_CLIENT_ID;
-        } else if ("and".equalsIgnoreCase(clientType)) {
-            return AND_CLIENT_ID;
-        } else {
-            throw new Exception("알 수 없는 클라이언트 타입입니다.");
-        }
-    }
-
-    public GoogleIdToken.Payload verifyIdToken(String idTokenString, String clientId) throws Exception {
-        GoogleIdTokenVerifier verifier = new GoogleIdTokenVerifier.Builder(transport, jsonFactory)
-                .setAudience(Collections.singletonList(clientId))
-                .build();
-
-        GoogleIdToken idToken = verifier.verify(idTokenString);
-        if (idToken == null){
-            throw new IllegalArgumentException("유효하지 않은 ID 토큰입니다.");
-        }
-        return idToken.getPayload();
-    }
-
-    public Map<String , Object> parseIdToken(String idToken) throws Exception{
-        SignedJWT signedJWT = SignedJWT.parse(idToken);
-        JWTClaimsSet claimsSet = signedJWT.getJWTClaimsSet();
-
-        String email = claimsSet.getStringClaim("email");
-        JSONObject name = claimsSet.getJSONObjectClaim("name");
-        Boolean emailVerified = claimsSet.getBooleanClaim("email_verified");
-        String providerId = claimsSet.getSubject();
-
-
-        HashMap<String , Object> userInfo = new HashMap<>();
-        userInfo.put("email", email);
-        userInfo.put("email_verified", emailVerified);
-        userInfo.put("provider_id", providerId);
-        if (name != null) {
-            userInfo.put("first_name", name.get("firstName"));
-            userInfo.put("last_name", name.get("lastName"));
-        }
-        return userInfo;
-    }
-}
+2025-06-30 14:51:03.751  INFO 20895 --- [nio-9800-exec-5] c.g.g.global.config.LogInterceptor       : postHandle [188]
+2025-06-30 14:51:03.751  INFO 20895 --- [nio-9800-exec-5] c.g.g.global.config.LogInterceptor       : RESPONSE [67d80d1b-c341-4c99-8c90-8c7c2c636c2a][/api/gogorental/googleOAuth/login]
+2025-06-30 14:51:46.185  INFO 20895 --- [nio-9800-exec-2] c.g.g.global.config.LogInterceptor       : REQUEST [f7312154-38b8-4712-bf54-87477088e790][/api/gogorental/swagger-ui/]
+2025-06-30 14:51:46.186  INFO 20895 --- [nio-9800-exec-2] c.g.g.global.config.LogInterceptor       : postHandle [1]
+2025-06-30 14:51:46.204  INFO 20895 --- [nio-9800-exec-2] c.g.g.global.config.LogInterceptor       : REQUEST [b7efae4d-5c88-483e-9ca1-fe2d2d473714][/api/gogorental/swagger-ui/index.html]
+2025-06-30 14:51:46.213  INFO 20895 --- [nio-9800-exec-2] c.g.g.global.config.LogInterceptor       : postHandle [9]
+2025-06-30 14:51:46.214  INFO 20895 --- [nio-9800-exec-2] c.g.g.global.config.LogInterceptor       : RESPONSE [b7efae4d-5c88-483e-9ca1-fe2d2d473714][/api/gogorental/swagger-ui/index.html]
+2025-06-30 14:51:46.215  INFO 20895 --- [nio-9800-exec-2] c.g.g.global.config.LogInterceptor       : RESPONSE [b7efae4d-5c88-483e-9ca1-fe2d2d473714][/api/gogorental/swagger-ui/]
