@@ -1,6 +1,74 @@
-2025-06-30 14:25:44.369  INFO 25562 --- [nio-9800-exec-3] c.g.g.global.config.LogInterceptor       : REQUEST [dfbbda55-fcc7-4596-ad72-ff22f7ddc13a][/api/gogorental/googleOAuth/login]
-2025-06-30 14:25:44.479  INFO 25562 --- [nio-9800-exec-3] c.g.g.global.config.LogInterceptor       : postHandle [110]
-2025-06-30 14:25:44.479  INFO 25562 --- [nio-9800-exec-3] c.g.g.global.config.LogInterceptor       : RESPONSE [dfbbda55-fcc7-4596-ad72-ff22f7ddc13a][/api/gogorental/googleOAuth/login]
-2025-06-30 14:26:09.547  INFO 25562 --- [nio-9800-exec-8] c.g.g.global.config.LogInterceptor       : REQUEST [8a7898a2-fd77-4662-bd08-bfcaafd11988][/api/gogorental/googleOAuth/login]
-2025-06-30 14:26:09.550  INFO 25562 --- [nio-9800-exec-8] c.g.g.global.config.LogInterceptor       : postHandle [3]
-2025-06-30 14:26:09.551  INFO 25562 --- [nio-9800-exec-8] c.g.g.global.config.LogInterceptor       : RESPONSE [8a7898a2-fd77-4662-bd08-bfcaafd11988][/api/gogorental/googleOAuth/login]
+package com.gogofnd.gogorent.global.user.service;
+
+import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
+import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
+import com.google.api.client.googleapis.util.Utils;
+import com.google.api.client.http.javanet.NetHttpTransport;
+import com.google.api.client.json.JsonFactory;
+import com.nimbusds.jwt.JWTClaimsSet;
+import com.nimbusds.jwt.SignedJWT;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import net.minidev.json.JSONObject;
+import org.springframework.stereotype.Component;
+
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+
+
+@Component
+@RequiredArgsConstructor
+@Slf4j
+public class GoogleOauth {
+
+    private static final String WEB_CLIENT_ID = "GoGoRent.GoGo.io";
+    private static final String AND_CLIENT_ID = "com.gogofnd.gogorental_and";
+
+    private final JsonFactory jsonFactory = Utils.getDefaultJsonFactory();
+
+    private final NetHttpTransport transport = new NetHttpTransport();
+
+    public String getClientId(String clientType) throws Exception{
+        if ("web".equalsIgnoreCase(clientType)){
+            return WEB_CLIENT_ID;
+        } else if ("and".equalsIgnoreCase(clientType)) {
+            return AND_CLIENT_ID;
+        } else {
+            throw new Exception("알 수 없는 클라이언트 타입입니다.");
+        }
+    }
+
+    public GoogleIdToken.Payload verifyIdToken(String idTokenString, String clientId) throws Exception {
+        GoogleIdTokenVerifier verifier = new GoogleIdTokenVerifier.Builder(transport, jsonFactory)
+                .setAudience(Collections.singletonList(clientId))
+                .build();
+
+        GoogleIdToken idToken = verifier.verify(idTokenString);
+        if (idToken == null){
+            throw new IllegalArgumentException("유효하지 않은 ID 토큰입니다.");
+        }
+        return idToken.getPayload();
+    }
+
+    public Map<String , Object> parseIdToken(String idToken) throws Exception{
+        SignedJWT signedJWT = SignedJWT.parse(idToken);
+        JWTClaimsSet claimsSet = signedJWT.getJWTClaimsSet();
+
+        String email = claimsSet.getStringClaim("email");
+        JSONObject name = claimsSet.getJSONObjectClaim("name");
+        Boolean emailVerified = claimsSet.getBooleanClaim("email_verified");
+        String providerId = claimsSet.getSubject();
+
+
+        HashMap<String , Object> userInfo = new HashMap<>();
+        userInfo.put("email", email);
+        userInfo.put("email_verified", emailVerified);
+        userInfo.put("provider_id", providerId);
+        if (name != null) {
+            userInfo.put("first_name", name.get("firstName"));
+            userInfo.put("last_name", name.get("lastName"));
+        }
+        return userInfo;
+    }
+}
