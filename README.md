@@ -1,14 +1,9 @@
-2025-06-30 14:55:25.368  INFO 26812 --- [nio-9800-exec-4] c.g.g.global.config.LogInterceptor       : REQUEST [405f2891-459f-468d-ac86-0f12d62947e9][/api/gogorental/googleOAuth/login]
-2025-06-30 14:55:25.432  INFO 26812 --- [nio-9800-exec-4] c.g.g.g.user.api.GoogleOAuthController   : 전달된 idTokenString: MTEwMjAwMTI5MTk0ODUxOTM2OTE2
-2025-06-30 14:55:25.482 ERROR 26812 --- [nio-9800-exec-4] c.g.g.g.user.api.GoogleOAuthController   : ID 토큰 인증 에러
+2025-06-30 15:01:40.339  INFO 26812 --- [nio-9800-exec-8] c.g.g.global.config.LogInterceptor       : REQUEST [ed5e4fba-606a-4d3b-a094-e88089170f69][/api/gogorental/googleOAuth/login]
+2025-06-30 15:01:40.344  INFO 26812 --- [nio-9800-exec-8] c.g.g.g.user.api.GoogleOAuthController   : 전달된 idTokenString: eyJhbGciOiJSUzI1NiIsImtpZCI6Ijg4MjUwM2E1ZmQ1NmU5ZjczNGRmYmE1YzUwZDdiZjQ4ZGIyODRhZTkiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwczovL2FjY291bnRzLmdvb2dsZS5jb20iLCJhenAiOiIyNjE3OTI3MTU0MzctMjkzazc5c250c21jcWllaGxhaXRhdWdlaDkxY3VjZTMuYXBwcy5nb29nbGV1c2VyY29udGVudC5jb20iLCJhdWQiOiIyNjE3OTI3MTU0MzctOGJ1Zjg3ajJ1M2VzY3N2bzFzMnVmZGNldHNvbzJzMmkuYXBwcy5nb29nbGV1c2VyY29udGVudC5jb20iLCJzdWIiOiIxMTAyMDAxMjkxOTQ4NTE5MzY5MTYiLCJlbWFpbCI6InNodXdqOThAZ21haWwuY29tIiwiZW1haWxfdmVyaWZpZWQiOnRydWUsIm5hbWUiOiLshJzsm5Dsp4AiLCJwaWN0dXJlIjoiaHR0cHM6Ly9saDMuZ29vZ2xldXNlcmNvbnRlbnQuY29tL2EvQUNnOG9jSkhScWtvM3I0SjFkdGpUR1NUTGxIVjQ4WWx6c0lMYlA2ZUZDWEducll3bUllNW1RPXM5Ni1jIiwiZ2l2ZW5fbmFtZSI6IuybkOyngCIsImZhbWlseV9uYW1lIjoi7IScIiwiaWF0IjoxNzUxMjYyMjQ3LCJleHAiOjE3NTEyNjU4NDd9.ZBX2jUAG_0CVAbYdYQmwXxxCxGhPctnGnDb_jTzLjFO30JtDj4Eo0QNFgJMcSfPH9_6Js_OkQ1DAgcc5Mz6sVRDwJaYApWw2YrnP8U7ZJTnbBHcgGusApVJjWUy_FJWWxUssNiSe2dwUYHsV4ykiZnifC3eJ0SzHD44AVbMWFtYHfCFfMPez4x7TrTyzEA58oqnkn8nXzefxL3S5GhYw8Y8M9hE53nMcb4qGYTFO6Tq-iACnkVM2Paki5SHxA36kFjJQN1SBzdQHy1N8wHGoopT0uPuaNPL3NQWBGRszdjd8CYlk_bY71hIAYFTg1n-RFc0mcKcyIZ1BmcxVVgViqQ
+2025-06-30 15:01:40.397 ERROR 26812 --- [nio-9800-exec-8] c.g.g.g.user.api.GoogleOAuthController   : ID 토큰 인증 에러
 
-java.lang.IllegalArgumentException: null
-        at com.google.common.base.Preconditions.checkArgument(Preconditions.java:131)
-        at com.google.api.client.util.Preconditions.checkArgument(Preconditions.java:35)
-        at com.google.api.client.json.webtoken.JsonWebSignature$Parser.parse(JsonWebSignature.java:544)
-        at com.google.api.client.googleapis.auth.oauth2.GoogleIdToken.parse(GoogleIdToken.java:53)
-        at com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier.verify(GoogleIdTokenVerifier.java:187)
-        at com.gogofnd.gogorent.global.user.service.GoogleOauth.verifyIdToken(GoogleOauth.java:47)
+java.lang.IllegalArgumentException: 유효하지 않은 ID 토큰입니다.
+        at com.gogofnd.gogorent.global.user.service.GoogleOauth.verifyIdToken(GoogleOauth.java:49)
         at com.gogofnd.gogorent.global.user.api.GoogleOAuthController.googleLogin(GoogleOAuthController.java:65)
         at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
         at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
@@ -112,5 +107,5 @@ java.lang.IllegalArgumentException: null
         at org.apache.tomcat.util.threads.TaskThread$WrappingRunnable.run(TaskThread.java:61)
         at java.base/java.lang.Thread.run(Thread.java:834)
 
-2025-06-30 14:55:25.495  INFO 26812 --- [nio-9800-exec-4] c.g.g.global.config.LogInterceptor       : postHandle [127]
-2025-06-30 14:55:25.495  INFO 26812 --- [nio-9800-exec-4] c.g.g.global.config.LogInterceptor       : RESPONSE [405f2891-459f-468d-ac86-0f12d62947e9][/api/gogorental/googleOAuth/login]
+2025-06-30 15:01:40.405  INFO 26812 --- [nio-9800-exec-8] c.g.g.global.config.LogInterceptor       : postHandle [66]
+2025-06-30 15:01:40.405  INFO 26812 --- [nio-9800-exec-8] c.g.g.global.config.LogInterceptor       : RESPONSE [ed5e4fba-606a-4d3b-a094-e88089170f69][/api/gogorental/googleOAuth/login]
