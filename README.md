@@ -1,30 +1,61 @@
-package com.gogofnd.gogorent.global.user.dto;
+    @PostMapping("register")
+    @ApiOperation("카카오 회원가입")
+    public ResponseEntity<?> kakaoRegister(@Valid @RequestBody KakaoUserRegisterDTO dto, HttpServletRequest httpServletRequest) throws Exception {
+        if (userRepository.findByNameAndPhoneNumberAndUseYnIsTrue(dto.getName(), dto.getPhoneNumber()).isPresent()){
+            ApiResponse2<Object> error = new ApiResponse2<>(
+                    "error",
+                    null,
+                    "이름 + 폰번호 + useY 중복입니다."
+            );
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
+        }
+        User user = new User();
+        user.setLoginId(dto.getEmail());
+        user.setName(dto.getName());
+        user.setPhoneNumber(dto.getPhoneNumber());
+        user.setEmail(dto.getEmail());
+        user.setAddress(dto.getAddress());
+        user.setDeliveryPlatform(DeliveryPlatform.valueOf(dto.getDeliveryPlatform()));
+        user.setPlatformOtherReason(dto.getPlatformOtherReason());
+        user.setRoles(Collections.singleton("ROLE_USER"));
+        user.setAdminYn(false);
+        userRepository.save(user);
 
-import lombok.Data;
+        UserOAuthInfo userOAuthInfo = new UserOAuthInfo();
+        userOAuthInfo.setProvider("kakao");
+        userOAuthInfo.setProviderId(dto.getProviderId());
+        userOAuthInfo.setUser(user);
+        userOAuthInfoRepository.save(userOAuthInfo);
 
-import javax.validation.constraints.Email;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
+        //JWT 생성
+        final UserDetails userDetails = userDetailsService.loadUserByUsername(user.getLoginId());
+        final String jwt = jwtUtil.createAccessToken(userDetails);
+        final String refreshToken = jwtUtil.createRefreshToken(userDetails);
+        refreshTokenService.saveRefreshToken(userDetails.getUsername(), refreshToken, Duration.ofDays(7));
 
-@Data
-public class KakaoUserRegisterDTO {
-    @NotNull
-    @Size(min = 2, max = 20, message = "name must be between 2 and 20 characters")
-    private String name;
-    @NotNull
-    @Email
-    @Size(min = 3, max = 40, message = "email must be between 2 and 40 characters")
-    private String email;
+        //접속정보 저장
+        String ip = httpServletRequest.getRemoteAddr();
+        UserAgent userAgent = UserAgent.parseUserAgentString(httpServletRequest.getHeader("User-Agent"));
+        String browser = userAgent.getBrowser().getName();
+        String os = userAgent.getOperatingSystem().getName();
+        String device = userAgent.getOperatingSystem().getDeviceType().getName();
+        loginHistoryService.saveLoginHistory(user, ip, String.format("Browser : %s, OS : %s, Device : %s", browser, os, device));
 
-    @NotNull
-    @Size(min = 3, max = 20, message = "phoneNumber must be between 2 and 20 characters")
-    private String phoneNumber;
-    private String providerId;
-    private String address;
-    private String deliveryPlatform;
-    private String platformOtherReason;
-    private String appleRefreshToken;
-    private String birthDate;
-    private String gender;
-    private String telecomCompany;
-}
+
+        HashMap<Object, Object> map = new HashMap<>();
+        map.put("name", user.getName());
+        map.put("phoneNum", user.getPhoneNumber());
+        map.put("email", user.getEmail());
+        map.put("address", user.getAddress());
+        map.put("deliveryPlatform", user.getDeliveryPlatform().name());
+        map.put("provider", "apple");
+        map.put("providerId", dto.getProviderId());
+        map.put("accessToken", jwt);
+        map.put("refreshToken", refreshToken);
+        ApiResponse2<Object> stringApiResponse2 = new ApiResponse2<>(
+                "success",
+                map,
+                "success"
+        );
+        return ResponseEntity.ok(stringApiResponse2);
+    }
