@@ -1,153 +1,111 @@
-2025-07-04 16:31:28.148  INFO 7425 --- [nio-9800-exec-3] c.g.g.global.config.LogInterceptor       : REQUEST [6547171c-abb1-4617-bcfb-d578a4bbe41d][/api/gogorental/kakaoOAuth2/register]
-java.lang.UnsupportedOperationException
-        at java.base/java.util.Collections$1.remove(Collections.java:4714)
-        at java.base/java.util.AbstractCollection.clear(AbstractCollection.java:447)
-        at org.hibernate.type.CollectionType.replaceElements(CollectionType.java:580)
-        at org.hibernate.type.CollectionType.replace(CollectionType.java:757)
-        at org.hibernate.type.TypeHelper.replace(TypeHelper.java:167)
-        at org.hibernate.event.internal.DefaultMergeEventListener.copyValues(DefaultMergeEventListener.java:450)
-        at org.hibernate.event.internal.DefaultMergeEventListener.entityIsPersistent(DefaultMergeEventListener.java:205)
-        at org.hibernate.event.internal.DefaultMergeEventListener.onMerge(DefaultMergeEventListener.java:178)
-        at org.hibernate.event.internal.DefaultMergeEventListener.onMerge(DefaultMergeEventListener.java:70)
-        at org.hibernate.event.service.internal.EventListenerGroupImpl.fireEventOnEachListener(EventListenerGroupImpl.java:107)
-        at org.hibernate.internal.SessionImpl.fireMerge(SessionImpl.java:829)
-        at org.hibernate.internal.SessionImpl.merge(SessionImpl.java:816)
-        at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
-        at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
-        at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
-        at java.base/java.lang.reflect.Method.invoke(Method.java:566)
-        at org.springframework.orm.jpa.ExtendedEntityManagerCreator$ExtendedEntityManagerInvocationHandler.invoke(ExtendedEntityManagerCreator.java:366)
-        at com.sun.proxy.$Proxy129.merge(Unknown Source)
-        at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
-        at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
-        at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
-        at java.base/java.lang.reflect.Method.invoke(Method.java:566)
-        at org.springframework.orm.jpa.SharedEntityManagerCreator$SharedEntityManagerInvocationHandler.invoke(SharedEntityManagerCreator.java:314)
-        at com.sun.proxy.$Proxy129.merge(Unknown Source)
-        at org.springframework.data.jpa.repository.support.SimpleJpaRepository.save(SimpleJpaRepository.java:557)
-        at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
-        at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
-        at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
-        at java.base/java.lang.reflect.Method.invoke(Method.java:566)
-        at org.springframework.data.repository.core.support.ImplementationInvocationMetadata.invoke(ImplementationInvocationMetadata.java:72)
-        at org.springframework.data.repository.core.support.RepositoryComposition$RepositoryFragments.invoke(RepositoryComposition.java:382)
-        at org.springframework.data.repository.core.support.RepositoryComposition.invoke(RepositoryComposition.java:205)
-        at org.springframework.data.repository.core.support.RepositoryFactorySupport$ImplementationMethodExecutionInterceptor.invoke(RepositoryFactorySupport.java:550)
-        at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:186)
-        at org.springframework.data.repository.core.support.QueryExecutorMethodInterceptor.doInvoke(QueryExecutorMethodInterceptor.java:155)
-        at org.springframework.data.repository.core.support.QueryExecutorMethodInterceptor.invoke(QueryExecutorMethodInterceptor.java:130)
-        at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:186)
-        at org.springframework.data.projection.DefaultMethodInvokingMethodInterceptor.invoke(DefaultMethodInvokingMethodInterceptor.java:80)
-        at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:186)
-        at org.springframework.transaction.interceptor.TransactionAspectSupport.invokeWithinTransaction(TransactionAspectSupport.java:367)
-        at org.springframework.transaction.interceptor.TransactionInterceptor.invoke(TransactionInterceptor.java:118)
-        at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:186)
-        at org.springframework.dao.support.PersistenceExceptionTranslationInterceptor.invoke(PersistenceExceptionTranslationInterceptor.java:139)
-        at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:186)
-        at org.springframework.data.jpa.repository.support.CrudMethodMetadataPostProcessor$CrudMethodMetadataPopulatingMethodInterceptor.invoke(CrudMethodMetadataPostProcessor.java:178)
-        at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:186)
-        at org.springframework.aop.interceptor.ExposeInvocationInterceptor.invoke(ExposeInvocationInterceptor.java:95)
-        at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:186)
-        at org.springframework.aop.framework.JdkDynamicAopProxy.invoke(JdkDynamicAopProxy.java:212)
-        at com.sun.proxy.$Proxy138.save(Unknown Source)
-        at com.gogofnd.gogorent.global.user.api.KakaoOAuthController2.kakaoRegister(KakaoOAuthController2.java:170)
-        at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
-        at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
-        at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
-        at java.base/java.lang.reflect.Method.invoke(Method.java:566)
-        at org.springframework.web.method.support.InvocableHandlerMethod.doInvoke(InvocableHandlerMethod.java:190)
-        at org.springframework.web.method.support.InvocableHandlerMethod.invokeForRequest(InvocableHandlerMethod.java:138)
-        at org.springframework.web.servlet.mvc.method.annotation.ServletInvocableHandlerMethod.invokeAndHandle(ServletInvocableHandlerMethod.java:105)
-        at org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter.invokeHandlerMethod(RequestMappingHandlerAdapter.java:878)
-        at org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter.handleInternal(RequestMappingHandlerAdapter.java:792)
-        at org.springframework.web.servlet.mvc.method.AbstractHandlerMethodAdapter.handle(AbstractHandlerMethodAdapter.java:87)
-        at org.springframework.web.servlet.DispatcherServlet.doDispatch(DispatcherServlet.java:1040)
-        at org.springframework.web.servlet.DispatcherServlet.doService(DispatcherServlet.java:943)
-        at org.springframework.web.servlet.FrameworkServlet.processRequest(FrameworkServlet.java:1006)
-        at org.springframework.web.servlet.FrameworkServlet.doPost(FrameworkServlet.java:909)
-        at javax.servlet.http.HttpServlet.service(HttpServlet.java:652)
-        at org.springframework.web.servlet.FrameworkServlet.service(FrameworkServlet.java:883)
-        at javax.servlet.http.HttpServlet.service(HttpServlet.java:733)
-        at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:227)
-        at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:162)
-        at org.apache.tomcat.websocket.server.WsFilter.doFilter(WsFilter.java:53)
-        at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:189)
-        at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:162)
-        at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:113)
-        at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:189)
-        at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:162)
-        at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:103)
-        at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:189)
-        at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:162)
-        at com.gogofnd.gogorent.global.config.JwtExceptionFilter.doFilterInternal(JwtExceptionFilter.java:24)
-        at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:119)
-        at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:189)
-        at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:162)
-        at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:320)
-        at org.springframework.security.web.access.intercept.FilterSecurityInterceptor.invoke(FilterSecurityInterceptor.java:126)
-        at org.springframework.security.web.access.intercept.FilterSecurityInterceptor.doFilter(FilterSecurityInterceptor.java:90)
-        at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:334)
-        at org.springframework.security.web.access.ExceptionTranslationFilter.doFilter(ExceptionTranslationFilter.java:118)
-        at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:334)
-        at org.springframework.security.web.session.SessionManagementFilter.doFilter(SessionManagementFilter.java:137)
-        at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:334)
-        at org.springframework.security.web.authentication.AnonymousAuthenticationFilter.doFilter(AnonymousAuthenticationFilter.java:111)
-        at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:334)
-        at org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter.doFilter(SecurityContextHolderAwareRequestFilter.java:158)
-        at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:334)
-        at org.springframework.security.web.savedrequest.RequestCacheAwareFilter.doFilter(RequestCacheAwareFilter.java:63)
-        at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:334)
-        at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:103)
-        at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:334)
-        at com.gogofnd.gogorent.global.config.JwtExceptionFilter.doFilterInternal(JwtExceptionFilter.java:24)
-        at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:119)
-        at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:334)
-        at org.springframework.security.web.authentication.logout.LogoutFilter.doFilter(LogoutFilter.java:116)
-        at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:334)
-        at org.springframework.web.filter.CorsFilter.doFilterInternal(CorsFilter.java:92)
-        at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:119)
-        at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:334)
-        at org.springframework.security.web.header.HeaderWriterFilter.doHeadersAfter(HeaderWriterFilter.java:92)
-        at org.springframework.security.web.header.HeaderWriterFilter.doFilterInternal(HeaderWriterFilter.java:77)
-        at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:119)
-        at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:334)
-        at org.springframework.security.web.context.SecurityContextPersistenceFilter.doFilter(SecurityContextPersistenceFilter.java:105)
-        at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:334)
-        at org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter.doFilterInternal(WebAsyncManagerIntegrationFilter.java:56)
-        at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:119)
-        at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:334)
-        at org.springframework.security.web.FilterChainProxy.doFilterInternal(FilterChainProxy.java:215)
-        at org.springframework.security.web.FilterChainProxy.doFilter(FilterChainProxy.java:178)
-        at org.springframework.web.filter.DelegatingFilterProxy.invokeDelegate(DelegatingFilterProxy.java:358)
-        at org.springframework.web.filter.DelegatingFilterProxy.doFilter(DelegatingFilterProxy.java:271)
-        at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:189)
-        at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:162)
-        at org.springframework.web.filter.RequestContextFilter.doFilterInternal(RequestContextFilter.java:100)
-        at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:119)
-        at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:189)
-        at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:162)
-        at org.springframework.web.filter.FormContentFilter.doFilterInternal(FormContentFilter.java:93)
-        at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:119)
-        at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:189)
-        at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:162)
-        at org.springframework.web.filter.CharacterEncodingFilter.doFilterInternal(CharacterEncodingFilter.java:201)
-        at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:119)
-        at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:189)
-        at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:162)
-        at org.apache.catalina.core.StandardWrapperValve.invoke(StandardWrapperValve.java:202)
-        at org.apache.catalina.core.StandardContextValve.invoke(StandardContextValve.java:97)
-        at org.apache.catalina.authenticator.AuthenticatorBase.invoke(AuthenticatorBase.java:542)
-        at org.apache.catalina.core.StandardHostValve.invoke(StandardHostValve.java:143)
-        at org.apache.catalina.valves.ErrorReportValve.invoke(ErrorReportValve.java:92)
-        at org.apache.catalina.core.StandardEngineValve.invoke(StandardEngineValve.java:78)
-        at org.apache.catalina.connector.CoyoteAdapter.service(CoyoteAdapter.java:346)
-        at org.apache.coyote.http11.Http11Processor.service(Http11Processor.java:374)
-        at org.apache.coyote.AbstractProcessorLight.process(AbstractProcessorLight.java:65)
-        at org.apache.coyote.AbstractProtocol$ConnectionHandler.process(AbstractProtocol.java:887)
-        at org.apache.tomcat.util.net.NioEndpoint$SocketProcessor.doRun(NioEndpoint.java:1684)
-        at org.apache.tomcat.util.net.SocketProcessorBase.run(SocketProcessorBase.java:49)
-        at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1128)
-        at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:628)
-        at org.apache.tomcat.util.threads.TaskThread$WrappingRunnable.run(TaskThread.java:61)
-        at java.base/java.lang.Thread.run(Thread.java:834)
-2025-07-04 16:31:28.481  INFO 7425 --- [nio-9800-exec-3] c.g.g.global.config.LogInterceptor       : RESPONSE [6547171c-abb1-4617-bcfb-d578a4bbe41d][/api/gogorental/kakaoOAuth2/register]
+package com.gogofnd.gogorent.global.user.entity;
+
+
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.gogofnd.gogorent.business.entity.Contract;
+import com.gogofnd.gogorent.global.pay.entity.Card;
+import com.gogofnd.gogorent.global.pay.entity.CardCheckPay;
+import com.gogofnd.gogorent.global.pay.entity.PayRecord;
+import lombok.*;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+
+import javax.persistence.*;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+
+@Entity
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
+@EntityListeners(AuditingEntityListener.class)
+public class User {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "userId")
+    private Long id;
+    @Column(unique = true, length = 30)
+    private String loginId;
+    @Column(length = 100)
+    private String password;
+    @Column(length = 30)
+    private String name;
+    @Column(length = 50)
+    private String phoneNumber;
+    private Boolean adminYn;
+
+    @Column(unique = true, length = 50)
+    private String email;
+    private String address;
+    private long totalPayAmount;
+    @Enumerated(EnumType.STRING)
+    @Column(length = 20)
+    private DeliveryPlatform deliveryPlatform;
+    private String platformOtherReason;
+    private String telecomCompany;
+    private String birthDate;
+    private String gender;
+
+    @CreatedDate
+    private LocalDateTime insDtm;
+    @LastModifiedDate
+    private LocalDateTime updDtm;
+    private boolean useYn = true;
+
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY
+    , cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
+    private List<Card> cards = new ArrayList<>();
+
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY
+            , cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
+    private List<Contract> contracts= new ArrayList<>();
+
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY
+            , cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
+    private List<Inquiry> inquiries= new ArrayList<>();
+
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY
+            , cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
+    private List<CardCheckPay> cardCheckPays= new ArrayList<>();
+
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY
+            , cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
+    private List<PayRecord> payRecords = new ArrayList<>();
+
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY
+            , cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
+    private List<DriverLicense> driverLicenses = new ArrayList<>();
+
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY
+            , cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
+    private List<LoginHistory> loginHistories = new ArrayList<>();
+
+    @OneToOne(mappedBy = "user", fetch = FetchType.LAZY
+            , cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
+    private UserOAuthInfo userOAuthInfo;
+
+    @ElementCollection(fetch = FetchType.EAGER)
+    private Set<String> roles = new HashSet<>();
+    public void plusPoint(long point){
+        this.totalPayAmount = this.totalPayAmount + point;
+    }
+
+    public void minusPoint(long point){
+        this.totalPayAmount = this.totalPayAmount - point;
+    }
+}
