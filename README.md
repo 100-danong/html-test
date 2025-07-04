@@ -1,59 +1,100 @@
-    @PostMapping("login")
-    @ApiOperation("카카오 로그인")
-    public ResponseEntity<?> kakaoLogin(@RequestBody String code, @RequestParam String type, HttpServletRequest httpServletRequest) throws Exception {
-        try {
-            String accessToken = kakaoOAuth.getAccessToken(code, type);
-            Map<String, Object> userInfo = kakaoOAuth.getUserInfo(accessToken);
+package com.gogofnd.gogorent.global.user.service;
 
-            String providerId = userInfo.get("id").toString();
-            Optional<UserOAuthInfo> userOAuthInfo = userOAuthInfoRepository.findByProviderAndProviderIdAndUseYnIsTrue("kakao", providerId);
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.*;
+import org.springframework.stereotype.Component;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
+import org.springframework.web.client.RestClientException;
+import org.springframework.web.client.RestTemplate;
 
-            if (userOAuthInfo.isPresent()){
-                User user2 = userOAuthInfo.get().getUser();
-                if (user2.isUseYn()) {
-                    //JWT 생성
-                    final UserDetails userDetails = userDetailsService.loadUserByUsername(user2.getLoginId());
-                    final String jwt = jwtUtil.createAccessToken(userDetails);
-                    final String refreshToken = jwtUtil.createRefreshToken(userDetails);
-                    refreshTokenService.saveRefreshToken(userDetails.getUsername(), refreshToken, Duration.ofDays(7));
+import java.util.Map;
+import java.util.Objects;
 
-                    //접속정보 저장
-                    String ip = httpServletRequest.getRemoteAddr();
-                    UserAgent userAgent = UserAgent.parseUserAgentString(httpServletRequest.getHeader("User-Agent"));
-                    String browser = userAgent.getBrowser().getName();
-                    String os = userAgent.getOperatingSystem().getName();
-                    String device = userAgent.getOperatingSystem().getDeviceType().getName();
+@Component
+@RequiredArgsConstructor
+public class KakaoOAuth2 {
 
-                    loginHistoryService.saveLoginHistory(user2, ip, String.format("Browser : %s, OS : %s, Device : %s", browser, os, device));
+    //web
+    private static final String WEB = "ec86a7af731bdef703d097a73e9c04fd";
+    //ios
+    private static final String IOS = "c96461f4cc2ce0034d3214b07cee9182";
 
-                    ApiResponse2<TokenDTO> tokenResponseApiResponse2 = new ApiResponse2<>(
-                            "success",
-                            new TokenDTO(jwt, refreshToken),
-                            "success"
-                    );
-                    return ResponseEntity.ok(tokenResponseApiResponse2);
-                } else {
-                    ApiResponse2<Map<String , Object>> tokenResponseApiResponse2 = new ApiResponse2<>(
-                            "success",
-                            userInfo,
-                            "kakao OAuth 탈퇴한 회원입니다."
-                    );
-                    return ResponseEntity.ok(tokenResponseApiResponse2);
-                }
-            } else {
-                ApiResponse2<Map<String , Object>> tokenResponseApiResponse2 = new ApiResponse2<>(
-                        "success",
-                        userInfo,
-                        "kakao OAuth 회원가입"
-                );
-                return ResponseEntity.ok(tokenResponseApiResponse2);
-            }
-        } catch (Exception e) {
-            ApiResponse2<Object> error = new ApiResponse2<>(
-                    "error",
-                    null,
-                    e.getMessage()
-            );
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
+    //android
+    private static final String AND = "261792715437-8buf87j2u3escsvo1s2ufdcetsoo2s2i.apps.googleusercontent.com";
+
+    private static final String REDIRECT_URI = "{baseUrl}/oauth2/callback/kakao-web";
+
+    //            #            scope: profile_nickname,account_email
+    public String getAccessToken(String code, String type){
+        RestTemplate restTemplate = new RestTemplate();
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+
+        String type1;
+        if (Objects.equals(type, "web")){
+            type1=WEB;
+        } else if (Objects.equals(type, "ios")){
+            type1=IOS;
+        } else if (Objects.equals(type, "and")){
+            type1=AND;
+        } else {
+            throw new IllegalArgumentException("잘못된 type");
         }
+
+        MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+        params.add("grant_type", "authorization_code");
+        params.add("client_id", type1);
+        params.add("redirect_uri", REDIRECT_URI);
+        params.add("code", code);
+
+        HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(params, headers);
+
+        ResponseEntity<Map> response = restTemplate.postForEntity(
+                "https://kauth.kakao.com/oauth/token",
+                request,
+                Map.class
+        );
+        Map responseBody = response.getBody();
+        return (String) responseBody.get("access_token");
     }
+
+    public Map<String, Object> getUserInfo(String accessToken){
+        RestTemplate restTemplate = new RestTemplate();
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Authorization", "Bearer " + accessToken);
+        HttpEntity<Object> request = new HttpEntity<>(headers);
+        ResponseEntity<Map> response = restTemplate.exchange(
+                "https://kapi.kakao.com/v2/user/me",
+                HttpMethod.GET,
+                request,
+                Map.class
+        );
+        return response.getBody();
+    }
+
+    public boolean unlinkKakaoAccount(String accessToken){
+        RestTemplate restTemplate = new RestTemplate();
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Authorization", "Bearer " + accessToken);
+
+        HttpEntity<String> request = new HttpEntity<>(headers);
+
+        try {
+            ResponseEntity<Map> response = restTemplate.exchange(
+                    "https://kapi.kakao.com/v1/user/unlink",
+                    HttpMethod.POST,
+                    request,
+                    Map.class
+            );
+
+            if (response.getStatusCode() == HttpStatus.OK){
+                return true;
+            }
+        } catch (RestClientException e){
+            e.printStackTrace();
+        }
+        return false;
+    }
+}
