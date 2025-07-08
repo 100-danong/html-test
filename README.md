@@ -1,6 +1,3 @@
-TgDTO tgDTO = tgMapper.findTgDTO(userValid.getRiId());
-
-<select id="findTgDTO" parameterType="java.lang.Long" resultType="com.gogofnd.kb.domain.rider.dto.tg.TgDTO">
         SELECT
         ri.ri_id,
         ri.si_id,
@@ -15,5 +12,6 @@ TgDTO tgDTO = tgMapper.findTgDTO(userValid.getRiId());
         JOIN seller_info si ON ri.si_id = si.si_id
         WHERE 1=1
         AND ci.ci_complete_time IS NULL
-        AND ci.ri_id = #{riId}
-    </select>
+        AND ci.ri_id = '32673'
+        order by ci.ci_appoint_time DESC 
+        LIMIT 1;
