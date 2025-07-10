@@ -25,10 +25,13 @@ public class SlackStatusFilter extends OncePerRequestFilter {
             FilterChain filterChain
     ) throws ServletException, IOException {
         try {
+            System.out.println("여긴 오니?");
             filterChain.doFilter(request, response);
         } catch (Exception ex){
+            System.out.println("여기 안 오는 거지?");
             int status = response.getStatus();
             if (status != 500) {
+                System.out.println("아니면 여기로 빠지니?");
                 return;
             }
 
