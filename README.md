@@ -1,4 +1,27 @@
-public void sendError(String server, String appName, String env, Exception ex) {
+package com.gogofnd.gogorent.business.service;
+
+import com.gogofnd.gogorent.global.config.SlackProperties;
+import lombok.RequiredArgsConstructor;
+import org.springframework.boot.web.client.RestTemplateBuilder;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
+
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+@Service
+@RequiredArgsConstructor
+public class SlackService {
+    private final SlackProperties props;
+    private final RestTemplate rest = new RestTemplateBuilder().build();
+    public void sendError(String server, String appName, String env, Exception ex) {
         Map<String, String> roleLabels = Map.of(
                 "oncall",       "담당자",
                 "executives",   "대표",
@@ -46,62 +69,19 @@ public void sendError(String server, String appName, String env, Exception ex) {
                 "\"text\":\"```" + escape(trace) + "```\"" +
                 "}]}";
 
-
-
-
-
-
-
-
-
-                package com.gogofnd.gogorent.global.filter;
-
-
-import com.gogofnd.gogorent.business.service.SlackService;
-import lombok.RequiredArgsConstructor;
-import org.springframework.core.env.Environment;
-import org.springframework.stereotype.Component;
-import org.springframework.web.filter.OncePerRequestFilter;
-
-import javax.servlet.FilterChain;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-@Component
-@RequiredArgsConstructor
-public class SlackStatusFilter extends OncePerRequestFilter {
-    private final SlackService slackService;
-    private final Environment env;
-
-    @Override
-    protected void doFilterInternal(
-            HttpServletRequest request,
-            HttpServletResponse response,
-            FilterChain filterChain
-    ) throws ServletException, IOException {
-        // 요청을 처리
-        filterChain.doFilter(request, response);
-
-        // 응답 상태 코드 추출
-        int status = response.getStatus();
-        // 성공(200) 응답은 알림 제외
-        if (status != 500) {
-            return;
-        }
-
-        String server  = request.getServerName();
-        String appName = env.getProperty("spring.application.name", "unknown-app");
-        String profile = env.getProperty("spring.profiles.active", "default");
-
-        // SlackService 호출
-        slackService.sendError(server, appName, profile, status);
-    }
-}
-
-
-
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         rest.postForEntity(props.getWebhookUrl(), new HttpEntity<>(payload, headers), String.class);
     }
+
+    /**
+     * JSON 내 특수문자 escape 처리
+     */
+    private String escape(String s) {
+        if (s == null) return "";
+        return s.replace("\\", "\\\\")
+                .replace("\"", "\\\"")
+                .replace("\r", "")
+                .replace("\n", "\\n");
+    }
+}
