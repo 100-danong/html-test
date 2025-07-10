@@ -1,56 +1,4 @@
-package com.gogofnd.gogorent.global.config;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.gogofnd.gogorent.business.service.SlackService;
-import org.springframework.core.env.Environment;
-import org.springframework.security.access.AccessDeniedException;
-import org.springframework.security.web.access.AccessDeniedHandler;
-import org.springframework.stereotype.Component;
-
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
-
-@Component
-public class CustomAccessDeniedHandler implements AccessDeniedHandler {
-
-    private final ObjectMapper objectMapper = new ObjectMapper();
-    private final SlackService slackService;
-    private final org.springframework.core.env.Environment env;
-
-    public CustomAccessDeniedHandler(SlackService slackService, Environment env) {
-        this.slackService = slackService;
-        this.env = env;
-    }
-
-    @Override
-    public void handle(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, AccessDeniedException e) throws IOException, ServletException {
-        int status = httpServletResponse.getStatus();
-        System.out.println("여기?");
-        if (status == 500) {
-            System.out.println("여기는?");
-            String server = httpServletRequest.getServerName();
-            String appName = env.getProperty("spring.application.name", "unknown-app");
-            String profile = env.getProperty("spring.profiles.active", "default");
-
-            slackService.sendError(server, appName, profile, e);
-        }
-
-        Map<String, String> map = new HashMap<>();
-        map.put("error", "Forbidden");
-        map.put("message", e.getMessage());
-
-        httpServletResponse.setStatus(HttpServletResponse.SC_FORBIDDEN);
-        httpServletResponse.setContentType("application/json");
-        httpServletResponse.getWriter().write(objectMapper.writeValueAsString(map));
-    }
-}
-
-
-2025-07-10 11:52:39.431  INFO 37816 --- [nio-9800-exec-2] c.g.g.global.config.LogInterceptor       : REQUEST [d2cc094b-9bfe-45a6-9d54-14edc70ec419][/api/gogorental/test/slack/error]
+2025-07-10 13:06:18.976  INFO 12924 --- [nio-9800-exec-8] c.g.g.global.config.LogInterceptor       : REQUEST [c9a09e24-46cc-495a-bb12-f3045c9bf899][/api/gogorental/test/slack/error]
 java.lang.RuntimeException: 💥 테스트용 강제 예외 발생!
         at com.gogofnd.gogorent.business.controller.TestSlackController.triggerError(TestSlackController.java:16)
         at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
@@ -154,4 +102,4 @@ java.lang.RuntimeException: 💥 테스트용 강제 예외 발생!
         at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:628)
         at org.apache.tomcat.util.threads.TaskThread$WrappingRunnable.run(TaskThread.java:61)
         at java.base/java.lang.Thread.run(Thread.java:834)
-2025-07-10 11:52:39.440  INFO 37816 --- [nio-9800-exec-2] c.g.g.global.config.LogInterceptor       : RESPONSE [d2cc094b-9bfe-45a6-9d54-14edc70ec419][/api/gogorental/test/slack/error]
+2025-07-10 13:06:18.997  INFO 12924 --- [nio-9800-exec-8] c.g.g.global.config.LogInterceptor       : RESPONSE [c9a09e24-46cc-495a-bb12-f3045c9bf899][/api/gogorental/test/slack/error]
