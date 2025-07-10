@@ -1,4 +1,4 @@
-2025-07-10 11:35:21.487  INFO 14294 --- [nio-9800-exec-9] c.g.g.global.config.LogInterceptor       : REQUEST [f77b3175-116f-4b64-8a9b-a5ee8e530a15][/api/gogorental/test/slack/error]
+2025-07-10 11:39:18.512  INFO 19391 --- [nio-9800-exec-6] c.g.g.global.config.LogInterceptor       : REQUEST [151c53c2-ab3d-46b3-a85d-e8cb351a4a64][/api/gogorental/test/slack/error]
 java.lang.RuntimeException: 💥 테스트용 강제 예외 발생!
         at com.gogofnd.gogorent.business.controller.TestSlackController.triggerError(TestSlackController.java:16)
         at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
@@ -24,10 +24,6 @@ java.lang.RuntimeException: 💥 테스트용 강제 예외 발생!
         at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:189)
         at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:162)
         at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:113)
-        at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:189)
-        at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:162)
-        at com.gogofnd.gogorent.global.filter.SlackStatusFilter.doFilterInternal(SlackStatusFilter.java:28)
-        at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:119)
         at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:189)
         at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:162)
         at com.gogofnd.gogorent.global.config.JwtRequestFilter.doFilterInternal(JwtRequestFilter.java:80)
@@ -106,4 +102,4 @@ java.lang.RuntimeException: 💥 테스트용 강제 예외 발생!
         at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:628)
         at org.apache.tomcat.util.threads.TaskThread$WrappingRunnable.run(TaskThread.java:61)
         at java.base/java.lang.Thread.run(Thread.java:834)
-2025-07-10 11:35:21.496  INFO 14294 --- [nio-9800-exec-9] c.g.g.global.config.LogInterceptor       : RESPONSE [f77b3175-116f-4b64-8a9b-a5ee8e530a15][/api/gogorental/test/slack/error]
+2025-07-10 11:39:18.519  INFO 19391 --- [nio-9800-exec-6] c.g.g.global.config.LogInterceptor       : RESPONSE [151c53c2-ab3d-46b3-a85d-e8cb351a4a64][/api/gogorental/test/slack/error]
