@@ -1,101 +1,107 @@
-2025-07-08 19:13:01.189  INFO 27958 --- [nio-8081-exec-1] c.g.g.global.config.HttpInterceptor      : [REQ] ---> [METHOD] POST | [URL] /user/sensor/DateSetting | [qs] null | [TOKEN] null | reto null
-2025-07-08 19:13:01.231 ERROR 27958 --- [nio-8081-exec-1] c.g.g.g.e.e.GlobalExceptionHandler       : handleEntityNotFoundException
+public void sendError(String server, String appName, String env, Exception ex) {
+        Map<String, String> roleLabels = Map.of(
+                "oncall",       "담당자",
+                "executives",   "대표",
+                "stakeholders", "관계자"
+        );
 
-org.springframework.web.HttpMediaTypeNotSupportedException: Content type 'application/x-www-form-urlencoded;charset=UTF-8' not supported
-        at org.springframework.web.servlet.mvc.method.annotation.AbstractMessageConverterMethodArgumentResolver.readWithMessageConverters(AbstractMessageConverterMethodArgumentResolver.java:206)
-        at org.springframework.web.servlet.mvc.method.annotation.RequestResponseBodyMethodProcessor.readWithMessageConverters(RequestResponseBodyMethodProcessor.java:158)
-        at org.springframework.web.servlet.mvc.method.annotation.RequestResponseBodyMethodProcessor.resolveArgument(RequestResponseBodyMethodProcessor.java:131)
-        at org.springframework.web.method.support.HandlerMethodArgumentResolverComposite.resolveArgument(HandlerMethodArgumentResolverComposite.java:121)
-        at org.springframework.web.method.support.InvocableHandlerMethod.getMethodArgumentValues(InvocableHandlerMethod.java:170)
-        at org.springframework.web.method.support.InvocableHandlerMethod.invokeForRequest(InvocableHandlerMethod.java:137)
-        at org.springframework.web.servlet.mvc.method.annotation.ServletInvocableHandlerMethod.invokeAndHandle(ServletInvocableHandlerMethod.java:106)
-        at org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter.invokeHandlerMethod(RequestMappingHandlerAdapter.java:894)
-        at org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter.handleInternal(RequestMappingHandlerAdapter.java:808)
-        at org.springframework.web.servlet.mvc.method.AbstractHandlerMethodAdapter.handle(AbstractHandlerMethodAdapter.java:87)
-        at org.springframework.web.servlet.DispatcherServlet.doDispatch(DispatcherServlet.java:1063)
-        at org.springframework.web.servlet.DispatcherServlet.doService(DispatcherServlet.java:963)
-        at org.springframework.web.servlet.FrameworkServlet.processRequest(FrameworkServlet.java:1006)
-        at org.springframework.web.servlet.FrameworkServlet.doPost(FrameworkServlet.java:909)
-        at javax.servlet.http.HttpServlet.service(HttpServlet.java:681)
-        at org.springframework.web.servlet.FrameworkServlet.service(FrameworkServlet.java:883)
-        at javax.servlet.http.HttpServlet.service(HttpServlet.java:764)
-        at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:228)
-        at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:163)
-        at org.apache.tomcat.websocket.server.WsFilter.doFilter(WsFilter.java:53)
-        at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:190)
-        at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:163)
-        at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:113)
-        at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:190)
-        at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:163)
-        at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:327)
-        at org.springframework.security.web.access.intercept.FilterSecurityInterceptor.invoke(FilterSecurityInterceptor.java:115)
-        at org.springframework.security.web.access.intercept.FilterSecurityInterceptor.doFilter(FilterSecurityInterceptor.java:81)
-        at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:336)
-        at org.springframework.security.web.access.ExceptionTranslationFilter.doFilter(ExceptionTranslationFilter.java:121)
-        at org.springframework.security.web.access.ExceptionTranslationFilter.doFilter(ExceptionTranslationFilter.java:115)
-        at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:336)
-        at org.springframework.security.web.session.SessionManagementFilter.doFilter(SessionManagementFilter.java:126)
-        at org.springframework.security.web.session.SessionManagementFilter.doFilter(SessionManagementFilter.java:81)
-        at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:336)
-        at org.springframework.security.web.authentication.AnonymousAuthenticationFilter.doFilter(AnonymousAuthenticationFilter.java:105)
-        at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:336)
-        at org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter.doFilter(SecurityContextHolderAwareRequestFilter.java:149)
-        at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:336)
-        at org.springframework.security.web.savedrequest.RequestCacheAwareFilter.doFilter(RequestCacheAwareFilter.java:63)
-        at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:336)
-        at com.gogofnd.gogosafe.global.filter.TokenFilter.doFilter(TokenFilter.java:40)
-        at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:336)
-        at com.gogofnd.gogosafe.global.filter.ExceptionFilter.doFilterInternal(ExceptionFilter.java:26)
-        at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:119)
-        at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:336)
-        at org.springframework.security.web.authentication.logout.LogoutFilter.doFilter(LogoutFilter.java:103)
-        at org.springframework.security.web.authentication.logout.LogoutFilter.doFilter(LogoutFilter.java:89)
-        at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:336)
-        at org.springframework.security.web.header.HeaderWriterFilter.doHeadersAfter(HeaderWriterFilter.java:90)
-        at org.springframework.security.web.header.HeaderWriterFilter.doFilterInternal(HeaderWriterFilter.java:75)
-        at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:119)
-        at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:336)
-        at org.springframework.security.web.context.SecurityContextPersistenceFilter.doFilter(SecurityContextPersistenceFilter.java:110)
-        at org.springframework.security.web.context.SecurityContextPersistenceFilter.doFilter(SecurityContextPersistenceFilter.java:80)
-        at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:336)
-        at org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter.doFilterInternal(WebAsyncManagerIntegrationFilter.java:55)
-        at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:119)
-        at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:336)
-        at org.springframework.security.web.FilterChainProxy.doFilterInternal(FilterChainProxy.java:211)
-        at org.springframework.security.web.FilterChainProxy.doFilter(FilterChainProxy.java:183)
-        at org.springframework.web.filter.DelegatingFilterProxy.invokeDelegate(DelegatingFilterProxy.java:358)
-        at org.springframework.web.filter.DelegatingFilterProxy.doFilter(DelegatingFilterProxy.java:271)
-        at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:190)
-        at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:163)
-        at org.springframework.web.filter.RequestContextFilter.doFilterInternal(RequestContextFilter.java:100)
-        at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:119)
-        at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:190)
-        at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:163)
-        at org.springframework.web.filter.FormContentFilter.doFilterInternal(FormContentFilter.java:93)
-        at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:119)
-        at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:190)
-        at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:163)
-        at org.springframework.boot.actuate.metrics.web.servlet.WebMvcMetricsFilter.doFilterInternal(WebMvcMetricsFilter.java:96)
-        at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:119)
-        at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:190)
-        at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:163)
-        at org.springframework.web.filter.CharacterEncodingFilter.doFilterInternal(CharacterEncodingFilter.java:201)
-        at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:119)
-        at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:190)
-        at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:163)
-        at org.apache.catalina.core.StandardWrapperValve.invoke(StandardWrapperValve.java:202)
-        at org.apache.catalina.core.StandardContextValve.invoke(StandardContextValve.java:97)
-        at org.apache.catalina.authenticator.AuthenticatorBase.invoke(AuthenticatorBase.java:542)
-        at org.apache.catalina.core.StandardHostValve.invoke(StandardHostValve.java:143)
-        at org.apache.catalina.valves.ErrorReportValve.invoke(ErrorReportValve.java:92)
-        at org.apache.catalina.core.StandardEngineValve.invoke(StandardEngineValve.java:78)
-        at org.apache.catalina.connector.CoyoteAdapter.service(CoyoteAdapter.java:357)
-        at org.apache.coyote.http11.Http11Processor.service(Http11Processor.java:382)
-        at org.apache.coyote.AbstractProcessorLight.process(AbstractProcessorLight.java:65)
-        at org.apache.coyote.AbstractProtocol$ConnectionHandler.process(AbstractProtocol.java:893)
-        at org.apache.tomcat.util.net.NioEndpoint$SocketProcessor.doRun(NioEndpoint.java:1723)
-        at org.apache.tomcat.util.net.SocketProcessorBase.run(SocketProcessorBase.java:49)
-        at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1128)
-        at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:628)
-        at org.apache.tomcat.util.threads.TaskThread$WrappingRunnable.run(TaskThread.java:61)
-        at java.base/java.lang.Thread.run(Thread.java:829)
+        List<String> mentionFields = props.getMentionGroups().entrySet().stream()
+                .filter(e -> e.getValue() != null && !e.getValue().isEmpty())
+                .map(e -> {
+                    String label = roleLabels.getOrDefault(e.getKey(), e.getKey());
+                    String mentions = e.getValue().stream()
+                            .map(id -> "<@" + id + ">")
+                            .collect(Collectors.joining(" "));
+                    return String.format(
+                            "{\"title\":\"%s\",\"value\":\"%s\",\"short\":false}",
+                            label, escape(mentions)
+                    );
+                })
+                .collect(Collectors.toList());
+
+        String errorMessage = ex.getMessage();
+        StringWriter sw = new StringWriter();
+        ex.printStackTrace(new PrintWriter(sw));
+        String trace = sw.toString();
+
+        List<String> errorFields = List.of(
+                String.format("{\"title\":\"환경\",\"value\":\"%s\",\"short\":true}", escape(env)),
+                String.format("{\"title\":\"서버\",\"value\":\"%s\",\"short\":true}", escape(server)),
+                String.format("{\"title\":\"서비스\",\"value\":\"%s\",\"short\":true}", escape(appName)),
+                String.format("{\"title\":\"오류 메시지\",\"value\":\"%s\",\"short\":false}", escape(errorMessage))
+        );
+
+        String allFields = Stream.concat(
+                        mentionFields.stream(),
+                        errorFields.stream()
+                )
+                .collect(Collectors.joining(","));
+
+        String payload = "{" +
+                "\"attachments\":[{" +
+                "\"color\":\"#ff0000\"," +
+                "\"fields\":[" + allFields + "]," +
+                "\"footer\":\"Stacktrace 아래에 있습니다\"," +
+                "\"footer_icon\":\"https://platform.slack-edge.com/img/default_application_icon.png\"," +
+                "\"text\":\"```" + escape(trace) + "```\"" +
+                "}]}";
+
+
+
+
+
+
+
+
+
+                package com.gogofnd.gogorent.global.filter;
+
+
+import com.gogofnd.gogorent.business.service.SlackService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.core.env.Environment;
+import org.springframework.stereotype.Component;
+import org.springframework.web.filter.OncePerRequestFilter;
+
+import javax.servlet.FilterChain;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+@Component
+@RequiredArgsConstructor
+public class SlackStatusFilter extends OncePerRequestFilter {
+    private final SlackService slackService;
+    private final Environment env;
+
+    @Override
+    protected void doFilterInternal(
+            HttpServletRequest request,
+            HttpServletResponse response,
+            FilterChain filterChain
+    ) throws ServletException, IOException {
+        // 요청을 처리
+        filterChain.doFilter(request, response);
+
+        // 응답 상태 코드 추출
+        int status = response.getStatus();
+        // 성공(200) 응답은 알림 제외
+        if (status != 500) {
+            return;
+        }
+
+        String server  = request.getServerName();
+        String appName = env.getProperty("spring.application.name", "unknown-app");
+        String profile = env.getProperty("spring.profiles.active", "default");
+
+        // SlackService 호출
+        slackService.sendError(server, appName, profile, status);
+    }
+}
+
+
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        rest.postForEntity(props.getWebhookUrl(), new HttpEntity<>(payload, headers), String.class);
+    }
