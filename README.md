@@ -1,10 +1,10 @@
-오후 3:41:45: Executing ':KbApplication.main()'...
+오후 3:46:09: Executing ':KbApplication.main()'...
 
 > Task :initQuerydslSourcesDir
-> Task :compileQuerydsl UP-TO-DATE
-> Task :compileJava UP-TO-DATE
+> Task :compileQuerydsl
+> Task :compileJava
 > Task :processResources UP-TO-DATE
-> Task :classes UP-TO-DATE
+> Task :classes
 
 > Task :KbApplication.main()
 
@@ -16,11 +16,11 @@
  =========|_|==============|___/=/_/_/_/
  :: Spring Boot ::        (v2.3.9.RELEASE)
 
-2025-07-11 15:41:53.881  INFO 6456 --- [           main] com.gogofnd.kb.KbApplication             : Starting KbApplication on Gogofnd002 with PID 6456 (C:\Users\user02gogof\Desktop\kb_goplanv2\build\classes\java\main started by user02gogof in C:\Users\user02gogof\Desktop\kb_goplanv2)
-2025-07-11 15:41:53.890 DEBUG 6456 --- [           main] com.gogofnd.kb.KbApplication             : Running with Spring Boot v2.3.9.RELEASE, Spring v5.2.13.RELEASE
-2025-07-11 15:41:53.895  INFO 6456 --- [           main] com.gogofnd.kb.KbApplication             : The following profiles are active: dev
-2025-07-11 15:42:03.620 DEBUG 6456 --- [           main] c.g.kb.global.config.ExceptionFilter     : Filter 'exceptionFilter' configured for use
-2025-07-11 15:42:11.499 ERROR 6456 --- [           main] o.s.b.d.LoggingFailureAnalysisReporter   : 
+2025-07-11 15:46:26.328  INFO 14952 --- [           main] com.gogofnd.kb.KbApplication             : Starting KbApplication on Gogofnd002 with PID 14952 (C:\Users\user02gogof\Desktop\kb_goplanv2\build\classes\java\main started by user02gogof in C:\Users\user02gogof\Desktop\kb_goplanv2)
+2025-07-11 15:46:26.333 DEBUG 14952 --- [           main] com.gogofnd.kb.KbApplication             : Running with Spring Boot v2.3.9.RELEASE, Spring v5.2.13.RELEASE
+2025-07-11 15:46:26.334  INFO 14952 --- [           main] com.gogofnd.kb.KbApplication             : The following profiles are active: dev
+2025-07-11 15:46:33.072 DEBUG 14952 --- [           main] c.g.kb.global.config.ExceptionFilter     : Filter 'exceptionFilter' configured for use
+2025-07-11 15:46:39.430 ERROR 14952 --- [           main] o.s.b.d.LoggingFailureAnalysisReporter   : 
 
 ***************************
 APPLICATION FAILED TO START
@@ -28,17 +28,22 @@ APPLICATION FAILED TO START
 
 Description:
 
-Parameter 0 of constructor in com.gogofnd.kb.global.error.exception.GlobalExceptionHandler required a bean of type 'com.gogofnd.gogorent.business.service.SlackService' that could not be found.
+Parameter 0 of constructor in com.gogofnd.kb.global.service.SlackService required a bean of type 'com.gogofnd.gogorent.global.config.SlackProperties' that could not be found.
 
 
 Action:
 
-Consider defining a bean of type 'com.gogofnd.gogorent.business.service.SlackService' in your configuration.
+Consider defining a bean of type 'com.gogofnd.gogorent.global.config.SlackProperties' in your configuration.
 
 
 > Task :KbApplication.main() FAILED
 
 Deprecated Gradle features were used in this build, making it incompatible with Gradle 8.0.
+
+You can use '--warning-mode all' to show the individual deprecation warnings and determine if they come from your own scripts or plugins.
+
+See https://docs.gradle.org/7.4.1/userguide/command_line_interface.html#sec:command_line_warnings
+5 actionable tasks: 4 executed, 1 up-to-date
 
 FAILURE: Build failed with an exception.
 
@@ -53,10 +58,5 @@ Execution failed for task ':KbApplication.main()'.
 
 * Get more help at https://help.gradle.org
 
-BUILD FAILED in 26s
-
-You can use '--warning-mode all' to show the individual deprecation warnings and determine if they come from your own scripts or plugins.
-
-See https://docs.gradle.org/7.4.1/userguide/command_line_interface.html#sec:command_line_warnings
-5 actionable tasks: 2 executed, 3 up-to-date
-오후 3:42:11: Execution finished ':KbApplication.main()'.
+BUILD FAILED in 29s
+오후 3:46:39: Execution finished ':KbApplication.main()'.
