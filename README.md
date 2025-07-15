@@ -1,6 +1,1 @@
-spring:
-  autoconfigure:
-    exclude:
-      - org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
-      - org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration
-      - org.springframework.boot.autoconfigure.jdbc.DataSourceTransactionManagerAutoConfiguration
+Source root 'C:\Users\user02gogof\Desktop\new_GoPlanV1\src\main\java\resources' cannot be defined in module 'new_GoPlanV1' because it belongs to content of nested module 'new_GoPlanV1.main'
