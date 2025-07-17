@@ -1,29 +1,21 @@
-오후 3:50:01: Executing 'build'...
+오후 3:56:31: Executing 'build'...
 
 > Task :initQuerydslSourcesDir
-> Task :compileQuerydsl
-
-> Task :compileJava
-Note: C:\Users\user02gogof\Desktop\new_GoPlanV1\src\main\java\com\gogofnd\kb\service\insuranceService.java uses unchecked or unsafe operations.
-Note: Recompile with -Xlint:unchecked for details.
-
-> Task :processResources
-> Task :classes
-> Task :bootJar FAILED
+> Task :compileQuerydsl FAILED
 
 Deprecated Gradle features were used in this build, making it incompatible with Gradle 8.0.
 
 You can use '--warning-mode all' to show the individual deprecation warnings and determine if they come from your own scripts or plugins.
 
 See https://docs.gradle.org/7.4.1/userguide/command_line_interface.html#sec:command_line_warnings
-5 actionable tasks: 5 executed
+2 actionable tasks: 2 executed
 
 FAILURE: Build failed with an exception.
 
 * What went wrong:
-Execution failed for task ':bootJar'.
-> Could not resolve all files for configuration ':runtimeClasspath'.
-   > Could not find io.r2dbc:r2dbc-mysql:.
+Execution failed for task ':compileQuerydsl'.
+> Could not resolve all files for configuration ':querydsl'.
+   > Could not find io.r2dbc:r2dbc-mariadb:1.1.4.
      Required by:
          project :
 
@@ -34,5 +26,5 @@ Execution failed for task ':bootJar'.
 
 * Get more help at https://help.gradle.org
 
-BUILD FAILED in 14s
-오후 3:50:16: Execution finished 'build'.
+BUILD FAILED in 4s
+오후 3:56:36: Execution finished 'build'.
