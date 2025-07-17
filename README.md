@@ -1,112 +1,11 @@
-buildscript {
-    ext {
-        queryDslVersion = "5.0.0"
-    }
-}
+> Task :compileQuerydsl FAILED
 
-plugins {
-    id 'org.springframework.boot' version '2.3.9.RELEASE'
-    id 'io.spring.dependency-management' version '1.0.11.RELEASE'
-    id 'java'
-    id 'com.ewerk.gradle.plugins.querydsl' version '1.0.10'
-}
+Execution failed for task ':compileQuerydsl'.
+> Annotation processor '' not found
 
-group = 'com.gogofnd'
-version = '0.0.1-SNAPSHOT'
-sourceCompatibility = '11'
+* Try:
+> Run with --stacktrace option to get the stack trace.
+> Run with --info or --debug option to get more log output.
+> Run with --scan to get full insights.
 
-configurations {
-    compileOnly {
-        extendsFrom annotationProcessor
-    }
-}
 
-repositories {
-    mavenCentral()
-}
-
-dependencies {
-
-    //base
-    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-    implementation 'org.springframework.boot:spring-boot-starter-web'
-    implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
-    implementation 'org.springframework.boot:spring-boot-starter-validation'
-    implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity5'
-    compileOnly 'org.projectlombok:lombok:1.18.24'
-    /*runtimeOnly 'org.mariadb.jdbc:mariadb-java-client'*/
-    annotationProcessor 'org.projectlombok:lombok:1.18.24'
-    testImplementation 'org.springframework.boot:spring-boot-starter-test'
-    // mybatis
-/*    implementation 'org.mybatis:mybatis:3.5.6'*/
-
-    //security
-    implementation 'org.springframework.boot:spring-boot-starter-security'
-    testImplementation 'org.springframework.security:spring-security-test'
-
-    // swagger
-    implementation "io.springfox:springfox-boot-starter:3.0.0"
-    implementation "io.springfox:springfox-swagger-ui:3.0.0"
-
-    //jwt
-    implementation 'io.jsonwebtoken:jjwt:0.9.1'
-
-    //goggle
-    implementation 'com.google.code.gson:gson:2.10'
-    implementation 'org.apache.commons:commons-text:1.10.0'
-    implementation group: 'commons-io', name: 'commons-io', version: '2.8.0'
-
-    //querydsl
-    implementation "com.querydsl:querydsl-jpa:5.0.0"
-    implementation "com.querydsl:querydsl-apt:5.0.0"
-    implementation "com.querydsl:querydsl-core:5.0.0"
-
-    //valid
-    implementation 'org.springframework.boot:spring-boot-starter-validation'
-
-    //webflux
-    implementation 'org.springframework.boot:spring-boot-starter-webflux'
-
-    //poi
-    implementation group: 'org.apache.poi', name: 'poi', version: '4.1.2'
-    implementation group: 'org.apache.poi', name: 'poi-ooxml', version: '4.1.2'
-
-    //mybatis
-/*    implementation 'org.mybatis:mybatis:3.5.6'
-    implementation 'org.mybatis.spring.boot:mybatis-spring-boot-starter:2.3.0'*/
-
-    //임시(p6spy)
-//	implementation 'com.github.gavlyukovskiy:p6spy-spring-boot-starter:1.5.6'
-
-    compile('com.squareup.retrofit2:retrofit:2.9.0')
-    implementation 'com.squareup.retrofit2:converter-gson:2.6.4'
-    implementation 'com.squareup.okhttp3:logging-interceptor:3.11.0'
-    implementation group: 'com.squareup.retrofit2', name: 'converter-jackson', version: '2.9.0'
-    implementation 'com.google.firebase:firebase-admin:7.3.0'
-
-    //R2DBC
-    implementation 'org.springframework.boot:spring-boot-starter-data-r2dbc'
-    implementation 'org.mariadb:r2dbc-mariadb:1.1.4'
-}
-
-tasks.named('test') {
-    useJUnitPlatform()
-}
-def querydslDir = "$buildDir/generated/querydsl"
-
-querydsl {
-    jpa = true
-    querydslSourcesDir = querydslDir
-}
-sourceSets {
-    main.java.srcDir querydslDir
-}
-compileQuerydsl{
-    options.annotationProcessorPath = configurations.querydsl
-}
-configurations {
-    compileOnly {
-        extendsFrom annotationProcessor
-    }
-    querydsl.extendsFrom compileClasspath
-}
