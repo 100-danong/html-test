@@ -1,23 +1,12 @@
-package com.gogofnd.kb.global.config;
-
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Component;
-import org.springframework.web.server.ServerWebExchange;
-import org.springframework.web.server.WebFilterChain;
-import reactor.core.publisher.Mono;
-
-import javax.servlet.annotation.WebFilter;
-
-@Component
-@Slf4j
-public abstract class SwaggerAccessLoggingFilter implements WebFilter {
-    @Override
-    public Mono<Void> filter(ServerWebExchange exchange, WebFilterChain chain) {
-        String path = exchange.getRequest().getURI().getPath();
-
-        if(path.startsWith("/swagger-ui") || path.equals("/swagger-ui.html") || path.startsWith("/v3/api-docs")){
-            log.info("Swagger UI 접속: {}", path);
-        }
-        return chain.filter(exchange);
-    }
-}
+        SELECT ri.*, cci.cci_content
+        FROM rider_info ri
+        INNER JOIN insurance_history ih
+        ON ri.ri_id = ih.ri_id
+        INNER JOIN insurance_state_history ish
+        ON ih.ih_id = ish.ih_id
+        LEFT JOIN common_code_info cci
+        ON ish.ih_reject_code = cci.cci_code
+        WHERE ri.ri_insu_status != '062'
+        AND ri.ri_state = 1
+        GROUP BY ri.ri_id
+        ORDER BY ri.ri_ins_time DESC
