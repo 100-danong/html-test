@@ -1,75 +1,116 @@
-server:
-  port: 8888
-  servlet:
-    context-path: /api/goplanV1/
-    encoding:
-      charset: UTF-8
-      enabled: true
-      force: true
+buildscript {
+    ext {
+        queryDslVersion = "5.0.0"
+    }
+}
 
-spring:
-  jwt:
-    secret: gogofndgogosafe#!
-#  datasource:
-#    url: jdbc:mariadb://ga.navers.co.kr/goplanV2?serverTimezone=Asia/Seoul&allowMultiQueries=true
-#    username: goplanV2
-#    password: goplan0@
-#    datasource: driver-class-name=org.mariadb.jdbc.Driver
-  r2dbc:
-    url : r2dbc:mariadb://localhost:3306/goplantest
-    username: root
-    password: 1234
-  spring-doc:
-    api-docs:
-      groups:
-        enabled: true
-    swagger-ui:
-      path: /swagger-ui.html
-      displayRequestDuration: true
-      groups-order: DESC
+plugins {
+    id 'org.springframework.boot' version '2.7.18'
+    id 'io.spring.dependency-management' version '1.0.11.RELEASE'
+    id 'java'
+//    id 'com.ewerk.gradle.plugins.querydsl' version '1.0.10'
+}
 
-#  jpa:
-#    show-sql: true
-#    open-in-view: true
-#    generate-ddl: false
-#    hibernate:
-#      ddl-auto: none
-#      naming:
-#        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
-#    properties:
-#      hibernate:
-#        format_sql: true
-#        use_sql_comments: true
-#        default_batch_fetch_size: 1000
+group = 'com.gogofnd'
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = '11'
 
-app:
-  filePath: /home/develop3/images/
-  baseUrl: http://10.0.2.104:57509
+configurations {
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
+}
 
-firebaseKey: /home/develop3/firebase/kb-flutter-8c87e-firebase-adminsdk-7yzva-e3283f39a5.json
+repositories {
+    mavenCentral()
+}
 
-hash: gogofndgoplan#!%
+dependencies {
 
-serverUrl: ga.navers.co.kr:8888
-v3-serverUrl: http://ga.navers.co.kr:9888/api/goplan
+    //base
+//    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+    implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity5'
+    compileOnly 'org.projectlombok:lombok:1.18.24'
+    /*runtimeOnly 'org.mariadb.jdbc:mariadb-java-client'*/
+    annotationProcessor 'org.projectlombok:lombok:1.18.24'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    // mybatis
+/*    implementation 'org.mybatis:mybatis:3.5.6'*/
 
-#mybatis:
-#  configuration:
-#    map-underscore-to-camel-case: true
-#  environments:
-#    default:
-#      transactionManager: jdbc
-#      dataSource: dataSource
-#  mapper-locations: sqlmapper/**/*.xml
+    //security
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+    testImplementation 'org.springframework.security:spring-security-test'
 
-logging:
-  level:
-    org:
-      hibernate:
-        type:
-          descriptor:
-            sql: trace
+    // swagger
+    implementation "io.springfox:springfox-boot-starter:3.0.0"
+    implementation "io.springfox:springfox-swagger-ui:3.0.0"
 
-kakao:
-  api:
-    key: ec86a7af731bdef703d097a73e9c04fd
+    //jwt
+    implementation 'io.jsonwebtoken:jjwt:0.9.1'
+
+    //goggle
+    implementation 'com.google.code.gson:gson:2.10'
+    implementation 'org.apache.commons:commons-text:1.10.0'
+    implementation group: 'commons-io', name: 'commons-io', version: '2.8.0'
+
+    implementation 'io.projectreactor:reactor-core:3.4.0'
+
+    //querydsl
+//    implementation "com.querydsl:querydsl-jpa:5.0.0"
+//    implementation "com.querydsl:querydsl-apt:5.0.0"
+//    implementation "com.querydsl:querydsl-core:5.0.0"
+
+    //valid
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+
+    //webflux
+    implementation 'org.springframework.boot:spring-boot-starter-webflux'
+
+    //poi
+    implementation group: 'org.apache.poi', name: 'poi', version: '4.1.2'
+    implementation group: 'org.apache.poi', name: 'poi-ooxml', version: '4.1.2'
+
+    //mybatis
+/*    implementation 'org.mybatis:mybatis:3.5.6'
+    implementation 'org.mybatis.spring.boot:mybatis-spring-boot-starter:2.3.0'*/
+
+    //임시(p6spy)
+//	implementation 'com.github.gavlyukovskiy:p6spy-spring-boot-starter:1.5.6'
+
+    //compile('com.squareup.retrofit2:retrofit:2.9.0')
+    implementation 'com.squareup.retrofit2:retrofit:2.9.0'
+    implementation 'com.squareup.retrofit2:converter-gson:2.6.4'
+    implementation 'com.squareup.okhttp3:logging-interceptor:3.11.0'
+    implementation group: 'com.squareup.retrofit2', name: 'converter-jackson', version: '2.9.0'
+    implementation 'com.google.firebase:firebase-admin:7.3.0'
+
+    //R2DBC
+    implementation 'org.springframework.boot:spring-boot-starter-data-r2dbc'
+    //runtimeOnly 'org.mariadb:r2dbc-mariadb:1.1.4'
+    implementation 'org.mariadb:r2dbc-mariadb-0.9.1-spec:1.2.2'
+}
+
+tasks.named('test') {
+    useJUnitPlatform()
+}
+/*def querydslDir = "$buildDir/generated/querydsl"
+
+querydsl {
+    jpa = true
+    querydslSourcesDir = querydslDir
+}
+sourceSets {
+    main.java.srcDir querydslDir
+}
+compileQuerydsl{
+    options.annotationProcessorPath = configurations.querydsl
+}
+configurations {
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
+    querydsl.extendsFrom compileClasspath
+}*/
