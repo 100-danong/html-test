@@ -1,22 +1,16 @@
-오후 4:14:21: Executing ':new_GoPlanV1Application.main()'...
+오후 1:03:43: Executing 'build'...
 
 Starting Gradle Daemon...
-Gradle Daemon started in 3 s 576 ms
-> Task :initQuerydslSourcesDir
-> Task :compileQuerydsl FAILED
-
-Deprecated Gradle features were used in this build, making it incompatible with Gradle 8.0.
-
-You can use '--warning-mode all' to show the individual deprecation warnings and determine if they come from your own scripts or plugins.
-
-See https://docs.gradle.org/7.4.1/userguide/command_line_interface.html#sec:command_line_warnings
-2 actionable tasks: 2 executed
+Gradle Daemon started in 4 s 302 ms
 
 FAILURE: Build failed with an exception.
 
+* Where:
+Build file 'C:\Users\user02gogof\Desktop\new_GoPlanV1\build.gradle' line: 81
+
 * What went wrong:
-Execution failed for task ':compileQuerydsl'.
-> Annotation processor '' not found
+A problem occurred evaluating root project 'new_GoPlanV1'.
+> Could not find method compile() for arguments [com.squareup.retrofit2:retrofit:2.9.0] on object of type org.gradle.api.internal.artifacts.dsl.dependencies.DefaultDependencyHandler.
 
 * Try:
 > Run with --stacktrace option to get the stack trace.
@@ -25,5 +19,5 @@ Execution failed for task ':compileQuerydsl'.
 
 * Get more help at https://help.gradle.org
 
-BUILD FAILED in 16s
-오후 4:14:38: Execution finished ':new_GoPlanV1Application.main()'.
+BUILD FAILED in 18s
+오후 1:04:02: Execution finished 'build'.
