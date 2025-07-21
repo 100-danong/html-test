@@ -1,115 +1,41 @@
-buildscript {
-    ext {
-        queryDslVersion = "5.0.0"
-    }
-}
+오후 2:23:18: Executing 'build'...
 
-plugins {
-    id 'org.springframework.boot' version '2.7.18'
-    id 'io.spring.dependency-management' version '1.0.11.RELEASE'
-    id 'java'
-//    id 'com.ewerk.gradle.plugins.querydsl' version '1.0.10'
-}
+> Task :compileJava UP-TO-DATE
+> Task :processResources UP-TO-DATE
+> Task :classes UP-TO-DATE
+> Task :bootJarMainClassName
+> Task :bootJarMainClassName FAILED
 
-group = 'com.gogofnd'
-version = '0.0.1-SNAPSHOT'
-sourceCompatibility = '11'
+Deprecated Gradle features were used in this build, making it incompatible with Gradle 8.0.
 
-configurations {
-    compileOnly {
-        extendsFrom annotationProcessor
-    }
-}
+You can use '--warning-mode all' to show the individual deprecation warnings and determine if they come from your own scripts or plugins.
 
-repositories {
-    mavenCentral()
-}
+See https://docs.gradle.org/7.4.1/userguide/command_line_interface.html#sec:command_line_warnings
+3 actionable tasks: 1 executed, 2 up-to-date
 
-dependencies {
+FAILURE: Build failed with an exception.
 
-    //base
-//    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-    implementation 'org.springframework.boot:spring-boot-starter-web'
-    implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
-    implementation 'org.springframework.boot:spring-boot-starter-validation'
-    implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity5'
-    compileOnly 'org.projectlombok:lombok:1.18.24'
-    /*runtimeOnly 'org.mariadb.jdbc:mariadb-java-client'*/
-    annotationProcessor 'org.projectlombok:lombok:1.18.24'
-    testImplementation 'org.springframework.boot:spring-boot-starter-test'
-    // mybatis
-/*    implementation 'org.mybatis:mybatis:3.5.6'*/
+* What went wrong:
+Execution failed for task ':bootJarMainClassName'.
+> Could not resolve all files for configuration ':runtimeClasspath'.
+   > Could not resolve org.mariadb:r2dbc-mariadb:0.9.1-spec.
+     Required by:
+         project :
+      > Could not resolve org.mariadb:r2dbc-mariadb:0.9.1-spec.
+         > Could not get resource 'https://jcenter.bintray.com/org/mariadb/r2dbc-mariadb/0.9.1-spec/r2dbc-mariadb-0.9.1-spec.pom'.
+            > Could not GET 'https://jcenter.bintray.com/org/mariadb/r2dbc-mariadb/0.9.1-spec/r2dbc-mariadb-0.9.1-spec.pom'.
+               > Connect to jcenter.bintray.com:443 [jcenter.bintray.com/3.95.117.170, jcenter.bintray.com/18.232.172.199, jcenter.bintray.com/18.214.194.113] failed: Connection timed out: no further information
+      > Could not resolve org.mariadb:r2dbc-mariadb:0.9.1-spec.
+         > Could not get resource 'https://oss.sonatype.org/content/repositories/releases/org/mariadb/r2dbc-mariadb/0.9.1-spec/r2dbc-mariadb-0.9.1-spec.pom'.
+            > Could not GET 'https://oss.sonatype.org/content/repositories/releases/org/mariadb/r2dbc-mariadb/0.9.1-spec/r2dbc-mariadb-0.9.1-spec.pom'.
+               > Connect to oss.sonatype.org:443 [oss.sonatype.org/44.199.138.219, oss.sonatype.org/3.225.52.36] failed: Connection timed out: no further information
 
-    //security
-    implementation 'org.springframework.boot:spring-boot-starter-security'
-    testImplementation 'org.springframework.security:spring-security-test'
+* Try:
+> Run with --stacktrace option to get the stack trace.
+> Run with --info or --debug option to get more log output.
+> Run with --scan to get full insights.
 
-    // swagger
-    implementation "io.springfox:springfox-boot-starter:3.0.0"
-    implementation "io.springfox:springfox-swagger-ui:3.0.0"
+* Get more help at https://help.gradle.org
 
-    //jwt
-    implementation 'io.jsonwebtoken:jjwt:0.9.1'
-
-    //goggle
-    implementation 'com.google.code.gson:gson:2.10'
-    implementation 'org.apache.commons:commons-text:1.10.0'
-    implementation group: 'commons-io', name: 'commons-io', version: '2.8.0'
-
-    implementation 'io.projectreactor:reactor-core:3.4.0'
-
-    //querydsl
-//    implementation "com.querydsl:querydsl-jpa:5.0.0"
-//    implementation "com.querydsl:querydsl-apt:5.0.0"
-//    implementation "com.querydsl:querydsl-core:5.0.0"
-
-    //valid
-    implementation 'org.springframework.boot:spring-boot-starter-validation'
-
-    //webflux
-    implementation 'org.springframework.boot:spring-boot-starter-webflux'
-
-    //poi
-    implementation group: 'org.apache.poi', name: 'poi', version: '4.1.2'
-    implementation group: 'org.apache.poi', name: 'poi-ooxml', version: '4.1.2'
-
-    //mybatis
-/*    implementation 'org.mybatis:mybatis:3.5.6'
-    implementation 'org.mybatis.spring.boot:mybatis-spring-boot-starter:2.3.0'*/
-
-    //임시(p6spy)
-//	implementation 'com.github.gavlyukovskiy:p6spy-spring-boot-starter:1.5.6'
-
-    //compile('com.squareup.retrofit2:retrofit:2.9.0')
-    implementation 'com.squareup.retrofit2:retrofit:2.9.0'
-    implementation 'com.squareup.retrofit2:converter-gson:2.6.4'
-    implementation 'com.squareup.okhttp3:logging-interceptor:3.11.0'
-    implementation group: 'com.squareup.retrofit2', name: 'converter-jackson', version: '2.9.0'
-    implementation 'com.google.firebase:firebase-admin:7.3.0'
-
-    //R2DBC
-    implementation 'org.springframework.boot:spring-boot-starter-data-r2dbc'
-    runtimeOnly 'org.mariadb:r2dbc-mariadb:0.9.1-spec'
-}
-
-tasks.named('test') {
-    useJUnitPlatform()
-}
-/*def querydslDir = "$buildDir/generated/querydsl"
-
-querydsl {
-    jpa = true
-    querydslSourcesDir = querydslDir
-}
-sourceSets {
-    main.java.srcDir querydslDir
-}
-compileQuerydsl{
-    options.annotationProcessorPath = configurations.querydsl
-}
-configurations {
-    compileOnly {
-        extendsFrom annotationProcessor
-    }
-    querydsl.extendsFrom compileClasspath
-}*/
+BUILD FAILED in 10m 46s
+오후 2:34:06: Execution finished 'build'.
