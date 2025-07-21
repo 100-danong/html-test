@@ -1,116 +1,53 @@
-buildscript {
-    ext {
-        queryDslVersion = "5.0.0"
-    }
-}
+오후 3:56:17: Executing ':new_GoPlanV1Application.main()'...
 
-plugins {
-    id 'org.springframework.boot' version '2.7.18'
-    id 'io.spring.dependency-management' version '1.0.11.RELEASE'
-    id 'java'
-//    id 'com.ewerk.gradle.plugins.querydsl' version '1.0.10'
-}
+> Task :compileJava UP-TO-DATE
+> Task :processResources UP-TO-DATE
+> Task :classes UP-TO-DATE
 
-group = 'com.gogofnd'
-version = '0.0.1-SNAPSHOT'
-sourceCompatibility = '11'
+> Task :new_GoPlanV1Application.main()
 
-configurations {
-    compileOnly {
-        extendsFrom annotationProcessor
-    }
-}
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+ :: Spring Boot ::               (v2.7.18)
 
-repositories {
-    mavenCentral()
-}
+2025-07-21 15:56:27.447  INFO 16352 --- [           main] com.gogofnd.kb.new_GoPlanV1Application   : Starting new_GoPlanV1Application using Java 11.0.15 on Gogofnd002 with PID 16352 (C:\Users\user02gogof\Desktop\new_GoPlanV1\build\classes\java\main started by user02gogof in C:\Users\user02gogof\Desktop\new_GoPlanV1)
+2025-07-21 15:56:27.461 DEBUG 16352 --- [           main] com.gogofnd.kb.new_GoPlanV1Application   : Running with Spring Boot v2.7.18, Spring v5.3.31
+2025-07-21 15:56:27.463  INFO 16352 --- [           main] com.gogofnd.kb.new_GoPlanV1Application   : The following 4 profiles are active: "dev", "logging_daily", "logging_error", "logging_info"
+2025-07-21 15:56:35.414 ERROR 16352 --- [           main] o.s.b.d.LoggingFailureAnalysisReporter   : 
 
-dependencies {
+***************************
+APPLICATION FAILED TO START
+***************************
 
-    //base
-//    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-    implementation 'org.springframework.boot:spring-boot-starter-web'
-    implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
-    implementation 'org.springframework.boot:spring-boot-starter-validation'
-    implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity5'
-    compileOnly 'org.projectlombok:lombok:1.18.24'
-    /*runtimeOnly 'org.mariadb.jdbc:mariadb-java-client'*/
-    annotationProcessor 'org.projectlombok:lombok:1.18.24'
-    testImplementation 'org.springframework.boot:spring-boot-starter-test'
-    // mybatis
-/*    implementation 'org.mybatis:mybatis:3.5.6'*/
+Description:
 
-    //security
-    implementation 'org.springframework.boot:spring-boot-starter-security'
-    testImplementation 'org.springframework.security:spring-security-test'
+Parameter 0 of constructor in com.gogofnd.kb.repository.RiderInfoCustomRepositoryImpl required a bean of type 'org.springframework.data.r2dbc.core.DatabaseClient' that could not be found.
 
-    // swagger
-    implementation "io.springfox:springfox-boot-starter:3.0.0"
-    implementation "io.springfox:springfox-swagger-ui:3.0.0"
 
-    //jwt
-    implementation 'io.jsonwebtoken:jjwt:0.9.1'
+Action:
 
-    //goggle
-    implementation 'com.google.code.gson:gson:2.10'
-    implementation 'org.apache.commons:commons-text:1.10.0'
-    implementation group: 'commons-io', name: 'commons-io', version: '2.8.0'
+Consider defining a bean of type 'org.springframework.data.r2dbc.core.DatabaseClient' in your configuration.
 
-    implementation 'io.projectreactor:reactor-core:3.4.0'
 
-    //querydsl
-//    implementation "com.querydsl:querydsl-jpa:5.0.0"
-//    implementation "com.querydsl:querydsl-apt:5.0.0"
-//    implementation "com.querydsl:querydsl-core:5.0.0"
+> Task :new_GoPlanV1Application.main() FAILED
+3 actionable tasks: 1 executed, 2 up-to-date
 
-    //valid
-    implementation 'org.springframework.boot:spring-boot-starter-validation'
+FAILURE: Build failed with an exception.
 
-    //webflux
-    implementation 'org.springframework.boot:spring-boot-starter-webflux'
+* What went wrong:
+Execution failed for task ':new_GoPlanV1Application.main()'.
+> Process 'command 'C:/Program Files/ojdkbuild/java-11-openjdk-11.0.15-1/bin/java.exe'' finished with non-zero exit value 1
 
-    //poi
-    implementation group: 'org.apache.poi', name: 'poi', version: '4.1.2'
-    implementation group: 'org.apache.poi', name: 'poi-ooxml', version: '4.1.2'
+* Try:
+> Run with --stacktrace option to get the stack trace.
+> Run with --info or --debug option to get more log output.
+> Run with --scan to get full insights.
 
-    //mybatis
-/*    implementation 'org.mybatis:mybatis:3.5.6'
-    implementation 'org.mybatis.spring.boot:mybatis-spring-boot-starter:2.3.0'*/
+* Get more help at https://help.gradle.org
 
-    //임시(p6spy)
-//	implementation 'com.github.gavlyukovskiy:p6spy-spring-boot-starter:1.5.6'
-
-    //compile('com.squareup.retrofit2:retrofit:2.9.0')
-    implementation 'com.squareup.retrofit2:retrofit:2.9.0'
-    implementation 'com.squareup.retrofit2:converter-gson:2.6.4'
-    implementation 'com.squareup.okhttp3:logging-interceptor:3.11.0'
-    implementation group: 'com.squareup.retrofit2', name: 'converter-jackson', version: '2.9.0'
-    implementation 'com.google.firebase:firebase-admin:7.3.0'
-
-    //R2DBC
-    implementation 'org.springframework.boot:spring-boot-starter-data-r2dbc'
-    //runtimeOnly 'org.mariadb:r2dbc-mariadb:1.1.4'
-    implementation 'org.mariadb:r2dbc-mariadb-0.9.1-spec:1.2.2'
-}
-
-tasks.named('test') {
-    useJUnitPlatform()
-}
-/*def querydslDir = "$buildDir/generated/querydsl"
-
-querydsl {
-    jpa = true
-    querydslSourcesDir = querydslDir
-}
-sourceSets {
-    main.java.srcDir querydslDir
-}
-compileQuerydsl{
-    options.annotationProcessorPath = configurations.querydsl
-}
-configurations {
-    compileOnly {
-        extendsFrom annotationProcessor
-    }
-    querydsl.extendsFrom compileClasspath
-}*/
+BUILD FAILED in 17s
+오후 3:56:35: Execution finished ':new_GoPlanV1Application.main()'.
