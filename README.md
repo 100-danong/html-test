@@ -1,53 +1,75 @@
-오후 2:56:18: Executing ':new_GoPlanV1Application.main()'...
+server:
+  port: 8888
+  servlet:
+    context-path: /api/goplanV1/
+    encoding:
+      charset: UTF-8
+      enabled: true
+      force: true
 
-> Task :compileJava UP-TO-DATE
-> Task :processResources UP-TO-DATE
-> Task :classes UP-TO-DATE
+spring:
+  jwt:
+    secret: gogofndgogosafe#!
+#  datasource:
+#    url: jdbc:mariadb://ga.navers.co.kr/goplanV2?serverTimezone=Asia/Seoul&allowMultiQueries=true
+#    username: goplanV2
+#    password: goplan0@
+#    datasource: driver-class-name=org.mariadb.jdbc.Driver
+  r2dbc:
+    url : r2dbc:mariadb://localhost:3306/goplantest
+    username: root
+    password: 1234
+  spring-doc:
+    api-docs:
+      groups:
+        enabled: true
+    swagger-ui:
+      path: /swagger-ui.html
+      displayRequestDuration: true
+      groups-order: DESC
 
-> Task :new_GoPlanV1Application.main()
+#  jpa:
+#    show-sql: true
+#    open-in-view: true
+#    generate-ddl: false
+#    hibernate:
+#      ddl-auto: none
+#      naming:
+#        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+#    properties:
+#      hibernate:
+#        format_sql: true
+#        use_sql_comments: true
+#        default_batch_fetch_size: 1000
 
-  .   ____          _            __ _ _
- /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
-( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
- \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
-  '  |____| .__|_| |_|_| |_\__, | / / / /
- =========|_|==============|___/=/_/_/_/
- :: Spring Boot ::               (v2.7.18)
+app:
+  filePath: /home/develop3/images/
+  baseUrl: http://10.0.2.104:57509
 
-2025-07-21 14:56:28.767  INFO 17400 --- [           main] com.gogofnd.kb.new_GoPlanV1Application   : Starting new_GoPlanV1Application using Java 11.0.15 on Gogofnd002 with PID 17400 (C:\Users\user02gogof\Desktop\new_GoPlanV1\build\classes\java\main started by user02gogof in C:\Users\user02gogof\Desktop\new_GoPlanV1)
-2025-07-21 14:56:28.793 DEBUG 17400 --- [           main] com.gogofnd.kb.new_GoPlanV1Application   : Running with Spring Boot v2.7.18, Spring v5.3.31
-2025-07-21 14:56:28.802  INFO 17400 --- [           main] com.gogofnd.kb.new_GoPlanV1Application   : The following 4 profiles are active: "dev", "logging_daily", "logging_error", "logging_info"
-2025-07-21 14:56:35.746 ERROR 17400 --- [           main] o.s.b.d.LoggingFailureAnalysisReporter   : 
+firebaseKey: /home/develop3/firebase/kb-flutter-8c87e-firebase-adminsdk-7yzva-e3283f39a5.json
 
-***************************
-APPLICATION FAILED TO START
-***************************
+hash: gogofndgoplan#!%
 
-Description:
+serverUrl: ga.navers.co.kr:8888
+v3-serverUrl: http://ga.navers.co.kr:9888/api/goplan
 
-Parameter 0 of constructor in com.gogofnd.kb.repository.RiderInfoCustomRepositoryImpl required a bean of type 'org.springframework.data.r2dbc.core.DatabaseClient' that could not be found.
+#mybatis:
+#  configuration:
+#    map-underscore-to-camel-case: true
+#  environments:
+#    default:
+#      transactionManager: jdbc
+#      dataSource: dataSource
+#  mapper-locations: sqlmapper/**/*.xml
 
+logging:
+  level:
+    org:
+      hibernate:
+        type:
+          descriptor:
+            sql: trace
 
-Action:
-
-Consider defining a bean of type 'org.springframework.data.r2dbc.core.DatabaseClient' in your configuration.
-
-
-> Task :new_GoPlanV1Application.main() FAILED
-3 actionable tasks: 1 executed, 2 up-to-date
-
-FAILURE: Build failed with an exception.
-
-* What went wrong:
-Execution failed for task ':new_GoPlanV1Application.main()'.
-> Process 'command 'C:/Program Files/ojdkbuild/java-11-openjdk-11.0.15-1/bin/java.exe'' finished with non-zero exit value 1
-
-* Try:
-> Run with --stacktrace option to get the stack trace.
-> Run with --info or --debug option to get more log output.
-> Run with --scan to get full insights.
-
-* Get more help at https://help.gradle.org
-
-BUILD FAILED in 17s
-오후 2:56:36: Execution finished ':new_GoPlanV1Application.main()'.
+kakao:
+  api:
+    key: ec86a7af731bdef703d097a73e9c04fd
