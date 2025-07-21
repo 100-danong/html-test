@@ -1,53 +1,36 @@
-오후 3:56:17: Executing ':new_GoPlanV1Application.main()'...
+package com.gogofnd.kb.repository;
 
-> Task :compileJava UP-TO-DATE
-> Task :processResources UP-TO-DATE
-> Task :classes UP-TO-DATE
+import com.gogofnd.kb.dto.DbTestRiderIInfoDTO;
+import org.springframework.data.r2dbc.core.DatabaseClient;
+import org.springframework.stereotype.Repository;
+import lombok.RequiredArgsConstructor;
+import reactor.core.publisher.Flux;
 
-> Task :new_GoPlanV1Application.main()
+@Repository
+@RequiredArgsConstructor
+public class RiderInfoCustomRepositoryImpl implements RiderInfoCustomRepository {
 
-  .   ____          _            __ _ _
- /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
-( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
- \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
-  '  |____| .__|_| |_|_| |_\__, | / / / /
- =========|_|==============|___/=/_/_/_/
- :: Spring Boot ::               (v2.7.18)
+    private final DatabaseClient databaseClient;
 
-2025-07-21 15:56:27.447  INFO 16352 --- [           main] com.gogofnd.kb.new_GoPlanV1Application   : Starting new_GoPlanV1Application using Java 11.0.15 on Gogofnd002 with PID 16352 (C:\Users\user02gogof\Desktop\new_GoPlanV1\build\classes\java\main started by user02gogof in C:\Users\user02gogof\Desktop\new_GoPlanV1)
-2025-07-21 15:56:27.461 DEBUG 16352 --- [           main] com.gogofnd.kb.new_GoPlanV1Application   : Running with Spring Boot v2.7.18, Spring v5.3.31
-2025-07-21 15:56:27.463  INFO 16352 --- [           main] com.gogofnd.kb.new_GoPlanV1Application   : The following 4 profiles are active: "dev", "logging_daily", "logging_error", "logging_info"
-2025-07-21 15:56:35.414 ERROR 16352 --- [           main] o.s.b.d.LoggingFailureAnalysisReporter   : 
+    @Override
+    public Flux<DbTestRiderIInfoDTO> findComplexRiderInfo() {
 
-***************************
-APPLICATION FAILED TO START
-***************************
+        StringBuffer sb = new StringBuffer();
+        sb.append(" SELECT ri.*, cci.cci_content ");
+        sb.append(" FROM rider_info ri ");
+        sb.append(" INNER JOIN insurance_history ih ON ri.ri_id = ih.ri_id ");
+        sb.append(" INNER JOIN insurance_state_history ish ON ih.ih_id = ish.ih_id ");
+        sb.append(" LEFT JOIN common_code_info cci ON ish.ih_reject_code = cci.cci_code ");
+        sb.append(" WHERE ri.ri_insu_status != '062' ");
+        sb.append(" AND ri.ri_state = 1 ");
+        sb.append(" GROUP BY ri.ri_id ");
+        sb.append(" ORDER BY ri.ri_ins_time DESC ");
 
-Description:
+        String sql = sb.toString();
 
-Parameter 0 of constructor in com.gogofnd.kb.repository.RiderInfoCustomRepositoryImpl required a bean of type 'org.springframework.data.r2dbc.core.DatabaseClient' that could not be found.
-
-
-Action:
-
-Consider defining a bean of type 'org.springframework.data.r2dbc.core.DatabaseClient' in your configuration.
-
-
-> Task :new_GoPlanV1Application.main() FAILED
-3 actionable tasks: 1 executed, 2 up-to-date
-
-FAILURE: Build failed with an exception.
-
-* What went wrong:
-Execution failed for task ':new_GoPlanV1Application.main()'.
-> Process 'command 'C:/Program Files/ojdkbuild/java-11-openjdk-11.0.15-1/bin/java.exe'' finished with non-zero exit value 1
-
-* Try:
-> Run with --stacktrace option to get the stack trace.
-> Run with --info or --debug option to get more log output.
-> Run with --scan to get full insights.
-
-* Get more help at https://help.gradle.org
-
-BUILD FAILED in 17s
-오후 3:56:35: Execution finished ':new_GoPlanV1Application.main()'.
+        return databaseClient.execute(sql)
+                .fetch()
+                .all()
+                .map(row -> DbTestRiderIInfoDTO.from(row));
+    }
+}
