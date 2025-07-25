@@ -1,14 +1,9 @@
-java.lang.NullPointerException: temporal
-	at java.base/java.util.Objects.requireNonNull(Objects.java:246)
-	at java.base/java.time.LocalDate.from(LocalDate.java:392)
-	at java.base/java.time.LocalDateTime.from(LocalDateTime.java:456)
-	at java.base/java.time.LocalDateTime.until(LocalDateTime.java:1683)
-	at java.base/java.time.Duration.between(Duration.java:488)
-	at com.gogofnd.kb.partner.call.service.CallService.kb11th(CallService.java:298)
+java.lang.NullPointerException: null
+	at com.gogofnd.kb.partner.call.service.CallService.kb11th(CallService.java:313)
 	at com.gogofnd.kb.partner.call.service.CallService$$FastClassBySpringCGLIB$$b36d461c.invoke(<generated>)
 	at org.springframework.cglib.proxy.MethodProxy.invoke(MethodProxy.java:218)
 	at org.springframework.aop.framework.CglibAopProxy$DynamicAdvisedInterceptor.intercept(CglibAopProxy.java:687)
-	at com.gogofnd.kb.partner.call.service.CallService$$EnhancerBySpringCGLIB$$ea2f74a7.kb11th(<generated>)
+	at com.gogofnd.kb.partner.call.service.CallService$$EnhancerBySpringCGLIB$$6d4faf94.kb11th(<generated>)
 	at com.gogofnd.kb.partner.call.api.CallApi.api11(CallApi.java:36)
 	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
 	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
@@ -99,3 +94,13 @@ java.lang.NullPointerException: temporal
 	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:628)
 	at org.apache.tomcat.util.threads.TaskThread$WrappingRunnable.run(TaskThread.java:61)
 	at java.base/java.lang.Thread.run(Thread.java:829)
+
+
+
+
+
+
+
+
+
+ groupcallInfo.setSalesDate(callInfo.getSalesDate());
