@@ -1,13 +1,8 @@
-DELETE FROM call_info
-WHERE ri_id IN (
-    SELECT ri_id FROM (
-        SELECT ci.ri_id
-        FROM call_info ci
-        JOIN rider_info ri ON ci.ri_id = ri.ri_id
-        WHERE ci.ci_appoint_time >= '2025-07-29 00:00:00'
-          AND ci.ci_appoint_time < '2025-07-29 06:00:00'
-          AND ri.si_id = '5'
-    ) AS temp
-)
-AND ci_appoint_time >= '2025-07-28 06:00:00'
-AND ci_appoint_time < '2025-07-29 06:00:00';
+SELECT ci.ci_recv_group_id, ri.ri_userid, gi.gci_total_time, gi.gci_gogo_total_balance
+from groupcall_info gi 
+join call_info ci 
+on gi.gci_groupid = ci.gci_groupid 
+join rider_info ri 
+on gi.ri_id = ri.ri_id 
+WHERE ri.ri_userid in('ONNA000382', 'ONNA001051', 'ONNA001169', 'ONNA001580', 'ONNA001302') AND gi.gci_first_starttime >= '2025-07-28 06:00:00' AND gi.gci_first_starttime < '2025-07-29 06:00:00'
+group by gi.gci_groupid;
