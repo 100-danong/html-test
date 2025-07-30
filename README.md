@@ -1,8 +1,9 @@
-SELECT gi.gci_groupid, ci.ci_recv_group_id, ri.ri_userid, gi.gci_first_starttime, gi.gci_last_endtime, gi.gci_total_time, gi.gci_gogo_total_balance
-from groupcall_info gi 
-join call_info ci 
-on gi.gci_groupid = ci.gci_groupid 
-join rider_info ri 
-on gi.ri_id = ri.ri_id 
-WHERE ri.ri_userid in('ONNA000382', 'ONNA001051', 'ONNA001169', 'ONNA001580', 'ONNA001302') AND gi.gci_first_starttime >= '2025-07-28 06:00:00' AND gi.gci_first_starttime < '2025-07-29 06:00:00'
-group by gi.gci_groupid;
+상태:	gogofnd.co.kr에 연결...
+응답:	fzSftp started, protocol_version=11
+명령:	open "gogoriders@gogofnd.co.kr" 22
+오류:	Connection timed out after 20 seconds of inactivity
+오류:	서버에 연결하지 못함
+상태:	재시도 대기...
+상태:	gogofnd.co.kr에 연결...
+응답:	fzSftp started, protocol_version=11
+명령:	open "gogoriders@gogofnd.co.kr" 22
