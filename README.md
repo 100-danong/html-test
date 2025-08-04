@@ -1,43 +1,37 @@
-private CallCountInfo getCallCountStart(LocalDate today, long ri_id, String call_id, long si_id){
-        CallCountInfo callCountInfo  = callCountMapper.findBySalesDateRiId(today, ri_id);
-
-        //운영기준일 기준 첫 콜일 경우
-        if(callCountInfo == null){
-            callCountInfo.setSalesDate(today);
-            callCountInfo.setSiId(si_id);
-            callCountInfo.setRiId(ri_id);
-            callCountInfo.setCiCallId(call_id);
-            callCountInfo.setCciStartCount(1);
-            callCountInfo.setCciEndCount(0);
-            callCountInfo.setCciGroupCount(1);
-            callCountInfo.setCciTotalCount(1);
-            callCountInfo.create(today, ri_id, call_id, si_id);
-        } else {
-            //이전 콜이 마지막 그룹 콜이였을 경우
-            if(callCountInfo.getCciTotalCount() == callCountInfo.getCciStartCount() + callCountInfo.getCciEndCount()){
-                callCountInfo.setCiCallId(call_id);
-                callCountInfo.setCciStartCount(1);
-                callCountInfo.setCciEndCount(0);
-                callCountInfo.setCciGroupCount(callCountInfo.getCciGroupCount() + 1);
-                callCountInfo.setCciTotalCount(1);
-
-            } else {
-                callCountInfo.setCiCallId(call_id);
-                callCountInfo.setCciStartCount(callCountInfo.getCciStartCount() + 1);
-                callCountInfo.setCciTotalCount(callCountInfo.getCciTotalCount() + 1);
-            }
-        }
-        return callCountInfo;
-    }
-
-
-    java.lang.NullPointerException: null
-	at com.gogofnd.kb.partner.call.service.CallService.getCallCountStart(CallService.java:630)
-	at com.gogofnd.kb.partner.call.service.CallService.kb10th(CallService.java:134)
+org.springframework.jdbc.BadSqlGrammarException: 
+### Error updating database.  Cause: java.sql.SQLSyntaxErrorException: (conn=1234873) You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near '1, 1, NOW(), NOW())' at line 4
+### The error may exist in file [C:\Users\user02gogof\Desktop\kb_goplanv2\build\resources\main\sqlmapper\delivery\CallCountMapper.xml]
+### The error may involve com.gogofnd.kb.partner.call.mapper.CallCountMapper.InsertCallCountInfo-Inline
+### The error occurred while setting parameters
+### SQL: INSERT INTO call_count_info         (sales_date, ri_id, si_id, ci_call_id, cci_start_count, cci_end_count, cci_group_count, cci_total_count, cci_ins_time, cci_upd_time)         VALUES         (?, ?, ?,  ?, ?, ? ?, ?, NOW(), NOW())
+### Cause: java.sql.SQLSyntaxErrorException: (conn=1234873) You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near '1, 1, NOW(), NOW())' at line 4
+; bad SQL grammar []; nested exception is java.sql.SQLSyntaxErrorException: (conn=1234873) You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near '1, 1, NOW(), NOW())' at line 4
+	at org.springframework.jdbc.support.SQLErrorCodeSQLExceptionTranslator.doTranslate(SQLErrorCodeSQLExceptionTranslator.java:239)
+	at org.springframework.jdbc.support.AbstractFallbackSQLExceptionTranslator.translate(AbstractFallbackSQLExceptionTranslator.java:72)
+	at org.mybatis.spring.MyBatisExceptionTranslator.translateExceptionIfPossible(MyBatisExceptionTranslator.java:92)
+	at org.mybatis.spring.SqlSessionTemplate$SqlSessionInterceptor.invoke(SqlSessionTemplate.java:439)
+	at com.sun.proxy.$Proxy115.insert(Unknown Source)
+	at org.mybatis.spring.SqlSessionTemplate.insert(SqlSessionTemplate.java:272)
+	at org.apache.ibatis.binding.MapperMethod.execute(MapperMethod.java:62)
+	at org.apache.ibatis.binding.MapperProxy$PlainMethodInvoker.invoke(MapperProxy.java:152)
+	at org.apache.ibatis.binding.MapperProxy.invoke(MapperProxy.java:85)
+	at com.sun.proxy.$Proxy128.InsertCallCountInfo(Unknown Source)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:566)
+	at org.springframework.aop.support.AopUtils.invokeJoinpointUsingReflection(AopUtils.java:344)
+	at org.springframework.aop.framework.ReflectiveMethodInvocation.invokeJoinpoint(ReflectiveMethodInvocation.java:198)
+	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:163)
+	at org.springframework.dao.support.PersistenceExceptionTranslationInterceptor.invoke(PersistenceExceptionTranslationInterceptor.java:139)
+	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:186)
+	at org.springframework.aop.framework.JdkDynamicAopProxy.invoke(JdkDynamicAopProxy.java:212)
+	at com.sun.proxy.$Proxy129.InsertCallCountInfo(Unknown Source)
+	at com.gogofnd.kb.partner.call.service.CallService.kb10th(CallService.java:223)
 	at com.gogofnd.kb.partner.call.service.CallService$$FastClassBySpringCGLIB$$b36d461c.invoke(<generated>)
 	at org.springframework.cglib.proxy.MethodProxy.invoke(MethodProxy.java:218)
 	at org.springframework.aop.framework.CglibAopProxy$DynamicAdvisedInterceptor.intercept(CglibAopProxy.java:687)
-	at com.gogofnd.kb.partner.call.service.CallService$$EnhancerBySpringCGLIB$$6d4faf94.kb10th(<generated>)
+	at com.gogofnd.kb.partner.call.service.CallService$$EnhancerBySpringCGLIB$$53093d0b.kb10th(<generated>)
 	at com.gogofnd.kb.partner.call.api.CallApi.api10(CallApi.java:28)
 	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
 	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
@@ -128,3 +122,43 @@ private CallCountInfo getCallCountStart(LocalDate today, long ri_id, String call
 	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:628)
 	at org.apache.tomcat.util.threads.TaskThread$WrappingRunnable.run(TaskThread.java:61)
 	at java.base/java.lang.Thread.run(Thread.java:829)
+Caused by: java.sql.SQLSyntaxErrorException: (conn=1234873) You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near '1, 1, NOW(), NOW())' at line 4
+	at org.mariadb.jdbc.internal.util.exceptions.ExceptionFactory.createException(ExceptionFactory.java:62)
+	at org.mariadb.jdbc.internal.util.exceptions.ExceptionFactory.create(ExceptionFactory.java:153)
+	at org.mariadb.jdbc.MariaDbStatement.executeExceptionEpilogue(MariaDbStatement.java:274)
+	at org.mariadb.jdbc.ClientSidePreparedStatement.executeInternal(ClientSidePreparedStatement.java:229)
+	at org.mariadb.jdbc.ClientSidePreparedStatement.execute(ClientSidePreparedStatement.java:149)
+	at com.zaxxer.hikari.pool.ProxyPreparedStatement.execute(ProxyPreparedStatement.java:44)
+	at com.zaxxer.hikari.pool.HikariProxyPreparedStatement.execute(HikariProxyPreparedStatement.java)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:566)
+	at org.apache.ibatis.logging.jdbc.PreparedStatementLogger.invoke(PreparedStatementLogger.java:59)
+	at com.sun.proxy.$Proxy180.execute(Unknown Source)
+	at org.apache.ibatis.executor.statement.PreparedStatementHandler.update(PreparedStatementHandler.java:47)
+	at org.apache.ibatis.executor.statement.RoutingStatementHandler.update(RoutingStatementHandler.java:74)
+	at org.apache.ibatis.executor.SimpleExecutor.doUpdate(SimpleExecutor.java:50)
+	at org.apache.ibatis.executor.BaseExecutor.update(BaseExecutor.java:117)
+	at org.apache.ibatis.executor.CachingExecutor.update(CachingExecutor.java:76)
+	at org.apache.ibatis.session.defaults.DefaultSqlSession.update(DefaultSqlSession.java:197)
+	at org.apache.ibatis.session.defaults.DefaultSqlSession.insert(DefaultSqlSession.java:184)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:566)
+	at org.mybatis.spring.SqlSessionTemplate$SqlSessionInterceptor.invoke(SqlSessionTemplate.java:425)
+	... 112 common frames omitted
+Caused by: org.mariadb.jdbc.internal.util.exceptions.MariaDbSqlException: You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near '1, 1, NOW(), NOW())' at line 4
+	at org.mariadb.jdbc.internal.util.exceptions.MariaDbSqlException.of(MariaDbSqlException.java:34)
+	at org.mariadb.jdbc.internal.protocol.AbstractQueryProtocol.exceptionWithQuery(AbstractQueryProtocol.java:194)
+	at org.mariadb.jdbc.internal.protocol.AbstractQueryProtocol.exceptionWithQuery(AbstractQueryProtocol.java:177)
+	at org.mariadb.jdbc.internal.protocol.AbstractQueryProtocol.executeQuery(AbstractQueryProtocol.java:321)
+	at org.mariadb.jdbc.ClientSidePreparedStatement.executeInternal(ClientSidePreparedStatement.java:220)
+	... 133 common frames omitted
+Caused by: java.sql.SQLException: You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near '1, 1, NOW(), NOW())' at line 4
+	at org.mariadb.jdbc.internal.protocol.AbstractQueryProtocol.readErrorPacket(AbstractQueryProtocol.java:1688)
+	at org.mariadb.jdbc.internal.protocol.AbstractQueryProtocol.readPacket(AbstractQueryProtocol.java:1550)
+	at org.mariadb.jdbc.internal.protocol.AbstractQueryProtocol.getResult(AbstractQueryProtocol.java:1513)
+	at org.mariadb.jdbc.internal.protocol.AbstractQueryProtocol.executeQuery(AbstractQueryProtocol.java:318)
+	... 134 common frames omitted
