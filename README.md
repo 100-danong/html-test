@@ -1,21 +1,44 @@
-java.time.format.DateTimeParseException: Text '2025-08-01 06:01:00' could not be parsed at index 10
-	at java.base/java.time.format.DateTimeFormatter.parseResolved0(DateTimeFormatter.java:2046)
-	at java.base/java.time.format.DateTimeFormatter.parse(DateTimeFormatter.java:1948)
-	at java.base/java.time.LocalDateTime.parse(LocalDateTime.java:492)
-	at java.base/java.time.LocalDateTime.parse(LocalDateTime.java:477)
-	at com.gogofnd.kb.domain.rider.service.TgService.insertDrivingStartInfo(TgService.java:62)
-	at com.gogofnd.kb.domain.rider.service.TgService$$FastClassBySpringCGLIB$$e6081bb3.invoke(<generated>)
+private CallCountInfo getCallCountStart(LocalDate today, long ri_id, String call_id, long si_id){
+        CallCountInfo callCountInfo  = callCountMapper.findBySalesDateRiId(today, ri_id);
+
+        //운영기준일 기준 첫 콜일 경우
+        if(callCountInfo == null){
+            callCountInfo.setSalesDate(today);
+            callCountInfo.setSiId(si_id);
+            callCountInfo.setRiId(ri_id);
+            callCountInfo.setCiCallId(call_id);
+            callCountInfo.setCciStartCount(1);
+            callCountInfo.setCciEndCount(0);
+            callCountInfo.setCciGroupCount(1);
+            callCountInfo.setCciTotalCount(1);
+            callCountInfo.create(today, ri_id, call_id, si_id);
+        } else {
+            //이전 콜이 마지막 그룹 콜이였을 경우
+            if(callCountInfo.getCciTotalCount() == callCountInfo.getCciStartCount() + callCountInfo.getCciEndCount()){
+                callCountInfo.setCiCallId(call_id);
+                callCountInfo.setCciStartCount(1);
+                callCountInfo.setCciEndCount(0);
+                callCountInfo.setCciGroupCount(callCountInfo.getCciGroupCount() + 1);
+                callCountInfo.setCciTotalCount(1);
+
+            } else {
+                callCountInfo.setCiCallId(call_id);
+                callCountInfo.setCciStartCount(callCountInfo.getCciStartCount() + 1);
+                callCountInfo.setCciTotalCount(callCountInfo.getCciTotalCount() + 1);
+            }
+        }
+        return callCountInfo;
+    }
+
+
+    java.lang.NullPointerException: null
+	at com.gogofnd.kb.partner.call.service.CallService.getCallCountStart(CallService.java:630)
+	at com.gogofnd.kb.partner.call.service.CallService.kb10th(CallService.java:134)
+	at com.gogofnd.kb.partner.call.service.CallService$$FastClassBySpringCGLIB$$b36d461c.invoke(<generated>)
 	at org.springframework.cglib.proxy.MethodProxy.invoke(MethodProxy.java:218)
-	at org.springframework.aop.framework.CglibAopProxy$CglibMethodInvocation.invokeJoinpoint(CglibAopProxy.java:771)
-	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:163)
-	at org.springframework.aop.framework.CglibAopProxy$CglibMethodInvocation.proceed(CglibAopProxy.java:749)
-	at org.springframework.transaction.interceptor.TransactionAspectSupport.invokeWithinTransaction(TransactionAspectSupport.java:367)
-	at org.springframework.transaction.interceptor.TransactionInterceptor.invoke(TransactionInterceptor.java:118)
-	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:186)
-	at org.springframework.aop.framework.CglibAopProxy$CglibMethodInvocation.proceed(CglibAopProxy.java:749)
-	at org.springframework.aop.framework.CglibAopProxy$DynamicAdvisedInterceptor.intercept(CglibAopProxy.java:691)
-	at com.gogofnd.kb.domain.rider.service.TgService$$EnhancerBySpringCGLIB$$3fac8a98.insertDrivingStartInfo(<generated>)
-	at com.gogofnd.kb.domain.rider.api.TgController.safeToPlanStart(TgController.java:60)
+	at org.springframework.aop.framework.CglibAopProxy$DynamicAdvisedInterceptor.intercept(CglibAopProxy.java:687)
+	at com.gogofnd.kb.partner.call.service.CallService$$EnhancerBySpringCGLIB$$6d4faf94.kb10th(<generated>)
+	at com.gogofnd.kb.partner.call.api.CallApi.api10(CallApi.java:28)
 	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
 	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
 	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
