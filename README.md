@@ -1,99 +1,171 @@
-@Async
-    @Scheduled(cron = "0 30 15 * * *")
-    public String reGrouping(){
-        //LocalDate salesDate = LocalDate.now().minusDays(1);
-        LocalDate salesDate = LocalDate.parse("2025-08-03");
-        List<ReGroupingDTO> calls = callMapper.findReGroupAllDay(salesDate);
-        SellerInfo sellerInfo = null;
-        if(calls != null) {
-            for (ReGroupingDTO allcall : calls) {
-                sellerInfo = sellerMapper.findBySellerCode(allcall.getSiSellerCode());
-                List<CallInfo> callInfo = callMapper.findReGroupAll(salesDate, allcall.getRiId());
-                List<CallInfo> currentGroup = new ArrayList<>();
-                GroupcallInfo groupcallInfo;
-                CallCountInfo callCountInfo = null;
-                LocalDateTime lastTime = null;
+오후 3:34:51: Executing ':KbApplication.main()'...
 
-                if (callInfo != null) {
-                    for (CallInfo call : callInfo) {
-                        if (currentGroup.isEmpty()) {
-                            //첫 운행일 경우 그룹id update
-                            callCountInfo = getReCallCountStart(call.getSalesDate(), call.getRiId(), call.getCiCallId(), sellerInfo.getSiId());
+> Task :initQuerydslSourcesDir
+> Task :compileQuerydsl
+> Task :compileJava
+> Task :processResources UP-TO-DATE
+> Task :classes
 
-                            lastTime = call.getCiCompleteTime();
-                            call.setGciGroupid(callService.getGroupIdNowTest(callCountInfo));
+> Task :KbApplication.main()
 
-                            /*callMapper.updateReGrouping(call.getCiCallId(), call.getGciGroupid());*/
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+ :: Spring Boot ::        (v2.3.9.RELEASE)
 
-                            long diffTime = Duration.between(call.getCiAppointTime(), call.getCiCompleteTime()).getSeconds();
-                            int runMinute = (int) Math.ceil((double) diffTime / 60);
+2025-08-12 15:35:08.750  INFO 7724 --- [           main] com.gogofnd.kb.KbApplication             : Starting KbApplication on Gogofnd002 with PID 7724 (C:\Users\user02gogof\Desktop\kb_goplanv2\build\classes\java\main started by user02gogof in C:\Users\user02gogof\Desktop\kb_goplanv2)
+2025-08-12 15:35:08.757 DEBUG 7724 --- [           main] com.gogofnd.kb.KbApplication             : Running with Spring Boot v2.3.9.RELEASE, Spring v5.2.13.RELEASE
+2025-08-12 15:35:08.758  INFO 7724 --- [           main] com.gogofnd.kb.KbApplication             : The following profiles are active: dev
+2025-08-12 15:35:16.311 DEBUG 7724 --- [           main] c.g.kb.global.config.ExceptionFilter     : Filter 'exceptionFilter' configured for use
+2025-08-12 15:35:21.723 ERROR 7724 --- [           main] o.s.boot.SpringApplication               : Application run failed
 
-                            CallBalanceDto balanceDto = callService.calcTotalBalance(runMinute, sellerInfo, call.getRiId(), call.getCiAppointTime(), call.getGciGroupid());
+org.springframework.beans.factory.UnsatisfiedDependencyException: Error creating bean with name 'webApi' defined in file [C:\Users\user02gogof\Desktop\kb_goplanv2\build\classes\java\main\com\gogofnd\kb\business\api\WebApi.class]: Unsatisfied dependency expressed through constructor parameter 0; nested exception is org.springframework.beans.factory.UnsatisfiedDependencyException: Error creating bean with name 'businessService' defined in file [C:\Users\user02gogof\Desktop\kb_goplanv2\build\classes\java\main\com\gogofnd\kb\business\service\BusinessService.class]: Unsatisfied dependency expressed through constructor parameter 0; nested exception is org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'riderMapper' defined in file [C:\Users\user02gogof\Desktop\kb_goplanv2\build\classes\java\main\com\gogofnd\kb\partner\rider\mapper\RiderMapper.class]: Cannot resolve reference to bean 'sqlSessionTemplate' while setting bean property 'sqlSessionTemplate'; nested exception is org.springframework.beans.factory.UnsatisfiedDependencyException: Error creating bean with name 'sqlSessionTemplate' defined in class path resource [org/mybatis/spring/boot/autoconfigure/MybatisAutoConfiguration.class]: Unsatisfied dependency expressed through method 'sqlSessionTemplate' parameter 0; nested exception is org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'sqlSessionFactory' defined in class path resource [org/mybatis/spring/boot/autoconfigure/MybatisAutoConfiguration.class]: Bean instantiation via factory method failed; nested exception is org.springframework.beans.BeanInstantiationException: Failed to instantiate [org.apache.ibatis.session.SqlSessionFactory]: Factory method 'sqlSessionFactory' threw exception; nested exception is java.io.IOException: Failed to parse mapping resource: 'file [C:\Users\user02gogof\Desktop\kb_goplanv2\build\resources\main\sqlmapper\delivery\TestGroupCallMapper.xml]'
+	at org.springframework.beans.factory.support.ConstructorResolver.createArgumentArray(ConstructorResolver.java:799)
+	at org.springframework.beans.factory.support.ConstructorResolver.autowireConstructor(ConstructorResolver.java:228)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.autowireConstructor(AbstractAutowireCapableBeanFactory.java:1361)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBeanInstance(AbstractAutowireCapableBeanFactory.java:1208)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.doCreateBean(AbstractAutowireCapableBeanFactory.java:556)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBean(AbstractAutowireCapableBeanFactory.java:516)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.lambda$doGetBean$0(AbstractBeanFactory.java:324)
+	at org.springframework.beans.factory.support.DefaultSingletonBeanRegistry.getSingleton(DefaultSingletonBeanRegistry.java:234)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.doGetBean(AbstractBeanFactory.java:322)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.getBean(AbstractBeanFactory.java:202)
+	at org.springframework.beans.factory.support.DefaultListableBeanFactory.preInstantiateSingletons(DefaultListableBeanFactory.java:897)
+	at org.springframework.context.support.AbstractApplicationContext.finishBeanFactoryInitialization(AbstractApplicationContext.java:879)
+	at org.springframework.context.support.AbstractApplicationContext.refresh(AbstractApplicationContext.java:551)
+	at org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext.refresh(ServletWebServerApplicationContext.java:143)
+	at org.springframework.boot.SpringApplication.refresh(SpringApplication.java:758)
+	at org.springframework.boot.SpringApplication.refresh(SpringApplication.java:750)
+	at org.springframework.boot.SpringApplication.refreshContext(SpringApplication.java:405)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:315)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1237)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1226)
+	at com.gogofnd.kb.KbApplication.main(KbApplication.java:35)
+Caused by: org.springframework.beans.factory.UnsatisfiedDependencyException: Error creating bean with name 'businessService' defined in file [C:\Users\user02gogof\Desktop\kb_goplanv2\build\classes\java\main\com\gogofnd\kb\business\service\BusinessService.class]: Unsatisfied dependency expressed through constructor parameter 0; nested exception is org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'riderMapper' defined in file [C:\Users\user02gogof\Desktop\kb_goplanv2\build\classes\java\main\com\gogofnd\kb\partner\rider\mapper\RiderMapper.class]: Cannot resolve reference to bean 'sqlSessionTemplate' while setting bean property 'sqlSessionTemplate'; nested exception is org.springframework.beans.factory.UnsatisfiedDependencyException: Error creating bean with name 'sqlSessionTemplate' defined in class path resource [org/mybatis/spring/boot/autoconfigure/MybatisAutoConfiguration.class]: Unsatisfied dependency expressed through method 'sqlSessionTemplate' parameter 0; nested exception is org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'sqlSessionFactory' defined in class path resource [org/mybatis/spring/boot/autoconfigure/MybatisAutoConfiguration.class]: Bean instantiation via factory method failed; nested exception is org.springframework.beans.BeanInstantiationException: Failed to instantiate [org.apache.ibatis.session.SqlSessionFactory]: Factory method 'sqlSessionFactory' threw exception; nested exception is java.io.IOException: Failed to parse mapping resource: 'file [C:\Users\user02gogof\Desktop\kb_goplanv2\build\resources\main\sqlmapper\delivery\TestGroupCallMapper.xml]'
+	at org.springframework.beans.factory.support.ConstructorResolver.createArgumentArray(ConstructorResolver.java:799)
+	at org.springframework.beans.factory.support.ConstructorResolver.autowireConstructor(ConstructorResolver.java:228)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.autowireConstructor(AbstractAutowireCapableBeanFactory.java:1361)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBeanInstance(AbstractAutowireCapableBeanFactory.java:1208)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.doCreateBean(AbstractAutowireCapableBeanFactory.java:556)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBean(AbstractAutowireCapableBeanFactory.java:516)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.lambda$doGetBean$0(AbstractBeanFactory.java:324)
+	at org.springframework.beans.factory.support.DefaultSingletonBeanRegistry.getSingleton(DefaultSingletonBeanRegistry.java:234)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.doGetBean(AbstractBeanFactory.java:322)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.getBean(AbstractBeanFactory.java:202)
+	at org.springframework.beans.factory.config.DependencyDescriptor.resolveCandidate(DependencyDescriptor.java:276)
+	at org.springframework.beans.factory.support.DefaultListableBeanFactory.doResolveDependency(DefaultListableBeanFactory.java:1307)
+	at org.springframework.beans.factory.support.DefaultListableBeanFactory.resolveDependency(DefaultListableBeanFactory.java:1227)
+	at org.springframework.beans.factory.support.ConstructorResolver.resolveAutowiredArgument(ConstructorResolver.java:886)
+	at org.springframework.beans.factory.support.ConstructorResolver.createArgumentArray(ConstructorResolver.java:790)
+	... 20 common frames omitted
+Caused by: org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'riderMapper' defined in file [C:\Users\user02gogof\Desktop\kb_goplanv2\build\classes\java\main\com\gogofnd\kb\partner\rider\mapper\RiderMapper.class]: Cannot resolve reference to bean 'sqlSessionTemplate' while setting bean property 'sqlSessionTemplate'; nested exception is org.springframework.beans.factory.UnsatisfiedDependencyException: Error creating bean with name 'sqlSessionTemplate' defined in class path resource [org/mybatis/spring/boot/autoconfigure/MybatisAutoConfiguration.class]: Unsatisfied dependency expressed through method 'sqlSessionTemplate' parameter 0; nested exception is org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'sqlSessionFactory' defined in class path resource [org/mybatis/spring/boot/autoconfigure/MybatisAutoConfiguration.class]: Bean instantiation via factory method failed; nested exception is org.springframework.beans.BeanInstantiationException: Failed to instantiate [org.apache.ibatis.session.SqlSessionFactory]: Factory method 'sqlSessionFactory' threw exception; nested exception is java.io.IOException: Failed to parse mapping resource: 'file [C:\Users\user02gogof\Desktop\kb_goplanv2\build\resources\main\sqlmapper\delivery\TestGroupCallMapper.xml]'
+	at org.springframework.beans.factory.support.BeanDefinitionValueResolver.resolveReference(BeanDefinitionValueResolver.java:342)
+	at org.springframework.beans.factory.support.BeanDefinitionValueResolver.resolveValueIfNecessary(BeanDefinitionValueResolver.java:113)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.applyPropertyValues(AbstractAutowireCapableBeanFactory.java:1702)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.populateBean(AbstractAutowireCapableBeanFactory.java:1447)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.doCreateBean(AbstractAutowireCapableBeanFactory.java:593)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBean(AbstractAutowireCapableBeanFactory.java:516)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.lambda$doGetBean$0(AbstractBeanFactory.java:324)
+	at org.springframework.beans.factory.support.DefaultSingletonBeanRegistry.getSingleton(DefaultSingletonBeanRegistry.java:234)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.doGetBean(AbstractBeanFactory.java:322)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.getBean(AbstractBeanFactory.java:202)
+	at org.springframework.beans.factory.config.DependencyDescriptor.resolveCandidate(DependencyDescriptor.java:276)
+	at org.springframework.beans.factory.support.DefaultListableBeanFactory.doResolveDependency(DefaultListableBeanFactory.java:1307)
+	at org.springframework.beans.factory.support.DefaultListableBeanFactory.resolveDependency(DefaultListableBeanFactory.java:1227)
+	at org.springframework.beans.factory.support.ConstructorResolver.resolveAutowiredArgument(ConstructorResolver.java:886)
+	at org.springframework.beans.factory.support.ConstructorResolver.createArgumentArray(ConstructorResolver.java:790)
+	... 34 common frames omitted
+Caused by: org.springframework.beans.factory.UnsatisfiedDependencyException: Error creating bean with name 'sqlSessionTemplate' defined in class path resource [org/mybatis/spring/boot/autoconfigure/MybatisAutoConfiguration.class]: Unsatisfied dependency expressed through method 'sqlSessionTemplate' parameter 0; nested exception is org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'sqlSessionFactory' defined in class path resource [org/mybatis/spring/boot/autoconfigure/MybatisAutoConfiguration.class]: Bean instantiation via factory method failed; nested exception is org.springframework.beans.BeanInstantiationException: Failed to instantiate [org.apache.ibatis.session.SqlSessionFactory]: Factory method 'sqlSessionFactory' threw exception; nested exception is java.io.IOException: Failed to parse mapping resource: 'file [C:\Users\user02gogof\Desktop\kb_goplanv2\build\resources\main\sqlmapper\delivery\TestGroupCallMapper.xml]'
+	at org.springframework.beans.factory.support.ConstructorResolver.createArgumentArray(ConstructorResolver.java:799)
+	at org.springframework.beans.factory.support.ConstructorResolver.instantiateUsingFactoryMethod(ConstructorResolver.java:540)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.instantiateUsingFactoryMethod(AbstractAutowireCapableBeanFactory.java:1341)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBeanInstance(AbstractAutowireCapableBeanFactory.java:1181)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.doCreateBean(AbstractAutowireCapableBeanFactory.java:556)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBean(AbstractAutowireCapableBeanFactory.java:516)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.lambda$doGetBean$0(AbstractBeanFactory.java:324)
+	at org.springframework.beans.factory.support.DefaultSingletonBeanRegistry.getSingleton(DefaultSingletonBeanRegistry.java:234)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.doGetBean(AbstractBeanFactory.java:322)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.getBean(AbstractBeanFactory.java:202)
+	at org.springframework.beans.factory.support.BeanDefinitionValueResolver.resolveReference(BeanDefinitionValueResolver.java:330)
+	... 48 common frames omitted
+Caused by: org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'sqlSessionFactory' defined in class path resource [org/mybatis/spring/boot/autoconfigure/MybatisAutoConfiguration.class]: Bean instantiation via factory method failed; nested exception is org.springframework.beans.BeanInstantiationException: Failed to instantiate [org.apache.ibatis.session.SqlSessionFactory]: Factory method 'sqlSessionFactory' threw exception; nested exception is java.io.IOException: Failed to parse mapping resource: 'file [C:\Users\user02gogof\Desktop\kb_goplanv2\build\resources\main\sqlmapper\delivery\TestGroupCallMapper.xml]'
+	at org.springframework.beans.factory.support.ConstructorResolver.instantiate(ConstructorResolver.java:657)
+	at org.springframework.beans.factory.support.ConstructorResolver.instantiateUsingFactoryMethod(ConstructorResolver.java:637)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.instantiateUsingFactoryMethod(AbstractAutowireCapableBeanFactory.java:1341)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBeanInstance(AbstractAutowireCapableBeanFactory.java:1181)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.doCreateBean(AbstractAutowireCapableBeanFactory.java:556)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBean(AbstractAutowireCapableBeanFactory.java:516)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.lambda$doGetBean$0(AbstractBeanFactory.java:324)
+	at org.springframework.beans.factory.support.DefaultSingletonBeanRegistry.getSingleton(DefaultSingletonBeanRegistry.java:234)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.doGetBean(AbstractBeanFactory.java:322)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.getBean(AbstractBeanFactory.java:202)
+	at org.springframework.beans.factory.config.DependencyDescriptor.resolveCandidate(DependencyDescriptor.java:276)
+	at org.springframework.beans.factory.support.DefaultListableBeanFactory.doResolveDependency(DefaultListableBeanFactory.java:1307)
+	at org.springframework.beans.factory.support.DefaultListableBeanFactory.resolveDependency(DefaultListableBeanFactory.java:1227)
+	at org.springframework.beans.factory.support.ConstructorResolver.resolveAutowiredArgument(ConstructorResolver.java:886)
+	at org.springframework.beans.factory.support.ConstructorResolver.createArgumentArray(ConstructorResolver.java:790)
+	... 58 common frames omitted
+Caused by: org.springframework.beans.BeanInstantiationException: Failed to instantiate [org.apache.ibatis.session.SqlSessionFactory]: Factory method 'sqlSessionFactory' threw exception; nested exception is java.io.IOException: Failed to parse mapping resource: 'file [C:\Users\user02gogof\Desktop\kb_goplanv2\build\resources\main\sqlmapper\delivery\TestGroupCallMapper.xml]'
+	at org.springframework.beans.factory.support.SimpleInstantiationStrategy.instantiate(SimpleInstantiationStrategy.java:185)
+	at org.springframework.beans.factory.support.ConstructorResolver.instantiate(ConstructorResolver.java:652)
+	... 72 common frames omitted
+Caused by: java.io.IOException: Failed to parse mapping resource: 'file [C:\Users\user02gogof\Desktop\kb_goplanv2\build\resources\main\sqlmapper\delivery\TestGroupCallMapper.xml]'
+	at org.mybatis.spring.SqlSessionFactoryBean.buildSqlSessionFactory(SqlSessionFactoryBean.java:615)
+	at org.mybatis.spring.SqlSessionFactoryBean.afterPropertiesSet(SqlSessionFactoryBean.java:492)
+	at org.mybatis.spring.SqlSessionFactoryBean.getObject(SqlSessionFactoryBean.java:635)
+	at org.mybatis.spring.boot.autoconfigure.MybatisAutoConfiguration.sqlSessionFactory(MybatisAutoConfiguration.java:187)
+	at org.mybatis.spring.boot.autoconfigure.MybatisAutoConfiguration$$EnhancerBySpringCGLIB$$764645c7.CGLIB$sqlSessionFactory$1(<generated>)
+	at org.mybatis.spring.boot.autoconfigure.MybatisAutoConfiguration$$EnhancerBySpringCGLIB$$764645c7$$FastClassBySpringCGLIB$$a4a9c5c4.invoke(<generated>)
+	at org.springframework.cglib.proxy.MethodProxy.invokeSuper(MethodProxy.java:244)
+	at org.springframework.context.annotation.ConfigurationClassEnhancer$BeanMethodInterceptor.intercept(ConfigurationClassEnhancer.java:331)
+	at org.mybatis.spring.boot.autoconfigure.MybatisAutoConfiguration$$EnhancerBySpringCGLIB$$764645c7.sqlSessionFactory(<generated>)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:566)
+	at org.springframework.beans.factory.support.SimpleInstantiationStrategy.instantiate(SimpleInstantiationStrategy.java:154)
+	... 73 common frames omitted
+Caused by: org.apache.ibatis.builder.BuilderException: Error parsing Mapper XML. The XML location is 'file [C:\Users\user02gogof\Desktop\kb_goplanv2\build\resources\main\sqlmapper\delivery\TestGroupCallMapper.xml]'. Cause: java.lang.IllegalArgumentException: Mapped Statements collection already contains value for com.gogofnd.kb.partner.call.mapper.GroupCallMapper.findAllByCallPickUpTimeBetween. please check file [C:\Users\user02gogof\Desktop\kb_goplanv2\build\resources\main\sqlmapper\delivery\GroupCallMapper.xml] and file [C:\Users\user02gogof\Desktop\kb_goplanv2\build\resources\main\sqlmapper\delivery\TestGroupCallMapper.xml]
+	at org.apache.ibatis.builder.xml.XMLMapperBuilder.configurationElement(XMLMapperBuilder.java:123)
+	at org.apache.ibatis.builder.xml.XMLMapperBuilder.parse(XMLMapperBuilder.java:95)
+	at org.mybatis.spring.SqlSessionFactoryBean.buildSqlSessionFactory(SqlSessionFactoryBean.java:613)
+	... 86 common frames omitted
+Caused by: java.lang.IllegalArgumentException: Mapped Statements collection already contains value for com.gogofnd.kb.partner.call.mapper.GroupCallMapper.findAllByCallPickUpTimeBetween. please check file [C:\Users\user02gogof\Desktop\kb_goplanv2\build\resources\main\sqlmapper\delivery\GroupCallMapper.xml] and file [C:\Users\user02gogof\Desktop\kb_goplanv2\build\resources\main\sqlmapper\delivery\TestGroupCallMapper.xml]
+	at org.apache.ibatis.session.Configuration$StrictMap.put(Configuration.java:1014)
+	at org.apache.ibatis.session.Configuration$StrictMap.put(Configuration.java:970)
+	at org.apache.ibatis.session.Configuration.addMappedStatement(Configuration.java:768)
+	at org.apache.ibatis.builder.MapperBuilderAssistant.addMappedStatement(MapperBuilderAssistant.java:297)
+	at org.apache.ibatis.builder.xml.XMLStatementBuilder.parseStatementNode(XMLStatementBuilder.java:113)
+	at org.apache.ibatis.builder.xml.XMLMapperBuilder.buildStatementFromContext(XMLMapperBuilder.java:138)
+	at org.apache.ibatis.builder.xml.XMLMapperBuilder.buildStatementFromContext(XMLMapperBuilder.java:131)
+	at org.apache.ibatis.builder.xml.XMLMapperBuilder.configurationElement(XMLMapperBuilder.java:121)
+	... 88 common frames omitted
 
-                            float gogoBalance = balanceDto.getGogoBalance();
-                            int kbBalance = balanceDto.getKbBalance();
 
-                            groupcallInfo = GroupcallInfo.create(call.getGciGroupid(), call.getRiId(), call.getCiAppointTime(), call.getCiCompleteTime(), gogoBalance, kbBalance, runMinute, call.getSalesDate());
+> Task :KbApplication.main() FAILED
 
-                            currentGroup.add(call);
-                            testGroupCallMapper.InsertGroupCallInfoWhenDeliveryQuit(groupcallInfo);
-                            callCountMapper.InsertCallCountInfo(callCountInfo);
-                        } else {
-                            //그룹으로 묶기
-                            if (!call.getCiAppointTime().isAfter(lastTime)) {
-                                callCountInfo = getReCallCount(call.getSalesDate(), call.getRiId(), call.getCiCallId());
+Deprecated Gradle features were used in this build, making it incompatible with Gradle 8.0.
 
-                                call.setGciGroupid(callService.getGroupIdNowTest(callCountInfo));
+You can use '--warning-mode all' to show the individual deprecation warnings and determine if they come from your own scripts or plugins.
 
-                                /*callMapper.updateReGrouping(call.getCiCallId(), call.getGciGroupid());*/
+See https://docs.gradle.org/7.4.1/userguide/command_line_interface.html#sec:command_line_warnings
+5 actionable tasks: 4 executed, 1 up-to-date
 
-                                //종료 시간 초기화
-                                if (call.getCiCompleteTime().isAfter(lastTime)) {
-                                    groupcallInfo = testGroupCallMapper.findGroupcallInfoByGciGroupId(call.getGciGroupid());
+FAILURE: Build failed with an exception.
 
-                                    long diffTime = Duration.between(groupcallInfo.getGciFirstStarttime(), call.getCiCompleteTime()).getSeconds();
-                                    int runMinute = (int) Math.ceil((double) diffTime / 60);
+* What went wrong:
+Execution failed for task ':KbApplication.main()'.
+> Process 'command 'C:/Program Files/ojdkbuild/java-11-openjdk-11.0.15-1/bin/java.exe'' finished with non-zero exit value 1
 
-                                    CallBalanceDto balanceDto = callService.calcTotalBalance(runMinute, sellerInfo, call.getRiId(), call.getCiAppointTime(), call.getGciGroupid());
+* Try:
+> Run with --stacktrace option to get the stack trace.
+> Run with --info or --debug option to get more log output.
+> Run with --scan to get full insights.
 
-                                    float gogoBalance = balanceDto.getGogoBalance();
-                                    int kbBalance = balanceDto.getKbBalance();
+* Get more help at https://help.gradle.org
 
-                                    currentGroup.add(call);
-                                    testGroupCallMapper.UpdateGroupcallInfoWhenDeliveryQuit(call.getGciGroupid(), call.getCiCompleteTime(), gogoBalance, kbBalance, runMinute, LocalDateTime.now());
-                                    callCountMapper.InsertCallCountInfo(callCountInfo);
-
-                                    lastTime = call.getCiCompleteTime();
-
-                                }
-                            } else {
-                                //신규 그룹 생성
-                                callCountInfo = getReCallCountAfter(call.getSalesDate(), call.getRiId(), call.getCiCallId());
-
-                                lastTime = call.getCiCompleteTime();
-                                call.setGciGroupid(callService.getGroupIdNowTest(callCountInfo));
-
-                                /*callMapper.updateReGrouping(call.getCiCallId(), call.getGciGroupid());*/
-
-                                long diffTime = Duration.between(call.getCiAppointTime(), call.getCiCompleteTime()).getSeconds();
-                                int runMinute = (int) Math.ceil((double) diffTime / 60);
-
-                                CallBalanceDto balanceDto = callService.calcTotalBalance(runMinute, sellerInfo, call.getRiId(), call.getCiAppointTime(), call.getGciGroupid());
-
-                                float gogoBalance = balanceDto.getGogoBalance();
-                                int kbBalance = balanceDto.getKbBalance();
-
-                                groupcallInfo = GroupcallInfo.create(call.getGciGroupid(), call.getRiId(), call.getCiAppointTime(), call.getCiCompleteTime(), gogoBalance, kbBalance, runMinute, call.getSalesDate());
-
-                                currentGroup.add(call);
-                                testGroupCallMapper.InsertGroupCallInfoWhenDeliveryQuit(groupcallInfo);
-                                callCountMapper.InsertCallCountInfo(callCountInfo);
-                            }
-                        }
-                    }
-                }
-            }
-            return "재 그룹핑 완료";
-        }
-        return "데이터 없음";
-    }
+BUILD FAILED in 30s
+오후 3:35:22: Execution finished ':KbApplication.main()'.
