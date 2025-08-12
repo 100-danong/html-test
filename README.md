@@ -1,9 +1,9 @@
-오후 3:34:51: Executing ':KbApplication.main()'...
+오후 3:38:00: Executing ':KbApplication.main()'...
 
 > Task :initQuerydslSourcesDir
 > Task :compileQuerydsl
 > Task :compileJava
-> Task :processResources UP-TO-DATE
+> Task :processResources
 > Task :classes
 
 > Task :KbApplication.main()
@@ -16,11 +16,11 @@
  =========|_|==============|___/=/_/_/_/
  :: Spring Boot ::        (v2.3.9.RELEASE)
 
-2025-08-12 15:35:08.750  INFO 7724 --- [           main] com.gogofnd.kb.KbApplication             : Starting KbApplication on Gogofnd002 with PID 7724 (C:\Users\user02gogof\Desktop\kb_goplanv2\build\classes\java\main started by user02gogof in C:\Users\user02gogof\Desktop\kb_goplanv2)
-2025-08-12 15:35:08.757 DEBUG 7724 --- [           main] com.gogofnd.kb.KbApplication             : Running with Spring Boot v2.3.9.RELEASE, Spring v5.2.13.RELEASE
-2025-08-12 15:35:08.758  INFO 7724 --- [           main] com.gogofnd.kb.KbApplication             : The following profiles are active: dev
-2025-08-12 15:35:16.311 DEBUG 7724 --- [           main] c.g.kb.global.config.ExceptionFilter     : Filter 'exceptionFilter' configured for use
-2025-08-12 15:35:21.723 ERROR 7724 --- [           main] o.s.boot.SpringApplication               : Application run failed
+2025-08-12 15:38:15.628  INFO 14396 --- [           main] com.gogofnd.kb.KbApplication             : Starting KbApplication on Gogofnd002 with PID 14396 (C:\Users\user02gogof\Desktop\kb_goplanv2\build\classes\java\main started by user02gogof in C:\Users\user02gogof\Desktop\kb_goplanv2)
+2025-08-12 15:38:15.645 DEBUG 14396 --- [           main] com.gogofnd.kb.KbApplication             : Running with Spring Boot v2.3.9.RELEASE, Spring v5.2.13.RELEASE
+2025-08-12 15:38:15.646  INFO 14396 --- [           main] com.gogofnd.kb.KbApplication             : The following profiles are active: dev
+2025-08-12 15:38:22.797 DEBUG 14396 --- [           main] c.g.kb.global.config.ExceptionFilter     : Filter 'exceptionFilter' configured for use
+2025-08-12 15:38:28.944 ERROR 14396 --- [           main] o.s.boot.SpringApplication               : Application run failed
 
 org.springframework.beans.factory.UnsatisfiedDependencyException: Error creating bean with name 'webApi' defined in file [C:\Users\user02gogof\Desktop\kb_goplanv2\build\classes\java\main\com\gogofnd\kb\business\api\WebApi.class]: Unsatisfied dependency expressed through constructor parameter 0; nested exception is org.springframework.beans.factory.UnsatisfiedDependencyException: Error creating bean with name 'businessService' defined in file [C:\Users\user02gogof\Desktop\kb_goplanv2\build\classes\java\main\com\gogofnd\kb\business\service\BusinessService.class]: Unsatisfied dependency expressed through constructor parameter 0; nested exception is org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'riderMapper' defined in file [C:\Users\user02gogof\Desktop\kb_goplanv2\build\classes\java\main\com\gogofnd\kb\partner\rider\mapper\RiderMapper.class]: Cannot resolve reference to bean 'sqlSessionTemplate' while setting bean property 'sqlSessionTemplate'; nested exception is org.springframework.beans.factory.UnsatisfiedDependencyException: Error creating bean with name 'sqlSessionTemplate' defined in class path resource [org/mybatis/spring/boot/autoconfigure/MybatisAutoConfiguration.class]: Unsatisfied dependency expressed through method 'sqlSessionTemplate' parameter 0; nested exception is org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'sqlSessionFactory' defined in class path resource [org/mybatis/spring/boot/autoconfigure/MybatisAutoConfiguration.class]: Bean instantiation via factory method failed; nested exception is org.springframework.beans.BeanInstantiationException: Failed to instantiate [org.apache.ibatis.session.SqlSessionFactory]: Factory method 'sqlSessionFactory' threw exception; nested exception is java.io.IOException: Failed to parse mapping resource: 'file [C:\Users\user02gogof\Desktop\kb_goplanv2\build\resources\main\sqlmapper\delivery\TestGroupCallMapper.xml]'
 	at org.springframework.beans.factory.support.ConstructorResolver.createArgumentArray(ConstructorResolver.java:799)
@@ -117,23 +117,23 @@ Caused by: java.io.IOException: Failed to parse mapping resource: 'file [C:\User
 	at org.mybatis.spring.SqlSessionFactoryBean.afterPropertiesSet(SqlSessionFactoryBean.java:492)
 	at org.mybatis.spring.SqlSessionFactoryBean.getObject(SqlSessionFactoryBean.java:635)
 	at org.mybatis.spring.boot.autoconfigure.MybatisAutoConfiguration.sqlSessionFactory(MybatisAutoConfiguration.java:187)
-	at org.mybatis.spring.boot.autoconfigure.MybatisAutoConfiguration$$EnhancerBySpringCGLIB$$764645c7.CGLIB$sqlSessionFactory$1(<generated>)
-	at org.mybatis.spring.boot.autoconfigure.MybatisAutoConfiguration$$EnhancerBySpringCGLIB$$764645c7$$FastClassBySpringCGLIB$$a4a9c5c4.invoke(<generated>)
+	at org.mybatis.spring.boot.autoconfigure.MybatisAutoConfiguration$$EnhancerBySpringCGLIB$$1ffd2aff.CGLIB$sqlSessionFactory$2(<generated>)
+	at org.mybatis.spring.boot.autoconfigure.MybatisAutoConfiguration$$EnhancerBySpringCGLIB$$1ffd2aff$$FastClassBySpringCGLIB$$786819f0.invoke(<generated>)
 	at org.springframework.cglib.proxy.MethodProxy.invokeSuper(MethodProxy.java:244)
 	at org.springframework.context.annotation.ConfigurationClassEnhancer$BeanMethodInterceptor.intercept(ConfigurationClassEnhancer.java:331)
-	at org.mybatis.spring.boot.autoconfigure.MybatisAutoConfiguration$$EnhancerBySpringCGLIB$$764645c7.sqlSessionFactory(<generated>)
+	at org.mybatis.spring.boot.autoconfigure.MybatisAutoConfiguration$$EnhancerBySpringCGLIB$$1ffd2aff.sqlSessionFactory(<generated>)
 	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
 	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
 	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
 	at java.base/java.lang.reflect.Method.invoke(Method.java:566)
 	at org.springframework.beans.factory.support.SimpleInstantiationStrategy.instantiate(SimpleInstantiationStrategy.java:154)
 	... 73 common frames omitted
-Caused by: org.apache.ibatis.builder.BuilderException: Error parsing Mapper XML. The XML location is 'file [C:\Users\user02gogof\Desktop\kb_goplanv2\build\resources\main\sqlmapper\delivery\TestGroupCallMapper.xml]'. Cause: java.lang.IllegalArgumentException: Mapped Statements collection already contains value for com.gogofnd.kb.partner.call.mapper.GroupCallMapper.findAllByCallPickUpTimeBetween. please check file [C:\Users\user02gogof\Desktop\kb_goplanv2\build\resources\main\sqlmapper\delivery\GroupCallMapper.xml] and file [C:\Users\user02gogof\Desktop\kb_goplanv2\build\resources\main\sqlmapper\delivery\TestGroupCallMapper.xml]
+Caused by: org.apache.ibatis.builder.BuilderException: Error parsing Mapper XML. The XML location is 'file [C:\Users\user02gogof\Desktop\kb_goplanv2\build\resources\main\sqlmapper\delivery\TestGroupCallMapper.xml]'. Cause: java.lang.IllegalArgumentException: Mapped Statements collection already contains value for com.gogofnd.kb.partner.call.mapper.GroupCallMapper.findGroupcallInfoByGciGroupId. please check file [C:\Users\user02gogof\Desktop\kb_goplanv2\build\resources\main\sqlmapper\delivery\GroupCallMapper.xml] and file [C:\Users\user02gogof\Desktop\kb_goplanv2\build\resources\main\sqlmapper\delivery\TestGroupCallMapper.xml]
 	at org.apache.ibatis.builder.xml.XMLMapperBuilder.configurationElement(XMLMapperBuilder.java:123)
 	at org.apache.ibatis.builder.xml.XMLMapperBuilder.parse(XMLMapperBuilder.java:95)
 	at org.mybatis.spring.SqlSessionFactoryBean.buildSqlSessionFactory(SqlSessionFactoryBean.java:613)
 	... 86 common frames omitted
-Caused by: java.lang.IllegalArgumentException: Mapped Statements collection already contains value for com.gogofnd.kb.partner.call.mapper.GroupCallMapper.findAllByCallPickUpTimeBetween. please check file [C:\Users\user02gogof\Desktop\kb_goplanv2\build\resources\main\sqlmapper\delivery\GroupCallMapper.xml] and file [C:\Users\user02gogof\Desktop\kb_goplanv2\build\resources\main\sqlmapper\delivery\TestGroupCallMapper.xml]
+Caused by: java.lang.IllegalArgumentException: Mapped Statements collection already contains value for com.gogofnd.kb.partner.call.mapper.GroupCallMapper.findGroupcallInfoByGciGroupId. please check file [C:\Users\user02gogof\Desktop\kb_goplanv2\build\resources\main\sqlmapper\delivery\GroupCallMapper.xml] and file [C:\Users\user02gogof\Desktop\kb_goplanv2\build\resources\main\sqlmapper\delivery\TestGroupCallMapper.xml]
 	at org.apache.ibatis.session.Configuration$StrictMap.put(Configuration.java:1014)
 	at org.apache.ibatis.session.Configuration$StrictMap.put(Configuration.java:970)
 	at org.apache.ibatis.session.Configuration.addMappedStatement(Configuration.java:768)
@@ -152,7 +152,7 @@ Deprecated Gradle features were used in this build, making it incompatible with 
 You can use '--warning-mode all' to show the individual deprecation warnings and determine if they come from your own scripts or plugins.
 
 See https://docs.gradle.org/7.4.1/userguide/command_line_interface.html#sec:command_line_warnings
-5 actionable tasks: 4 executed, 1 up-to-date
+5 actionable tasks: 5 executed
 
 FAILURE: Build failed with an exception.
 
@@ -167,5 +167,5 @@ Execution failed for task ':KbApplication.main()'.
 
 * Get more help at https://help.gradle.org
 
-BUILD FAILED in 30s
-오후 3:35:22: Execution finished ':KbApplication.main()'.
+BUILD FAILED in 28s
+오후 3:38:29: Execution finished ':KbApplication.main()'.
