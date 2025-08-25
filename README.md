@@ -1,36 +1,12 @@
-    @Transactional
-    public CallCountInfo getCallCountStart(LocalDate today, long ri_id, String call_id, long si_id){
-        CallCountInfo callCountInfo  = callCountMapper.findBySalesDateRiId(today, ri_id);
-
-        //운영기준일 기준 첫 콜일 경우
-        if(callCountInfo == null){
-            callCountInfo = new CallCountInfo();
-
-            callCountInfo.setSalesDate(today);
-            callCountInfo.setSiId(si_id);
-            callCountInfo.setRiId(ri_id);
-            callCountInfo.setCiCallId(call_id);
-            callCountInfo.setCciStartCount(1);
-            callCountInfo.setCciEndCount(0);
-            callCountInfo.setCciGroupCount(1);
-            callCountInfo.setCciTotalCount(1);
-            callCountInfo.setFlag("G");
-            callCountInfo.create(today, ri_id, call_id, si_id);
-        } else {
-            //이전 콜이 마지막 그룹 콜이였을 경우
-            if(callCountInfo.getCciStartCount() == callCountInfo.getCciEndCount()){
-                callCountInfo.setCiCallId(call_id);
-                callCountInfo.setCciStartCount(1);
-                callCountInfo.setCciEndCount(0);
-                callCountInfo.setCciGroupCount(callCountInfo.getCciGroupCount() + 1);
-                callCountInfo.setCciTotalCount(1);
-            } else {
-                callCountInfo.setCiCallId(call_id);
-                callCountInfo.setCciStartCount(callCountInfo.getCciStartCount() + 1);
-                callCountInfo.setCciTotalCount(callCountInfo.getCciTotalCount() + 1);
-            }
-        }
-        callCountMapper.InsertCallCountInfo(callCountInfo);
-        
-        return callCountInfo;
-    }
+SELECT 
+'고고세이프' AS '플랫폼명',
+gi.ri_id AS '라이더ID',
+ri.ri_name AS '라이더명',
+substr(gi.gci_first_starttime, 1, 10) AS '보험일자(운행일자)',
+SUM(gi.gci_total_time) AS '시간제 운행 시간',
+SUB(gi.gci_gogo_total_balance) AS '시간제 총 보험료'
+from groupcall_info gi 
+join rider_info ri 
+on gi.ri_id = ri.ri_id 
+where ri.si_id = '4'
+group by gi.gci_first_starttime;
