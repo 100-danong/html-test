@@ -1,4 +1,5 @@
-public CallCountInfo getCallCountStart(LocalDate today, long ri_id, String call_id, long si_id){
+    @Transactional
+    public CallCountInfo getCallCountStart(LocalDate today, long ri_id, String call_id, long si_id){
         CallCountInfo callCountInfo  = callCountMapper.findBySalesDateRiId(today, ri_id);
 
         //운영기준일 기준 첫 콜일 경우
@@ -29,5 +30,7 @@ public CallCountInfo getCallCountStart(LocalDate today, long ri_id, String call_
                 callCountInfo.setCciTotalCount(callCountInfo.getCciTotalCount() + 1);
             }
         }
+        callCountMapper.InsertCallCountInfo(callCountInfo);
+        
         return callCountInfo;
     }
