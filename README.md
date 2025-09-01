@@ -1,53 +1,8 @@
-2025:08:29 01:01:30.076 ERROR --- [MessageBroker-15] o.s.s.s.TaskUtils$LoggingErrorHandler : Unexpected error occurred in scheduled task
-
-org.springframework.transaction.CannotCreateTransactionException: Could not open JPA EntityManager for transaction; nested exception is org.hibernate.exception.JDBCConnectionException: Unable to acquire JDBC Connection
-        at org.springframework.orm.jpa.JpaTransactionManager.doBegin(JpaTransactionManager.java:448)
-        at org.springframework.transaction.support.AbstractPlatformTransactionManager.startTransaction(AbstractPlatformTransactionManager.java:400)
-        at org.springframework.transaction.support.AbstractPlatformTransactionManager.getTransaction(AbstractPlatformTransactionManager.java:373)
-        at org.springframework.transaction.interceptor.TransactionAspectSupport.createTransactionIfNecessary(TransactionAspectSupport.java:574)
-        at org.springframework.transaction.interceptor.TransactionAspectSupport.invokeWithinTransaction(TransactionAspectSupport.java:361)
-        at org.springframework.transaction.interceptor.TransactionInterceptor.invoke(TransactionInterceptor.java:118)
-        at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:186)
-        at org.springframework.aop.framework.CglibAopProxy$CglibMethodInvocation.proceed(CglibAopProxy.java:749)
-        at org.springframework.aop.framework.CglibAopProxy$DynamicAdvisedInterceptor.intercept(CglibAopProxy.java:691)
-        at com.gogofnd.gogorent.global.config.Scheduler$$EnhancerBySpringCGLIB$$448ac8a1.notReturn(<generated>)
-        at jdk.internal.reflect.GeneratedMethodAccessor625.invoke(Unknown Source)
-        at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
-        at java.base/java.lang.reflect.Method.invoke(Method.java:566)
-        at org.springframework.scheduling.support.ScheduledMethodRunnable.run(ScheduledMethodRunnable.java:84)
-        at org.springframework.scheduling.support.DelegatingErrorHandlingRunnable.run(DelegatingErrorHandlingRunnable.java:54)
-        at org.springframework.scheduling.concurrent.ReschedulingRunnable.run(ReschedulingRunnable.java:93)
-        at java.base/java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:515)
-        at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:264)
-        at java.base/java.util.concurrent.ScheduledThreadPoolExecutor$ScheduledFutureTask.run(ScheduledThreadPoolExecutor.java:304)
-        at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1128)
-        at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:628)
-        at java.base/java.lang.Thread.run(Thread.java:829)
-Caused by: org.hibernate.exception.JDBCConnectionException: Unable to acquire JDBC Connection
-        at org.hibernate.exception.internal.SQLExceptionTypeDelegate.convert(SQLExceptionTypeDelegate.java:48)
-        at org.hibernate.exception.internal.StandardSQLExceptionConverter.convert(StandardSQLExceptionConverter.java:37)
-        at org.hibernate.engine.jdbc.spi.SqlExceptionHelper.convert(SqlExceptionHelper.java:113)
-        at org.hibernate.engine.jdbc.spi.SqlExceptionHelper.convert(SqlExceptionHelper.java:99)
-        at org.hibernate.resource.jdbc.internal.LogicalConnectionManagedImpl.acquireConnectionIfNeeded(LogicalConnectionManagedImpl.java:111)
-        at org.hibernate.resource.jdbc.internal.LogicalConnectionManagedImpl.getPhysicalConnection(LogicalConnectionManagedImpl.java:138)
-        at org.hibernate.resource.jdbc.internal.LogicalConnectionManagedImpl.getConnectionForTransactionManagement(LogicalConnectionManagedImpl.java:276)
-        at org.hibernate.resource.jdbc.internal.LogicalConnectionManagedImpl.begin(LogicalConnectionManagedImpl.java:284)
-        at org.hibernate.resource.transaction.backend.jdbc.internal.JdbcResourceLocalTransactionCoordinatorImpl$TransactionDriverControlImpl.begin(JdbcResourceLocalTransactionCoordinatorImpl.java:246)
-        at org.hibernate.engine.transaction.internal.TransactionImpl.begin(TransactionImpl.java:83)
-        at org.springframework.orm.jpa.vendor.HibernateJpaDialect.beginTransaction(HibernateJpaDialect.java:184)
-        at org.springframework.orm.jpa.JpaTransactionManager.doBegin(JpaTransactionManager.java:402)
-        ... 21 common frames omitted
-Caused by: java.sql.SQLTransientConnectionException: HikariPool-1 - Connection is not available, request timed out after 30020ms.
-        at com.zaxxer.hikari.pool.HikariPool.createTimeoutException(HikariPool.java:695)
-        at com.zaxxer.hikari.pool.HikariPool.getConnection(HikariPool.java:197)
-        at com.zaxxer.hikari.pool.HikariPool.getConnection(HikariPool.java:162)
-        at com.zaxxer.hikari.HikariDataSource.getConnection(HikariDataSource.java:128)
-        at org.hibernate.engine.jdbc.connections.internal.DatasourceConnectionProviderImpl.getConnection(DatasourceConnectionProviderImpl.java:122)
-        at org.hibernate.internal.NonContextualJdbcConnectionAccess.obtainConnection(NonContextualJdbcConnectionAccess.java:38)
-        at org.hibernate.resource.jdbc.internal.LogicalConnectionManagedImpl.acquireConnectionIfNeeded(LogicalConnectionManagedImpl.java:108)
-        ... 28 common frames omitted
-Caused by: java.sql.SQLNonTransientConnectionException: Could not connect to address=(host=gb.navers.co.kr)(port=3306)(type=master) : Socket fail to connect to host:gb.navers.co.kr, port:3306. Connection refused (Connection refused)
-        at org.mariadb.jdbc.internal.util.exceptions.ExceptionFactory.createException(ExceptionFactory.java:73)
-        at org.mariadb.jdbc.internal.util.exceptions.ExceptionFactory.create(ExceptionFactory.java:192)
-        at org.mariadb.jdbc.internal.protocol.AbstractConnectProtocol.connectWithoutProxy(AbstractConnectProtocol.java:1372)
-        at org.mariadb.jdbc.internal.util.Utils.retrieveProxy(Utils.java:635)
+SELECT 
+  table_name AS 'Table Name', 
+  ROUND(data_length / 1024 / 1024, 2) AS 'Data Size(MB)', 
+  ROUND(index_length / 1024 / 1024, 2) AS 'Index Size(MB)', 
+  ROUND((data_length + index_length) / 1024 / 1024, 2) AS 'Total Size(MB)' 
+FROM information_schema.TABLES 
+WHERE table_schema = 'your_database_name' 
+ORDER BY `Total Size(MB)` DESC;
