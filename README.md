@@ -1,6 +1,47 @@
-hikari:
-      maximum-pool-size: 30         # 커넥션 풀 크기
-      minimum-idle: 10              # 최소 idle 커넥션 수
-      idle-timeout: 30000           # idle 커넥션 유지 시간 (30초)
-      connection-timeout: 30000     # 커넥션 못 받을 시 timeout (30초)
-      leak-detection-threshold: 30000  # 커넥션 누수 감지 (30초 이상 쥐고 있으면 로그 출력)
+        try {
+            //apiKey 복호화, seller_code와 검증
+            String decryptedApiKey = SellerAES_Encryption.decrypt(apiKey);
+            if (!kb11thRequest.getSeller_code().equals(decryptedApiKey)) {
+                throw new BusinessException(ErrorCode.HANDLE_ACCESS_DENIED);
+            }
+
+            //라이더의 보험 상태, 라이더ID, 운영사ID 조회
+            riderInfo = callMapper.findByDriveridAndSellerID(kb11thRequest.getDriver_id(), kb11thRequest.getSeller_code()).orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND_USER));            ;
+
+            //라이더의 보험가입 진행상태에 따라 상태 메시지와 상태 코드, 거절 시 거절에 따른 거절 사유 반환
+            resRiderInsurance = insuranceStatusRes(riderInfo.getRiId(), riderInfo.getRiInsuStatus(), "E");
+
+            if (kb11thRequest.getDriver_enddate() != null) {
+                callInfo = getCallInfoWithCallExistence(kb11thRequest.getCall_id(), kb11thRequest.getDriver_id());
+
+                callCompleteTime = convertDate(kb11thRequest.getDriver_enddate());
+            }
+        } catch (BusinessException e) {
+            CallInfoFailStart start = callFailMapper.findFailCallStart(kb11thRequest.getCall_id()).orElse(new CallInfoFailStart("0"));
+
+            ErrorCode errorCode = null;
+
+            // 운행시작 실패 테이블에 데이터가 없을 때
+            if (start.getCifsCallId().equals("0")) {
+                errorCode = e.getErrorCode();
+            } else {
+                errorCode = ErrorCode.valueOf(start.getCifsErrorCode());
+            }
+
+            if (kb11thRequest.getSeller_code().equals("194ea163e38") && errorCode.name().equals("ALREADY_COMPLETE") || kb11thRequest.getSeller_code().equals("c1f15172d8a") && errorCode.name().equals("ALREADY_COMPLETE")) {
+                errorCode = e.getErrorCode();
+            }
+
+            CallInfoFailEnd end = CallInfoFailEnd.create(kb11thRequest, errorCode);
+
+            callFailMapper.InsertCallFailEnd(end);
+
+            DrivingEndRes endRes = new DrivingEndRes();
+
+            if (start.getCifsCallId().equals("0")) {
+                endRes.UpdateExceptionResponse(e.getErrorCode().getMessage(), e.getErrorCode().getStatus(), e.getErrorCode().getCode());
+            } else {
+                endRes.UpdateExceptionResponse(errorCode.getMessage(), errorCode.getStatus(), errorCode.getCode());
+            }
+            return endRes;
+        }
