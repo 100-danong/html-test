@@ -1,47 +1,39 @@
-        try {
-            //apiKey 복호화, seller_code와 검증
-            String decryptedApiKey = SellerAES_Encryption.decrypt(apiKey);
-            if (!kb11thRequest.getSeller_code().equals(decryptedApiKey)) {
-                throw new BusinessException(ErrorCode.HANDLE_ACCESS_DENIED);
-            }
+@Transactional
+    public CallCountInfo getCallCountStart(LocalDate today, long ri_id, String call_id, long si_id) {
+        CallCountInfo callCountInfo = callCountMapper.findBySalesDateRiId(today, ri_id);
 
-            //라이더의 보험 상태, 라이더ID, 운영사ID 조회
-            riderInfo = callMapper.findByDriveridAndSellerID(kb11thRequest.getDriver_id(), kb11thRequest.getSeller_code()).orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND_USER));            ;
+        int callCount = callCountMapper.findByCiCallId(call_id);
 
-            //라이더의 보험가입 진행상태에 따라 상태 메시지와 상태 코드, 거절 시 거절에 따른 거절 사유 반환
-            resRiderInsurance = insuranceStatusRes(riderInfo.getRiId(), riderInfo.getRiInsuStatus(), "E");
+        if (callCount == 0) {
+            //운영기준일 기준 첫 콜일 경우
+            if (callCountInfo == null) {
+                callCountInfo = new CallCountInfo();
 
-            if (kb11thRequest.getDriver_enddate() != null) {
-                callInfo = getCallInfoWithCallExistence(kb11thRequest.getCall_id(), kb11thRequest.getDriver_id());
-
-                callCompleteTime = convertDate(kb11thRequest.getDriver_enddate());
-            }
-        } catch (BusinessException e) {
-            CallInfoFailStart start = callFailMapper.findFailCallStart(kb11thRequest.getCall_id()).orElse(new CallInfoFailStart("0"));
-
-            ErrorCode errorCode = null;
-
-            // 운행시작 실패 테이블에 데이터가 없을 때
-            if (start.getCifsCallId().equals("0")) {
-                errorCode = e.getErrorCode();
+                callCountInfo.setSalesDate(today);
+                callCountInfo.setSiId(si_id);
+                callCountInfo.setRiId(ri_id);
+                callCountInfo.setCiCallId(call_id);
+                callCountInfo.setCciStartCount(1);
+                callCountInfo.setCciEndCount(0);
+                callCountInfo.setCciGroupCount(1);
+                callCountInfo.setCciTotalCount(1);
+                callCountInfo.setFlag("G");
+                callCountInfo.create(today, ri_id, call_id, si_id);
             } else {
-                errorCode = ErrorCode.valueOf(start.getCifsErrorCode());
+                //이전 콜이 마지막 그룹 콜이였을 경우
+                if (callCountInfo.getCciStartCount() == callCountInfo.getCciEndCount()) {
+                    callCountInfo.setCiCallId(call_id);
+                    callCountInfo.setCciStartCount(1);
+                    callCountInfo.setCciEndCount(0);
+                    callCountInfo.setCciGroupCount(callCountInfo.getCciGroupCount() + 1);
+                    callCountInfo.setCciTotalCount(1);
+                } else {
+                    callCountInfo.setCiCallId(call_id);
+                    callCountInfo.setCciStartCount(callCountInfo.getCciStartCount() + 1);
+                    callCountInfo.setCciTotalCount(callCountInfo.getCciTotalCount() + 1);
+                }
             }
-
-            if (kb11thRequest.getSeller_code().equals("194ea163e38") && errorCode.name().equals("ALREADY_COMPLETE") || kb11thRequest.getSeller_code().equals("c1f15172d8a") && errorCode.name().equals("ALREADY_COMPLETE")) {
-                errorCode = e.getErrorCode();
-            }
-
-            CallInfoFailEnd end = CallInfoFailEnd.create(kb11thRequest, errorCode);
-
-            callFailMapper.InsertCallFailEnd(end);
-
-            DrivingEndRes endRes = new DrivingEndRes();
-
-            if (start.getCifsCallId().equals("0")) {
-                endRes.UpdateExceptionResponse(e.getErrorCode().getMessage(), e.getErrorCode().getStatus(), e.getErrorCode().getCode());
-            } else {
-                endRes.UpdateExceptionResponse(errorCode.getMessage(), errorCode.getStatus(), errorCode.getCode());
-            }
-            return endRes;
+            callCountMapper.InsertCallCountInfo(callCountInfo);
         }
+        return callCountInfo;
+    }
