@@ -1,8 +1,55 @@
-SELECT 
-  table_name AS 'Table Name', 
-  ROUND(data_length / 1024 / 1024, 2) AS 'Data Size(MB)', 
-  ROUND(index_length / 1024 / 1024, 2) AS 'Index Size(MB)', 
-  ROUND((data_length + index_length) / 1024 / 1024, 2) AS 'Total Size(MB)' 
-FROM information_schema.TABLES 
-WHERE table_schema = 'your_database_name' 
-ORDER BY `Total Size(MB)` DESC;
+2025:09:03 10:47:48.009 ERROR --- [http-nio-9888-exec-655] o.h.e.jdbc.spi.SqlExceptionHelper : HikariPool-1 - Connection is not available, request timed out after 30000ms.
+2025:09:03 10:47:48.224 WARN  --- [http-nio-9888-exec-763] c.g.k.g.e.e.GlobalExceptionHandler : RuntimeException
+org.mybatis.spring.MyBatisSystemException: nested exception is org.apache.ibatis.exceptions.PersistenceException:
+### Error querying database.  Cause: org.springframework.jdbc.CannotGetJdbcConnectionException: Failed to obtain JDBC Connection; nested exception is java.sql.SQLTransientConnectionException: HikariPool-1 - Connection is not available, request timed out after 30000ms.
+### The error may exist in class path resource [sqlmapper/tg/TgMapper.xml]
+### The error may involve com.gogofnd.kb.domain.rider.mapper.TgMapper.findByRiderId
+### The error occurred while executing a query
+### Cause: org.springframework.jdbc.CannotGetJdbcConnectionException: Failed to obtain JDBC Connection; nested exception is java.sql.SQLTransientConnectionException: HikariPool-1 - Connection is not available, request timed out after 30000ms.
+        at org.mybatis.spring.MyBatisExceptionTranslator.translateExceptionIfPossible(MyBatisExceptionTranslator.java:97)
+        at org.mybatis.spring.SqlSessionTemplate$SqlSessionInterceptor.invoke(SqlSessionTemplate.java:439)
+        at com.sun.proxy.$Proxy115.selectOne(Unknown Source)
+        at org.mybatis.spring.SqlSessionTemplate.selectOne(SqlSessionTemplate.java:160)
+        at org.apache.ibatis.binding.MapperMethod.execute(MapperMethod.java:87)
+        at org.apache.ibatis.binding.MapperProxy$PlainMethodInvoker.invoke(MapperProxy.java:152)
+        at org.apache.ibatis.binding.MapperProxy.invoke(MapperProxy.java:85)
+        at com.sun.proxy.$Proxy121.findByRiderId(Unknown Source)
+        at com.gogofnd.kb.domain.rider.service.TgService.isUserValid(TgService.java:43)
+        at com.gogofnd.kb.domain.rider.service.TgService$$FastClassBySpringCGLIB$$e6081bb3.invoke(<generated>)
+        at org.springframework.cglib.proxy.MethodProxy.invoke(MethodProxy.java:218)
+        at org.springframework.aop.framework.CglibAopProxy$DynamicAdvisedInterceptor.intercept(CglibAopProxy.java:687)
+        at com.gogofnd.kb.domain.rider.service.TgService$$EnhancerBySpringCGLIB$$aec9a441.isUserValid(<generated>)
+        at com.gogofnd.kb.domain.rider.api.TgController.safeToPlanStart(TgController.java:54)
+        at jdk.internal.reflect.GeneratedMethodAccessor332.invoke(Unknown Source)
+        at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+        at java.base/java.lang.reflect.Method.invoke(Method.java:566)
+        at org.springframework.web.method.support.InvocableHandlerMethod.doInvoke(InvocableHandlerMethod.java:190)
+        at org.springframework.web.method.support.InvocableHandlerMethod.invokeForRequest(InvocableHandlerMethod.java:138)
+        at org.springframework.web.servlet.mvc.method.annotation.ServletInvocableHandlerMethod.invokeAndHandle(ServletInvocableHandlerMethod.java:105)
+        at org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter.invokeHandlerMethod(RequestMappingHandlerAdapter.java:878)
+        at org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter.handleInternal(RequestMappingHandlerAdapter.java:792)
+        at org.springframework.web.servlet.mvc.method.AbstractHandlerMethodAdapter.handle(AbstractHandlerMethodAdapter.java:87)
+        at org.springframework.web.servlet.DispatcherServlet.doDispatch(DispatcherServlet.java:1040)
+        at org.springframework.web.servlet.DispatcherServlet.doService(DispatcherServlet.java:943)
+        at org.springframework.web.servlet.FrameworkServlet.processRequest(FrameworkServlet.java:1006)
+        at org.springframework.web.servlet.FrameworkServlet.doPost(FrameworkServlet.java:909)
+        at javax.servlet.http.HttpServlet.service(HttpServlet.java:652)
+        at org.springframework.web.servlet.FrameworkServlet.service(FrameworkServlet.java:883)
+        at javax.servlet.http.HttpServlet.service(HttpServlet.java:733)
+        at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:227)
+        at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:162)
+        at org.apache.tomcat.websocket.server.WsFilter.doFilter(WsFilter.java:53)
+        at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:189)
+        at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:162)
+        at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:113)
+        at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:189)
+        at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:162)
+        at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:320)
+        at org.springframework.security.web.access.intercept.FilterSecurityInterceptor.invoke(FilterSecurityInterceptor.java:126)
+        at org.springframework.security.web.access.intercept.FilterSecurityInterceptor.doFilter(FilterSecurityInterceptor.java:90)
+        at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:334)
+        at org.springframework.security.web.access.ExceptionTranslationFilter.doFilter(ExceptionTranslationFilter.java:118)
+        at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:334)
+        at org.springframework.security.web.session.SessionManagementFilter.doFilter(SessionManagementFilter.java:137)
+        at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:334)
+        at org.springframework.security.web.authentication.AnonymousAuthenticationFilter.doFilter(AnonymousAuthenticationFilter.java:111)
