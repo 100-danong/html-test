@@ -1,8 +1,3 @@
--- 현재 활성 트랜잭션
-SELECT * FROM INFORMATION_SCHEMA.INNODB_TRX\G;
+SQL Error [1064] [42000]: (conn=2996402) You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near '\G' at line 2
 
--- 현재 락 걸린 상태
-SELECT * FROM INFORMATION_SCHEMA.INNODB_LOCKS\G;
-
--- 락 대기 현황
-SELECT * FROM INFORMATION_SCHEMA.INNODB_LOCK_WAITS\G;
+Error position: line: 1
