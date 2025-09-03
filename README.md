@@ -1,26 +1,15 @@
-2025:09:03 10:47:48.009 ERROR --- [http-nio-9888-exec-655] o.h.e.jdbc.spi.SqlExceptionHelper : HikariPool-1 - Connection is not available, request timed out after 30000ms.
-2025:09:03 10:47:48.224 WARN  --- [http-nio-9888-exec-763] c.g.k.g.e.e.GlobalExceptionHandler : RuntimeException
-org.mybatis.spring.MyBatisSystemException: nested exception is org.apache.ibatis.exceptions.PersistenceException:
-### Error querying database.  Cause: org.springframework.jdbc.CannotGetJdbcConnectionException: Failed to obtain JDBC Connection; nested exception is java.sql.SQLTransientConnectionException: HikariPool-1 - Connection is not available, request timed out after 30000ms.
-### The error may exist in class path resource [sqlmapper/tg/TgMapper.xml]
-### The error may involve com.gogofnd.kb.domain.rider.mapper.TgMapper.findByRiderId
-### The error occurred while executing a query
-### Cause: org.springframework.jdbc.CannotGetJdbcConnectionException: Failed to obtain JDBC Connection; nested exception is java.sql.SQLTransientConnectionException: HikariPool-1 - Connection is not available, request timed out after 30000ms.
-        at org.mybatis.spring.MyBatisExceptionTranslator.translateExceptionIfPossible(MyBatisExceptionTranslator.java:97)
-        at org.mybatis.spring.SqlSessionTemplate$SqlSessionInterceptor.invoke(SqlSessionTemplate.java:439)
-        at com.sun.proxy.$Proxy115.selectOne(Unknown Source)
-        at org.mybatis.spring.SqlSessionTemplate.selectOne(SqlSessionTemplate.java:160)
-        at org.apache.ibatis.binding.MapperMethod.execute(MapperMethod.java:87)
-        at org.apache.ibatis.binding.MapperProxy$PlainMethodInvoker.invoke(MapperProxy.java:152)
-        at org.apache.ibatis.binding.MapperProxy.invoke(MapperProxy.java:85)
-        at com.sun.proxy.$Proxy121.findByRiderId(Unknown Source)
-        at com.gogofnd.kb.domain.rider.service.TgService.isUserValid(TgService.java:43)
-        at com.gogofnd.kb.domain.rider.service.TgService$$FastClassBySpringCGLIB$$e6081bb3.invoke(<generated>)
+java.lang.NullPointerException
+        at com.gogofnd.kb.partner.call.service.CallService.lambda$updateCompleteTime$2(CallService.java:846)
+        at java.base/java.util.ArrayList.forEach(ArrayList.java:1541)
+        at com.gogofnd.kb.partner.call.service.CallService.updateCompleteTime(CallService.java:832)
+        at com.gogofnd.kb.partner.call.service.CallService.kb10th(CallService.java:162)
+        at com.gogofnd.kb.partner.call.service.CallService$$FastClassBySpringCGLIB$$b36d461c.invoke(<generated>)
         at org.springframework.cglib.proxy.MethodProxy.invoke(MethodProxy.java:218)
         at org.springframework.aop.framework.CglibAopProxy$DynamicAdvisedInterceptor.intercept(CglibAopProxy.java:687)
-        at com.gogofnd.kb.domain.rider.service.TgService$$EnhancerBySpringCGLIB$$aec9a441.isUserValid(<generated>)
-        at com.gogofnd.kb.domain.rider.api.TgController.safeToPlanStart(TgController.java:54)
-        at jdk.internal.reflect.GeneratedMethodAccessor332.invoke(Unknown Source)
+        at com.gogofnd.kb.partner.call.service.CallService$$EnhancerBySpringCGLIB$$a0734ffb.kb10th(<generated>)
+        at com.gogofnd.kb.partner.call.api.CallApi.api10(CallApi.java:28)
+        at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+        at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
         at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
         at java.base/java.lang.reflect.Method.invoke(Method.java:566)
         at org.springframework.web.method.support.InvocableHandlerMethod.doInvoke(InvocableHandlerMethod.java:190)
@@ -53,3 +42,13 @@ org.mybatis.spring.MyBatisSystemException: nested exception is org.apache.ibatis
         at org.springframework.security.web.session.SessionManagementFilter.doFilter(SessionManagementFilter.java:137)
         at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:334)
         at org.springframework.security.web.authentication.AnonymousAuthenticationFilter.doFilter(AnonymousAuthenticationFilter.java:111)
+        at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:334)
+        at org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter.doFilter(SecurityContextHolderAwareRequestFilter.java:158)
+        at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:334)
+        at org.springframework.security.web.savedrequest.RequestCacheAwareFilter.doFilter(RequestCacheAwareFilter.java:63)
+        at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:334)
+        at com.gogofnd.kb.global.filter.TokenFilter.doFilter(TokenFilter.java:37)
+        at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:334)
+        at com.gogofnd.kb.global.config.ExceptionFilter.doFilterInternal(ExceptionFilter.java:23)
+        at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:119)
+        at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:334)
