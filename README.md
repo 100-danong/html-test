@@ -1,5 +1,8 @@
-SELECT cifs_call_id, cifs_error_code
-        FROM call_info_fail_start
-        WHERE cifs_call_id = '27553318'
-        ORDER BY cifs_id DESC
-        LIMIT 1
+-- 현재 활성 트랜잭션
+SELECT * FROM INFORMATION_SCHEMA.INNODB_TRX\G;
+
+-- 현재 락 걸린 상태
+SELECT * FROM INFORMATION_SCHEMA.INNODB_LOCKS\G;
+
+-- 락 대기 현황
+SELECT * FROM INFORMATION_SCHEMA.INNODB_LOCK_WAITS\G;
