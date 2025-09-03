@@ -1,34 +1,59 @@
-2025:09:03 13:33:15.147 INFO  --- [http-nio-9888-exec-64] drivingEnd : 운행종료 파라미터 값 Kb11thRequest{call_id='27551813', driver_id='a09137G', driver_enddate='2025-09-03 13:33:16', seller_code='1444432576f', group_id='null'}
-2025:09:03 13:33:16.482 WARN  --- [http-nio-9888-exec-50] c.g.k.g.e.e.GlobalExceptionHandler : RuntimeException
-org.mybatis.spring.MyBatisSystemException: nested exception is org.apache.ibatis.exceptions.PersistenceException:
-### Error querying database.  Cause: org.springframework.jdbc.CannotGetJdbcConnectionException: Failed to obtain JDBC Connection; nested exception is java.sql.SQLTransientConnectionException: HikariPool-1 - Connection is not available, request timed out after 30000ms.
-### The error may exist in class path resource [sqlmapper/delivery/CallMapper.xml]
-### The error may involve com.gogofnd.kb.partner.call.mapper.CallMapper.findByDriveridAndSellerID
-### The error occurred while executing a query
-### Cause: org.springframework.jdbc.CannotGetJdbcConnectionException: Failed to obtain JDBC Connection; nested exception is java.sql.SQLTransientConnectionException: HikariPool-1 - Connection is not available, request timed out after 30000ms.
-        at org.mybatis.spring.MyBatisExceptionTranslator.translateExceptionIfPossible(MyBatisExceptionTranslator.java:97)
-        at org.mybatis.spring.SqlSessionTemplate$SqlSessionInterceptor.invoke(SqlSessionTemplate.java:439)
-        at com.sun.proxy.$Proxy115.selectOne(Unknown Source)
-        at org.mybatis.spring.SqlSessionTemplate.selectOne(SqlSessionTemplate.java:160)
-        at org.apache.ibatis.binding.MapperMethod.execute(MapperMethod.java:87)
-        at org.apache.ibatis.binding.MapperProxy$PlainMethodInvoker.invoke(MapperProxy.java:152)
-        at org.apache.ibatis.binding.MapperProxy.invoke(MapperProxy.java:85)
-        at com.sun.proxy.$Proxy122.findByDriveridAndSellerID(Unknown Source)
-        at jdk.internal.reflect.GeneratedMethodAccessor124.invoke(Unknown Source)
-        at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
-        at java.base/java.lang.reflect.Method.invoke(Method.java:566)
-        at org.springframework.aop.support.AopUtils.invokeJoinpointUsingReflection(AopUtils.java:344)
-        at org.springframework.aop.framework.ReflectiveMethodInvocation.invokeJoinpoint(ReflectiveMethodInvocation.java:198)
-        at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:163)
-        at org.springframework.dao.support.PersistenceExceptionTranslationInterceptor.invoke(PersistenceExceptionTranslationInterceptor.java:139)
-        at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:186)
-        at org.springframework.aop.framework.JdkDynamicAopProxy.invoke(JdkDynamicAopProxy.java:212)
-        at com.sun.proxy.$Proxy123.findByDriveridAndSellerID(Unknown Source)
-        at com.gogofnd.kb.partner.call.service.CallService.kb11th(CallService.java:258)
-        at com.gogofnd.kb.partner.call.service.CallService$$FastClassBySpringCGLIB$$b36d461c.invoke(<generated>)
-        at org.springframework.cglib.proxy.MethodProxy.invoke(MethodProxy.java:218)
-        at org.springframework.aop.framework.CglibAopProxy$DynamicAdvisedInterceptor.intercept(CglibAopProxy.java:687)
-        at com.gogofnd.kb.partner.call.service.CallService$$EnhancerBySpringCGLIB$$a0734ffb.kb11th(<generated>)
-        at com.gogofnd.kb.partner.call.api.CallApi.api11(CallApi.java:36)
-        at jdk.internal.reflect.GeneratedMethodAccessor141.invoke(Unknown Source)
-        at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)****
+public DrivingEndRes kb11th(Kb11thRequest kb11thRequest, String apiKey) throws Exception {
+
+        drivingEnd.info("운행종료 파라미터 값 " + kb11thRequest.toString());
+
+        CallInfo callInfo = null;
+
+        //운행 완료 시간과 테이블 수정 시간 데이터 생성
+        LocalDateTime callCompleteTime = null;
+
+        RiderInfo riderInfo = null;
+        InsuranceStatusRes resRiderInsurance = null;
+
+        try {
+            //apiKey 복호화, seller_code와 검증
+            String decryptedApiKey = SellerAES_Encryption.decrypt(apiKey);
+            if (!kb11thRequest.getSeller_code().equals(decryptedApiKey)) {
+                throw new BusinessException(ErrorCode.HANDLE_ACCESS_DENIED);
+            }
+
+            //라이더의 보험 상태, 라이더ID, 운영사ID 조회
+            riderInfo = callMapper.findByDriveridAndSellerID(kb11thRequest.getDriver_id(), kb11thRequest.getSeller_code()).orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND_USER));            ;
+
+            //라이더의 보험가입 진행상태에 따라 상태 메시지와 상태 코드, 거절 시 거절에 따른 거절 사유 반환
+            resRiderInsurance = insuranceStatusRes(riderInfo.getRiId(), riderInfo.getRiInsuStatus(), "E");
+
+            if (kb11thRequest.getDriver_enddate() != null) {
+                callInfo = getCallInfoWithCallExistence(kb11thRequest.getCall_id(), kb11thRequest.getDriver_id());
+
+                callCompleteTime = convertDate(kb11thRequest.getDriver_enddate());
+            }
+        } catch (BusinessException e) {
+            CallInfoFailStart start = callFailMapper.findFailCallStart(kb11thRequest.getCall_id()).orElse(new CallInfoFailStart("0"));
+
+            ErrorCode errorCode = null;
+
+            // 운행시작 실패 테이블에 데이터가 없을 때
+            if (start.getCifsCallId().equals("0")) {
+                errorCode = e.getErrorCode();
+            } else {
+                errorCode = ErrorCode.valueOf(start.getCifsErrorCode());
+            }
+
+            if (kb11thRequest.getSeller_code().equals("194ea163e38") && errorCode.name().equals("ALREADY_COMPLETE") || kb11thRequest.getSeller_code().equals("c1f15172d8a") && errorCode.name().equals("ALREADY_COMPLETE")) {
+                errorCode = e.getErrorCode();
+            }
+
+            CallInfoFailEnd end = CallInfoFailEnd.create(kb11thRequest, errorCode);
+
+            callFailMapper.InsertCallFailEnd(end);
+
+            DrivingEndRes endRes = new DrivingEndRes();
+
+            if (start.getCifsCallId().equals("0")) {
+                endRes.UpdateExceptionResponse(e.getErrorCode().getMessage(), e.getErrorCode().getStatus(), e.getErrorCode().getCode());
+            } else {
+                endRes.UpdateExceptionResponse(errorCode.getMessage(), errorCode.getStatus(), errorCode.getCode());
+            }
+            return endRes;
+        }
