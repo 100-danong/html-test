@@ -1,13 +1,8 @@
-user02gogof@Gogofnd002 MINGW64 ~/Desktop/html-test (master)
-$ git push
-To github.com:100-danong/html-test.git
- ! [rejected]        master -> master (fetch first)
-error: failed to push some refs to 'github.com:100-danong/html-test.git'
-hint: Updates were rejected because the remote contains work that you do
-hint: not have locally. This is usually caused by another repository pushing
-hint: to the same ref. You may want to first integrate the remote changes
-hint: (e.g., 'git pull ...') before pushing again.
-hint: See the 'Note about fast-forwards' in 'git push --help' for details.
-
-user02gogof@Gogofnd002 MINGW64 ~/Desktop/html-test (master)
-$
+SELECT gi.gci_groupid, ci.ci_recv_group_id, ri.ri_userid, gi.gci_first_starttime, gi.gci_last_endtime, gi.gci_total_time, gi.gci_gogo_total_balance
+from groupcall_info gi 
+join call_info ci 
+on gi.gci_groupid = ci.gci_groupid 
+join rider_info ri 
+on gi.ri_id = ri.ri_id 
+WHERE ri.si_id = '5' AND gi.sales_date = '2025-09-03'
+group by gi.gci_groupid;
