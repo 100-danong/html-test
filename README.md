@@ -10,3 +10,5 @@ YTQ3wWB0YBS/A1oZyhNvO0Lvu0lU6Bi3ck8E9AGkLrk78wCu1VhCjb7U963mhglz4ZM8ZqhUuAKjtl2P
             byte[] decrypted = cipher.doFinal(decodedBytes);
             return new String(decrypted, "UTF-8");
     }
+
+    public static final String IV = PK.substring(0, 16); // 16byte
