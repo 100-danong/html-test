@@ -1,14 +1,40 @@
-YTQ3wWB0YBS/A1oZyhNvO0Lvu0lU6Bi3ck8E9AGkLrk78wCu1VhCjb7U963mhglz4ZM8ZqhUuAKjtl2PC6xSacEHUtABR72W7s6wJ/76eC2xL/zon0cCdgcO61prXDxOLS3+OpWUbbfo9mdSlFXEQTyxKuM2zy5MVurLYuSVcxXMG1f0aZIywWKaj0fUa2Zp
+public static String encrypt(String plainText) throws Exception {
+        SecretKey keyspec = new SecretKeySpec(key.getBytes("UTF-8"), "AES");
+        int byteLength = getByteLength(key);
+        System.out.println("byteLength = " + byteLength);
 
-    public static String AES256_DECRYPT(String text) throws NoSuchPaddingException, NoSuchAlgorithmException, IllegalBlockSizeException, BadPaddingException, InvalidAlgorithmParameterException, InvalidKeyException, UnsupportedEncodingException {
-            Cipher cipher = Cipher.getInstance(ALG);
-            SecretKeySpec keySpec = new SecretKeySpec(PK.getBytes(), "AES");
-            IvParameterSpec ivParamSpec = new IvParameterSpec(IV.getBytes());
-            cipher.init(Cipher.DECRYPT_MODE, keySpec, ivParamSpec);
+        //set iv as random 16byte
+        int ivSize = 16;
+        byte[] iv = new byte[ivSize];
+        SecureRandom random = new SecureRandom();
+        random.nextBytes(iv);
+        AlgorithmParameterSpec ivspec = new IvParameterSpec(iv);
 
-            byte[] decodedBytes = Base64.getDecoder().decode(text);
-            byte[] decrypted = cipher.doFinal(decodedBytes);
-            return new String(decrypted, "UTF-8");
+        // Encryption
+        Cipher cipher = Cipher.getInstance("AES/CBC/NoPadding");
+        cipher.init(Cipher.ENCRYPT_MODE, keyspec, ivspec);
+
+        int blockSize = 128; //block size
+        byte[] dataBytes = plainText.getBytes("UTF-8");
+
+        //find fillChar & pad
+        int plaintextLength = dataBytes.length;
+        int fillChar = ((blockSize - (plaintextLength % blockSize)));
+        plaintextLength += fillChar; //pad
+
+        byte[] plaintext = new byte[plaintextLength];
+        Arrays.fill(plaintext, (byte) fillChar);
+        System.arraycopy(dataBytes, 0, plaintext, 0, dataBytes.length);
+
+        //encrypt
+        byte[] cipherBytes = cipher.doFinal(plaintext);
+
+        //add iv to front of cipherBytes
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream( );
+        outputStream.write( iv );
+        outputStream.write( cipherBytes );
+
+        //encode into base64
+        byte [] encryptedIvText = outputStream.toByteArray();
+        return new String(Base64.getEncoder().encode(encryptedIvText), "UTF-8");
     }
-
-    public static final String IV = PK.substring(0, 16); // 16byte
