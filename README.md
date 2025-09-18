@@ -12,46 +12,40 @@
         LIMIT 1
     </select>
 
-    <select id="findByCallIdForDupl" parameterType="java.lang.String" resultType="java.lang.Integer">
-        select
-            count(*)
-        from call_info
-        where 1=1
-            and ci_call_id = #{ci_call_id}
-    </select>
-
-    <insert id="InsertCallFailStart" parameterType="com.gogofnd.kb.partner.call.entity.CallInfoFailStart">
-        insert into call_info_fail_start
-        (cifs_call_id, cifs_driver_pickupaddress, cifs_driver_deliveryaddress,
-        cifs_req_delivery_time, cifs_appoint_time, cifs_pickup_time,
-        cifs_driver_id, cifs_company_name, cifs_recv_group_id, cifs_error_code, cifs_comment)
-        values
-        (#{cifsCallId}, #{cifsDriverPickupaddress}, #{cifsDriverDeliveryaddress},
-        NOW(), #{cifsAppointTime}, NOW(),
-        #{cifsDriverId}, #{cifsCompanyName}, #{cifsRecvGroupId}, #{cifsErrorCode}, #{cifsComment})
-    </insert>
-
-    <select id="findBySellerCode" parameterType="java.lang.String" resultType="com.gogofnd.kb.partner.seller.entity.SellerInfo">
-        SELECT * FROM seller_info WHERE si_seller_code = #{siSellerCode}
-    </select>
-
-    <select id="findGroupCallByriIdAndTime" parameterType="java.util.Map" resultType="com.gogofnd.kb.partner.call.entity.GroupcallInfo">
-        SELECT gci.*
-        FROM groupcall_info gci
-        WHERE gci.ri_id = #{riId}
-        AND #{ciAppointTime} BETWEEN gci.gci_first_starttime AND gci.gci_last_endtime
-        ORDER BY gci_upd_time DESC
+    <select id="findFailCallStart" parameterType="java.lang.String" resultType="com.gogofnd.kb.partner.call.entity.CallInfoFailStart">
+        SELECT cifs_call_id, cifs_error_code
+        FROM call_info_fail_start
+        WHERE cifs_call_id = #{cifsCallId}
+        ORDER BY cifs_id DESC
         LIMIT 1
     </select>
 
-    <select id="findNullCompleteTimeCallId" parameterType="java.lang.String" resultType="java.lang.String">
-        select ci.ci_call_id
-        from call_info as ci
-        left join rider_info as ri on ci.ri_id = ri.ri_id
-        where 1=1
-            and ci.ci_complete_time is null
-            and ri.ri_driver_id = #{ri_driver_id}
-            AND ri.ri_state = 1
+    <insert id="InsertCallFailEnd" parameterType="com.gogofnd.kb.partner.call.entity.CallInfoFailEnd">
+        insert into call_info_fail_end
+        (cife_call_id, cife_driver_id, cife_driver_ci_complete_time,
+        cife_seller_code, cife_recv_group_id, cife_error_code, cife_comment)
+        values
+        (#{cifeCallId}, #{cifeDriverId}, #{cifeDriverCiCompleteTime},
+        #{cifeSellerCode}, #{cifeRecvGroupId}, #{cifeErrorCode}, #{cifeComment})
+    </insert>
+
+    <update id="updateCallInfoWhenComplete" parameterType="java.util.Map">
+        update call_info
+        set
+            ci_complete_time = #{ci_complete_time},
+            ci_delivery_status = #{ci_delivery_status},
+            ci_upd_time = #{ci_upd_time}
+        where ci_call_id = #{ci_call_id}
+    </update>
+
+    <select id="findBySiId" parameterType="java.lang.String" resultType="com.gogofnd.kb.partner.seller.entity.SellerInfo">
+        select * from seller_info where si_id = #{siId}
+    </select>
+
+    <select id="findByCallId" parameterType="java.lang.String" resultType="com.gogofnd.kb.partner.call.entity.CallInfo">
+        select *
+        from call_info
+        where ci_call_id = #{ci_call_id}
     </select>
 
     <select id="findBySalesDateRiId" parameterType="java.util.Map" resultType="com.gogofnd.kb.partner.call.entity.CallCountInfo">
@@ -63,12 +57,6 @@
         FOR UPDATE;
     </select>
 
-    <select id="findByCiCallId" parameterType="java.lang.String" resultType="java.lang.Integer">
-        SELECT count(*)
-        from call_count_info
-        WHERE ci_call_id = #{ciCallId} AND flag = 'G';
-    </select>
-
     <insert id="InsertCallCountInfo" parameterType="com.gogofnd.kb.partner.call.entity.CallCountInfo">
         INSERT INTO call_count_info
         (sales_date, ri_id, si_id, ci_call_id, cci_start_count, cci_end_count, cci_group_count, cci_total_count, cci_ins_time, cci_upd_time, flag)
@@ -76,28 +64,90 @@
         (#{salesDate}, #{riId}, #{siId}, #{ciCallId}, #{cciStartCount}, #{cciEndCount}, #{cciGroupCount}, #{cciTotalCount}, NOW(), NOW(), #{flag})
     </insert>
 
-    <select id="findRunDeliveryByDriverId" resultType="java.lang.Integer">
-        select count(*)
-        from call_info as ci
-        inner join rider_info as ri on ci.ri_id = ri.ri_id
-        where 1=1
-            and ri.ri_userid = #{ri_driver_id}
-            AND ri.ri_state = 1
-            and ci.ci_complete_time is null
-            and ci.sales_date = #{sales_date}
+    <select id="findByCallIdForGroupid" parameterType="java.lang.String" resultType="java.lang.String">
+        select gci_groupid
+        from call_info
+        where ci_call_id = #{ci_call_id}
     </select>
 
-    <insert id="InsertCallInfoWhenDeliveryStart" parameterType="com.gogofnd.kb.partner.call.entity.CallInfo" useGeneratedKeys="true" keyColumn="ci_id" keyProperty="ciId">
-        insert into call_info
-            (ri_id, gci_groupid, ci_appoint_time, ci_call_id, ci_req_delivery_time,
-             ci_delivery_address, ci_delivery_status, ci_company_name, ci_pickup_time, ci_pickup_address,
-             ci_recv_group_id, ci_ins_time, ci_upd_time, sales_date)
-        values
-            (#{riId}, #{gciGroupid}, #{ciAppointTime}, #{ciCallId}, #{ciReqDeliveryTime},
-             #{ciDeliveryAddress}, #{ciDeliveryStatus}, #{ciCompanyName}, #{ciPickupTime}, #{ciPickupAddress},
-             #{ciRecvGroupId}, #{ciInsTime}, #{ciUpdTime}, #{salesDate})
-    </insert>
+    <select id="findCountByGciGroupId" parameterType="java.lang.String" resultType="java.lang.Integer">
+        select count(gci_groupid) from groupcall_info where gci_groupid = #{gciGroupId}
+    </select>
 
-    <update id="updateKbCallId" parameterType="com.gogofnd.kb.partner.call.entity.CallInfo">
-        UPDATE call_info SET ci_insu_call_id = #{ciInsuCallId} WHERE ci_id = #{ciId}
+    <select id="findGroupcallInfoByGciGroupId" parameterType="java.lang.String" resultType="com.gogofnd.kb.partner.call.entity.GroupcallInfo">
+        select * from groupcall_info where gci_groupid = #{gciGroupId}
+    </select>
+
+    <update id="UpdateGroupcallInfoWhenDeliveryQuit" parameterType="java.util.Map">
+        UPDATE groupcall_info
+           SET
+               gci_last_endtime = #{gciLastEndTime},
+               gci_gogo_total_balance = #{gciGogoTotalBalance},
+               gci_total_balance = #{gciTotalBalance},
+               gci_total_time = #{updTotalTime},
+               gci_upd_time = #{gciUpdTime}
+         WHERE gci_groupId = #{gciGroupId}
     </update>
+
+    <select id="findByRiDriverIdForCallCnt" parameterType="java.util.Map" resultType="java.lang.Integer">
+        SELECT COUNT(*) cnt
+          FROM call_info ci
+    INNER JOIN rider_info ri ON ci.ri_id = ri.ri_id
+         WHERE 1=1
+           AND ri.ri_userid = #{ri_driver_id}
+           AND ri.ri_state = 1
+           AND ci.gci_groupid = #{gci_groupid}
+           AND ci.ci_complete_time IS NULL
+    </select>
+
+    <select id="findGroupcallInfoByGciGroupId" parameterType="java.lang.String" resultType="com.gogofnd.kb.partner.call.entity.GroupcallInfo">
+        select * from groupcall_info where gci_groupid = #{gciGroupId}
+    </select>
+
+    <select id="countCall" parameterType="java.lang.String" resultType="java.lang.Integer">
+        SELECT COUNT(*)
+        FROM call_info
+        WHERE gci_groupid = #{gciGroupId}
+    </select>
+
+    <update id="updateSellerInfoForBalance" parameterType="java.util.Map">
+        update seller_info
+        set
+            si_balance = si_balance - #{si_balance},
+            si_upd_time = now()
+        where si_id = #{si_id}
+    </update>
+
+    <select id="findByRiDriverIdForCallCnt" parameterType="java.util.Map" resultType="java.lang.Integer">
+        SELECT COUNT(*) cnt
+          FROM call_info ci
+    INNER JOIN rider_info ri ON ci.ri_id = ri.ri_id
+         WHERE 1=1
+           AND ri.ri_userid = #{ri_driver_id}
+           AND ri.ri_state = 1
+           AND ci.gci_groupid = #{gci_groupid}
+           AND ci.ci_complete_time IS NULL
+    </select>
+
+    <select id="findMinTime" parameterType="java.lang.String" resultType="com.gogofnd.kb.partner.call.entity.CallInfo">
+        SELECT MIN(ci_appoint_time) AS ciAppointTime
+        FROM call_info
+        WHERE gci_groupid = #{gciGroupId}
+    </select>
+
+    <update id="updateSellerInfoForBalance" parameterType="java.util.Map">
+        update seller_info
+        set
+            si_balance = si_balance - #{si_balance},
+            si_upd_time = now()
+        where si_id = #{si_id}
+    </update>
+
+    <insert id="InsertGroupCallInfoWhenDeliveryQuit" parameterType="com.gogofnd.kb.partner.call.entity.GroupcallInfo">
+        insert into groupcall_info
+        (gci_groupid, ri_id, gci_first_starttime, gci_last_endtime, gci_gogo_total_balance,
+        gci_total_balance, gci_total_time, gci_ins_time, gci_upd_time, sales_date)
+        values
+            (#{gciGroupid}, #{riId}, #{gciFirstStarttime}, #{gciLastEndtime}, #{gciGogoTotalBalance},
+             #{gciTotalBalance}, #{gciTotalTime}, #{gciInsTime}, #{gciUpdTime}, #{salesDate})
+    </insert>
