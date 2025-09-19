@@ -100,7 +100,7 @@
         ) i
     </select>
 
-    <insert id="insert" parameterType="com.gogofnd.kb.insurances.insurance.dto.WebHistoriesSaveDto" useGeneratedKeys="true" keyProperty="ihId">
+        <insert id="insert" parameterType="com.gogofnd.kb.insurances.insurance.dto.WebHistoriesSaveDto" useGeneratedKeys="true" keyProperty="ihId">
         INSERT INTO insurance_history (
             ih_id,
             ri_id,
@@ -189,7 +189,7 @@
         );
     </insert>
 
-    <update id="update" parameterType="com.gogofnd.kb.partner.rider.entity.RiderWebInfo">
+    <update id="update" parameterType="com.gogofnd.kb.partner.rider.entity.RiderInfo">
         UPDATE rider_info SET
             ri_driver_id = #{riDriverId},
             ri_upd_time  = #{riUpdTime}
