@@ -1,44 +1,24 @@
-    <select id="findAllByDriverId" parameterType="java.util.List" resultType="com.gogofnd.kb.partner.rider.entity.RiderInfo">
+    <select id="findByPhoneRenew" parameterType="java.lang.String" resultType="com.gogofnd.kb.partner.rider.entity.RiderInfo">
         SELECT *
-        FROM (
-            SELECT ri.ri_driver_id, ri.ri_id, ri.ri_state, ri.ri_insu_status, si.si_policy_number
-            FROM rider_info ri
-            INNER JOIN seller_info si
-            ON ri.si_id = si.si_id
-            WHERE 1=1
-            AND ri_state = 1
-            AND ri_driver_id IN
-            <foreach collection='list' item='item' open='(' close=')' separator=','>
-                #{item}
-            </foreach>
-            GROUP BY ri_driver_id
-
-            UNION ALL
-
-            SELECT rin.ri_driver_id, rin.ri_id, rin.ri_state, rin.ri_insu_status, spn.spn_policy_number
-            FROM rider_info_renew rin
-            INNER JOIN seller_policy_number spn
-            ON rin.spn_id = spn.spn_id
-            WHERE 1=1
-            AND ri_state = 4
-            AND ri_driver_id IN
-            <foreach collection='list' item='item' open='(' close=')' separator=','>
-                #{item}
-            </foreach>
-            GROUP BY ri_driver_id
-        ) AS t
-        ORDER BY ri_id
+        FROM rider_info_renew
+        WHERE ri_phone = #{phone}
+        AND ri_state = 4
     </select>
 
-    <select id="findForUpdateByPolicyNumber" parameterType="java.util.Map" resultType="com.gogofnd.kb.insurances.insurance.dto.HistoriesSaveDto">
+    <select id="findByPhone" parameterType="java.lang.String" resultType="com.gogofnd.kb.partner.rider.entity.RiderInfo">
+        SELECT *
+        FROM rider_info
+        WHERE ri_phone =  #{phone}
+        AND ri_state = 1
+    </select>
+
+    <select id="findForUpdateById" parameterType="java.util.Map" resultType="com.gogofnd.kb.insurances.insurance.dto.HistoriesSaveDto">
         SELECT ih.*, ri.ri_state
         FROM insurance_history ih
         INNER JOIN rider_info ri
         ON ih.ri_id = ri.ri_id
-        INNER JOIN seller_info si
-        ON ri.si_id = si.si_id
         WHERE ih.ri_id = #{riId}
-        AND si.si_policy_number = #{siPolicyNumber}
+        AND ri.ri_state = #{riState}
 
         UNION ALL
 
@@ -46,153 +26,100 @@
         FROM insurance_renew_history ih
         INNER JOIN rider_info_renew ri
         ON ih.ri_id = ri.ri_id
-        INNER JOIN seller_policy_number spn
-        ON ri.spn_id = spn.spn_id
         WHERE ih.ri_id = #{riId}
-        AND spn.spn_policy_number = #{siPolicyNumber}
-        AND ri.ri_state != 9
-    </select>
-
-    <select id="findSellerPolicyNumberByCmpcd" parameterType="java.util.Map" resultType="com.gogofnd.kb.partner.seller.entity.SellerPolicyNumber">
-        SELECT *
-        FROM seller_policy_number
-        WHERE si_cmp_code = #{siCmpCode}
-        AND spn_apply_state = #{spnApplyState}
-    </select>
-
-    <select id="findByRiderId" parameterType="java.util.Map" resultType="com.gogofnd.kb.partner.rider.dto.RiderInsuranceDto">
-        SELECT rih.*, ri.ri_state
-        FROM rider_insurance_history rih
-        JOIN rider_info ri
-        ON rih.ri_id = ri.ri_id
-        WHERE rih.ri_id = #{riId}
-        AND ri.ri_state = #{riState}
-
-        UNION ALL
-
-        SELECT rih.*, ri.ri_state
-        FROM rider_insurance_renew_history rih
-        JOIN rider_info_renew ri
-        ON rih.ri_id = ri.ri_id
-        WHERE rih.ri_id = #{riId}
         AND ri.ri_state = #{riState}
     </select>
 
-    <update id="updateAll" parameterType="java.util.List">
-        <foreach collection="list" item="r" separator=";">
+    <update id="update" parameterType="com.gogofnd.kb.insurances.insurance.dto.HistoriesSaveDto">
         UPDATE insurance_history SET
-            ih_insu_state       = #{r.ihInsuState},
-            ih_effect_startdate = #{r.ihEffectStartdate},
-            ih_effect_enddate   = #{r.ihEffectEnddate},
-            ih_until            = #{r.ihUntil},
-            ih_upd_time         = #{r.ihUpdTime},
-            ih_age_yn           = #{r.ihAgeYn},
-            ih_apply_state      = #{r.ihApplyState}
-        WHERE ih_id         = #{r.ihId}
-        </foreach>
+            ih_insu_state       = #{ihInsuState},
+            ih_effect_startdate = #{ihEffectStartdate},
+            ih_effect_enddate   = #{ihEffectEnddate},
+            ih_until            = #{ihUntil},
+            ih_upd_time         = #{ihUpdTime},
+            ih_age_yn           = #{ihAgeYn},
+            ih_apply_state      = #{ihApplyState}
+        WHERE ih_id         = #{ihId};
+
+        UPDATE rider_info SET
+            ri_insu_status  = #{ihInsuState},
+            ri_upd_time     = #{ihUpdTime}
+        WHERE ri_id         = #{riId}
+        AND ri_state = 1
+
     </update>
 
-    <insert id="saveAllStateHistory" parameterType="java.util.List" >
+    <insert id="saveStateHistory" parameterType="com.gogofnd.kb.insurances.insurance.dto.HistoriesSaveDto">
         INSERT INTO insurance_state_history (
             ish_ins_time,
             ih_id,
             ri_id,
-            ih_reject_code,
             ih_insu_state,
             ih_effect_startdate,
             ih_effect_enddate,
             ih_until
-        ) VALUES
-        <foreach collection="list" item="r" separator=",">
-        (
-            #{r.ishInsTime},
-            #{r.ihId},
-            #{r.riId},
-            #{r.ihRejectCode},
-            #{r.ihInsuState},
-            #{r.ihEffectStartdate},
-            #{r.ihEffectEnddate},
-            #{r.ihUntil}
-        )
-        </foreach>
+        ) VALUES (
+            #{ihUpdTime},
+            #{ihId},
+            #{riId},
+            #{ihInsuState},
+            #{ihEffectStartdate},
+            #{ihEffectEnddate},
+            #{ihUntil}
+        );
     </insert>
 
-    <update id="updateRiderInsurStatusAndApplyDateAll" parameterType="java.util.List">
-        <foreach collection="list" item="r" separator=";">
-            UPDATE rider_info SET
-            ri_insu_status      = #{r.ihInsuState},
-            ri_insu_startdate   = #{r.ihEffectStartdate},
-            ri_insu_enddate     = #{r.ihEffectEnddate},
-            ri_upd_time         = #{r.ihUpdTime},
-            ri_state            = #{r.riState}
-            WHERE ri_id         = #{r.riId}
-        </foreach>
+    <update id="updateRiInsuState" parameterType="com.gogofnd.kb.insurances.insurance.dto.HistoriesSaveDto">
+        UPDATE rider_info SET
+        ri_insu_status = #{ihInsuState},
+        ri_upd_time  = #{ihUpdTime}
+        WHERE ri_id = #{riId}
+        AND ri_state = 1
     </update>
 
-    <update id="updateAllUnderComp" parameterType="java.util.List">
-        <foreach collection="list" item="r" separator=";">
-            UPDATE rider_insurance_history SET
-                rih_under_complete_time = #{r.rihUnderCompleteTime},
-                rih_upd_time            = #{r.ihUpdTime}
-            WHERE ri_id                 = #{r.riId}
-        </foreach>
+    <update id="updateRenew" parameterType="com.gogofnd.kb.insurances.insurance.dto.HistoriesSaveDto">
+        UPDATE insurance_renew_history SET
+            ih_insu_state       = #{ihInsuState},
+            ih_effect_startdate = #{ihEffectStartdate},
+            ih_effect_enddate   = #{ihEffectEnddate},
+            ih_until            = #{ihUntil},
+            ih_upd_time         = #{ihUpdTime},
+            ih_age_yn           = #{ihAgeYn},
+            ih_apply_state      = #{ihApplyState}
+        WHERE ih_id         = #{ihId};
+
+        UPDATE rider_info_renew SET
+            ri_insu_status  = #{ihInsuState},
+            ri_upd_time     = #{ihUpdTime}
+        WHERE ri_id         = #{riId}
+        AND ri_state = 4
+
     </update>
 
-    <update id="updateAllRenew" parameterType="java.util.List">
-        <foreach collection="list" item="r" separator=";">
-            UPDATE insurance_renew_history SET
-                ih_insu_state       = #{r.ihInsuState},
-                ih_effect_startdate = #{r.ihEffectStartdate},
-                ih_effect_enddate   = #{r.ihEffectEnddate},
-                ih_until            = #{r.ihUntil},
-                ih_upd_time         = #{r.ihUpdTime},
-                ih_age_yn           = #{r.ihAgeYn},
-                ih_apply_state      = #{r.ihApplyState}
-            WHERE ih_id         = #{r.ihId}
-        </foreach>
-    </update>
-
-    <insert id="saveAllStateHistoryRenew" parameterType="java.util.List" >
+    <insert id="saveStateHistoryRenew" parameterType="com.gogofnd.kb.insurances.insurance.dto.HistoriesSaveDto">
         INSERT INTO insurance_state_renew_history (
             ish_ins_time,
             ih_id,
             ri_id,
-            ih_reject_code,
             ih_insu_state,
             ih_effect_startdate,
             ih_effect_enddate,
             ih_until
-        ) VALUES
-        <foreach collection="list" item="r" separator=",">
-            (
-                #{r.ishInsTime},
-                #{r.ihId},
-                #{r.riId},
-                #{r.ihRejectCode},
-                #{r.ihInsuState},
-                #{r.ihEffectStartdate},
-                #{r.ihEffectEnddate},
-                #{r.ihUntil}
-            )
-        </foreach>
+        ) VALUES (
+            #{ihUpdTime},
+            #{ihId},
+            #{riId},
+            #{ihInsuState},
+            #{ihEffectStartdate},
+            #{ihEffectEnddate},
+            #{ihUntil}
+        );
     </insert>
 
-    <update id="updateRiderInsurStatusAndApplyDateAllRenew" parameterType="java.util.List">
-        <foreach collection="list" item="r" separator=";">
-            UPDATE rider_info_renew SET
-                ri_insu_status      = #{r.ihInsuState},
-                ri_insu_startdate   = #{r.ihEffectStartdate},
-                ri_insu_enddate     = #{r.ihEffectEnddate},
-                ri_upd_time         = #{r.ihUpdTime}
-            WHERE ri_id         = #{r.riId}
-        </foreach>
-    </update>
-
-    <update id="updateAllUnderCompRenew" parameterType="java.util.List">
-        <foreach collection="list" item="r" separator=";">
-            UPDATE rider_insurance_renew_history SET
-                rih_under_complete_time = #{r.rihUnderCompleteTime},
-                rih_upd_time            = #{r.ihUpdTime}
-            WHERE ri_id                 = #{r.riId}
-        </foreach>
+    <update id="updateRiInsuStateRenew" parameterType="com.gogofnd.kb.insurances.insurance.dto.HistoriesSaveDto">
+        UPDATE rider_info_renew SET
+            ri_insu_status = #{ihInsuState},
+            ri_upd_time  = #{ihUpdTime}
+        WHERE ri_id = #{riId}
+        AND ri_state = 4
     </update>
