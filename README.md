@@ -1,102 +1,32 @@
-    <select id="findRequestsRiderByInsuranceStatusYesterday" parameterType="java.lang.String" resultType="com.gogofnd.kb.partner.rider.dto.RiderInfoDto">
-        <![CDATA[
-        SELECT r.ri_id,
-            s.si_id,
-            i.ih_id,
-            r.ri_driver_id,
-            r.ri_phone,
-            r.ri_bike_number,
-            r.ri_name,
-            r.ri_ss_number,
-            s.si_cmp_code,
-            s.si_policy_number,
-            r.ri_total_webview_url,
-            r.ri_compinsu_enddate,
-            r.ri_operpurp_code,
-            r.ri_active_area,
-            r.ri_insu_status,
-            s.si_application_number,
-            s.si_seller_code,
-            r.ri_state,
-            IFNULL(r.ri_ctcagreyn, 'Y') AS ri_ctcagreyn
-        FROM rider_info r
-        JOIN seller_info s
-            ON r.si_id = s.si_id
-        JOIN insurance_history i
-            ON r.ri_id = i.ri_id
-        WHERE i.ih_insu_state = #{status}
-        AND r.ri_insu_status != '062'
-        AND i.ih_upd_time < NOW()
-        AND i.ih_upd_time >= SUBTIME(DATE_ADD(NOW(), INTERVAL -1 DAY), TIMEDIFF(NOW() , CAST(DATE(NOW()) AS DATETIME)))
-        AND r.ri_state = 1
-        GROUP BY r.ri_id
-
-        UNION ALL
-
-        SELECT r.ri_id,
-            r.si_id,
-            i.ih_id,
-            r.ri_driver_id,
-            r.ri_phone,
-            r.ri_bike_number,
-            r.ri_name,
-            r.ri_ss_number,
-            s.si_cmp_code,
-            s.spn_policy_number,
-            r.ri_total_webview_url,
-            r.ri_compinsu_enddate,
-            r.ri_operpurp_code,
-            r.ri_active_area,
-            r.ri_insu_status,
-            s.spn_application_number,
-            si.si_seller_code,
-            r.ri_state,
-            IFNULL(r.ri_ctcagreyn, 'Y') AS ri_ctcagreyn
-        FROM rider_info_renew r
-        JOIN seller_policy_number s
-            ON r.spn_id = s.spn_id
-        JOIN insurance_renew_history i
-            ON r.ri_id = i.ri_id
-        JOIN seller_info si
-        	ON si.si_id = r.si_id
-        WHERE i.ih_insu_state = #{status}
-        AND r.ri_insu_status != '062'
-        AND i.ih_upd_time < NOW()
-        AND i.ih_upd_time >= SUBTIME(DATE_ADD(NOW(), INTERVAL -1 DAY), TIMEDIFF(NOW() , CAST(DATE(NOW()) AS DATETIME)))
-        AND r.ri_state = 4
-        AND s.spn_apply_state = 'W'
-        GROUP BY r.ri_id
-        ]]>
+    <select id="findAllByCallPickUpTimeBetween" parameterType="java.util.Map" resultType="com.gogofnd.kb.partner.call.entity.GroupcallInfo">
+        select DISTINCT
+            gci.gci_groupid as 'gci_groupid',
+            gci.gci_first_starttime as 'gci_first_starttime',
+            gci.gci_last_endtime as 'gci_last_endtime',
+            gci.gci_total_time as 'gci_total_time',
+            ri.ri_driver_id as 'ri_driver_id',
+            si.si_cmp_code as 'si_cmp_code',
+            spn.spn_policy_number as 'si_policy_number'
+        from groupcall_info as gci
+            inner join rider_info as ri on gci.ri_id = ri.ri_id
+            inner join seller_info as si on ri.si_id = si.si_id
+            inner join seller_policy_number spn ON si.si_cmp_code = spn.si_cmp_code
+        where 1=1
+            and gci.gci_first_starttime <![CDATA[ >= ]]> #{startTime}
+            and gci.gci_first_starttime <![CDATA[ < ]]> #{endTime}
+            and spn.spn_effect_startdate <![CDATA[ <= ]]> #{startTime}
+            and spn.spn_effect_enddate <![CDATA[ >= ]]> #{endTime}
     </select>
 
-    <select id="findByIdRenew" parameterType="java.lang.Long" resultType="com.gogofnd.kb.partner.rider.dto.RiderInsuranceDto">
-        SELECT riderinsu.rih_id ,
-            riderinsu.ri_id ,
-            riderinsu.ih_id ,
-            riderinsu.rih_withdraw_request_time
-        FROM rider_insurance_renew_history riderinsu
-        WHERE riderinsu.ri_id = #{id}
+    <select id="sumGroupCallTotalTime" parameterType="java.util.Map" resultType="java.lang.Integer">
+        SELECT SUM(gci.gci_total_time)
+        FROM groupcall_info as gci
+        INNER JOIN rider_info as ri
+        ON gci.ri_id = ri.ri_id
+        INNER JOIN seller_info as si
+        ON ri.si_id = si.si_id
+        WHERE 1=1
+        AND ri.ri_driver_id = #{riDriverId}
+        AND gci.gci_first_starttime <![CDATA[ >= ]]> #{startTime}
+        AND gci.gci_first_starttime <![CDATA[ < ]]> #{endTime}
     </select>
-
-    <select id="findById" parameterType="java.lang.Long" resultType="com.gogofnd.kb.partner.rider.dto.RiderInsuranceDto">
-        SELECT riderinsu.rih_id ,
-            riderinsu.ri_id ,
-            riderinsu.ih_id ,
-            riderinsu.rih_withdraw_request_time
-        FROM rider_insurance_history riderinsu
-        WHERE riderinsu.ri_id = #{id}
-    </select>
-
-    <update id="riderInsuranceHistoryWithdrawUpdateRenew" parameterType="com.gogofnd.kb.partner.rider.dto.RiderInsuranceDto">
-        UPDATE rider_insurance_renew_history SET
-            rih_withdraw_request_time = #{rihWithdrawRequestTime},
-            rih_upd_time = #{rihUpdTime}
-        WHERE rih_id = #{rihId}
-    </update>
-
-    <update id="riderInsuranceHistoryWithdrawUpdate" parameterType="com.gogofnd.kb.partner.rider.dto.RiderInsuranceDto">
-        UPDATE rider_insurance_history SET
-            rih_withdraw_request_time = #{rihWithdrawRequestTime},
-            rih_upd_time = #{rihUpdTime}
-        WHERE rih_id = #{rihId}
-    </update>
