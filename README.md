@@ -1,11 +1,7 @@
-    <select id="findVroongBalance" resultType="java.lang.Long">
-        SELECT s.si_balance
-        FROM seller_info s
-        WHERE s.si_cmp_code = 'G02'
-    </select>
-
-    <update id="updateVroongBalance" parameterType="java.lang.Long">
-        UPDATE seller_info SET
-            si_balance = #{result}
-        WHERE si_cmp_code = 'G02'
+    <update id="updateRiderStatus" parameterType="com.gogofnd.kb.business.dto.UpdateStatusReq">
+        UPDATE rider_info SET
+            ri_pay_status = #{status},
+            ri_upd_time = NOW()
+        WHERE ri_driver_id = #{driverId}
+        AND ri_state = 1
     </update>
