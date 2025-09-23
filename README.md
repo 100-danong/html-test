@@ -69,38 +69,34 @@
         ]]>
     </select>
 
-    <select id="findByRiderId" parameterType="java.util.Map" resultType="com.gogofnd.kb.partner.rider.dto.RiderInsuranceDto">
-        SELECT rih.*, ri.ri_state
-        FROM rider_insurance_history rih
-        JOIN rider_info ri
-        ON rih.ri_id = ri.ri_id
-        WHERE rih.ri_id = #{riId}
-        AND ri.ri_state = #{riState}
-
-        UNION ALL
-
-        SELECT rih.*, ri.ri_state
-        FROM rider_insurance_renew_history rih
-        JOIN rider_info_renew ri
-        ON rih.ri_id = ri.ri_id
-        WHERE rih.ri_id = #{riId}
-        AND ri.ri_state = #{riState}
+    <select id="findByIdRenew" parameterType="java.lang.Long" resultType="com.gogofnd.kb.partner.rider.dto.RiderInsuranceDto">
+        SELECT riderinsu.rih_id ,
+            riderinsu.ri_id ,
+            riderinsu.ih_id ,
+            riderinsu.rih_withdraw_request_time
+        FROM rider_insurance_renew_history riderinsu
+        WHERE riderinsu.ri_id = #{id}
     </select>
 
-    <update id="riderInsuranceHistoryEndoUpdateAll" parameterType="java.util.List">
-        <foreach collection="list" item="item" separator=";">
-            UPDATE rider_insurance_history SET
-                rih_endo_request_time = #{item.rihEndoRequestTime},
-                rih_upd_time = #{item.rihUpdTime}
-            WHERE rih_id = #{item.rihId}
-        </foreach>
+    <select id="findById" parameterType="java.lang.Long" resultType="com.gogofnd.kb.partner.rider.dto.RiderInsuranceDto">
+        SELECT riderinsu.rih_id ,
+            riderinsu.ri_id ,
+            riderinsu.ih_id ,
+            riderinsu.rih_withdraw_request_time
+        FROM rider_insurance_history riderinsu
+        WHERE riderinsu.ri_id = #{id}
+    </select>
+
+    <update id="riderInsuranceHistoryWithdrawUpdateRenew" parameterType="com.gogofnd.kb.partner.rider.dto.RiderInsuranceDto">
+        UPDATE rider_insurance_renew_history SET
+            rih_withdraw_request_time = #{rihWithdrawRequestTime},
+            rih_upd_time = #{rihUpdTime}
+        WHERE rih_id = #{rihId}
     </update>
 
-    <update id="riderInsuranceHistoryEndoUpdateAllRenew" parameterType="java.util.List">
-        <foreach collection="list" item="item" separator=";">
-            UPDATE rider_insurance_renew_history SET
-                rih_endo_request_time = #{item.rihEndoRequestTime},
-                rih_upd_time = #{item.rihUpdTime}
-            WHERE rih_id = #{item.rihId}
-        </foreach>
+    <update id="riderInsuranceHistoryWithdrawUpdate" parameterType="com.gogofnd.kb.partner.rider.dto.RiderInsuranceDto">
+        UPDATE rider_insurance_history SET
+            rih_withdraw_request_time = #{rihWithdrawRequestTime},
+            rih_upd_time = #{rihUpdTime}
+        WHERE rih_id = #{rihId}
     </update>
