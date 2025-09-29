@@ -1,57 +1,36 @@
-import lombok.*;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.relational.core.mapping.Column;
-import org.springframework.data.relational.core.mapping.Table;
+private final InsuranceBalanceHistoryService insuranceBalanceHistoryService;
 
-import java.time.LocalDateTime;
+    public ResultDto balanceListTotal(List<BalanceInsureReq> balanceInsureReqList){
 
-@Table("insurance_balance_history")
-@AllArgsConstructor
-@NoArgsConstructor
-@Builder
-@Getter
-@Setter
-public class InsuranceBalanceHistory {
+        //si_balance는 입출금용
+        List<InsuranceBalanceHistory> kbBalancesHistories = balanceInsureReqList.stream().map((balanceInsureReq) -> {
+            log.info("======================================= 13번 api 호출 ================================");
+            log.info("date : {}", balanceInsureReq.getDate());
+            log.info("balance : {}", balanceInsureReq.getBalance());
+            log.info("cmpcd : {}", balanceInsureReq.getProxy_driv_coorp_cmpcd());
+            log.info("useAmt : {}", balanceInsureReq.getUse_amt());
 
-    @Id
-    private Long id;
+            if(balanceInsureReq.getBalance().isBlank()){
+                balanceInsureReq.setBalance("0");
+            }
 
-    @Column("ibh_date")
-    private LocalDateTime ibhDate;
+            if(balanceInsureReq.getUse_amt().isBlank()){
+                balanceInsureReq.setUse_amt("0");
+            }
 
-    @Column("ibh_cmp_code")
-    private String ibhCmpCode;
+            String convertDate = convertDate(balanceInsureReq.getDate());
 
-    @Column("ibh_balance")
-    private Integer ibhBalance;
+            return KbBalancesHistoryDto.create(balanceInsureReq, convertDate);
+        }).collect(Collectors.toList());
 
-    @Column("ibh_use_amt")
-    private Integer ibhUseAmt;
-}
+        Integer resInstInsuBalanceHistory = insuranceBalanceHistoryService.saveAll(kbBalancesHistories);
 
+        if(resInstInsuBalanceHistory <= 0){
+            throw new BusinessException(ErrorCode.DB_INSERT_FAIL);
+        }
 
-import org.springframework.data.repository.reactive.ReactiveCrudRepository;
+        ResultDto resultDto = new ResultDto();
+        resultDto.setResult("ok");
 
-public interface InsuranceBalanceHistoryRepository
-        extends ReactiveCrudRepository<InsuranceBalanceHistory, Long> {
-}
-
-
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
-import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
-
-import java.util.List;
-
-@Service
-@RequiredArgsConstructor
-public class InsuranceBalanceHistoryService {
-
-    private final InsuranceBalanceHistoryRepository repository;
-
-    public Mono<Void> saveAll(List<InsuranceBalanceHistory> histories) {
-        return repository.saveAll(histories) // Flux<InsuranceBalanceHistory>
-                .then(); // 완료되면 Mono<Void> 반환
+        return resultDto;
     }
-}
