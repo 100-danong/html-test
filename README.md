@@ -1,36 +1,23 @@
-private final InsuranceBalanceHistoryService insuranceBalanceHistoryService;
+public Mono<ResultDto> balanceListTotal(List<BalanceInsureReq> balanceInsureReqList){
 
-    public ResultDto balanceListTotal(List<BalanceInsureReq> balanceInsureReqList){
-
-        //si_balance는 입출금용
-        List<InsuranceBalanceHistory> kbBalancesHistories = balanceInsureReqList.stream().map((balanceInsureReq) -> {
-            log.info("======================================= 13번 api 호출 ================================");
-            log.info("date : {}", balanceInsureReq.getDate());
-            log.info("balance : {}", balanceInsureReq.getBalance());
-            log.info("cmpcd : {}", balanceInsureReq.getProxy_driv_coorp_cmpcd());
-            log.info("useAmt : {}", balanceInsureReq.getUse_amt());
-
+    List<InsuranceBalanceHistory> kbBalancesHistories = balanceInsureReqList.stream()
+        .map(balanceInsureReq -> {
             if(balanceInsureReq.getBalance().isBlank()){
                 balanceInsureReq.setBalance("0");
             }
-
             if(balanceInsureReq.getUse_amt().isBlank()){
                 balanceInsureReq.setUse_amt("0");
             }
-
             String convertDate = convertDate(balanceInsureReq.getDate());
+            return KbBalancesHistoryDto.create(balanceInsureReq, convertDate).toEntity();
+        })
+        .collect(Collectors.toList());
 
-            return KbBalancesHistoryDto.create(balanceInsureReq, convertDate);
-        }).collect(Collectors.toList());
-
-        Integer resInstInsuBalanceHistory = insuranceBalanceHistoryService.saveAll(kbBalancesHistories);
-
-        if(resInstInsuBalanceHistory <= 0){
-            throw new BusinessException(ErrorCode.DB_INSERT_FAIL);
-        }
-
-        ResultDto resultDto = new ResultDto();
-        resultDto.setResult("ok");
-
-        return resultDto;
-    }
+    return insuranceBalanceHistoryService.saveAll(kbBalancesHistories)
+        .flatMap(count -> {
+            if(count <= 0){
+                return Mono.error(new BusinessException(ErrorCode.DB_INSERT_FAIL));
+            }
+            return Mono.just(new ResultDto("ok"));
+        });
+}
