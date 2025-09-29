@@ -1,49 +1,15 @@
-package com.gogofnd.kb.Kb.dto;
+Integer resInstInsuBalanceHistory = insuranceBalanceHistoryMapper.insuranceBalnceHistoryInsert(kbBalancesHistories);
 
-import lombok.*;
-import org.springframework.data.relational.core.mapping.Column;
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-
-@AllArgsConstructor
-@NoArgsConstructor
-@Builder
-@Getter
-@Setter
-public class KbBalancesHistoryDto {
-
-    @Column(name = "ibh_date")
-    private LocalDateTime ibhDate;//차감일자
-
-    @Column(name = "ibh_cmp_code")
-    private String ibhCmpCode;//제휴회사코드
-
-    @Column(name = "ibh_balance")
-    private Integer ibhBalance;//잔액
-
-    @Column(name = "ibh_use_amt")
-    private Integer ibhUseAmt;//사용금액
-
-    public static KbBalancesHistoryDto create(BalanceInsureReq balanceInsureReq, String convertDate) {
-        LocalDateTime time = LocalDateTime.now();
-
-        String date = convertDate + " " + time.format(DateTimeFormatter.ofPattern("HH:mm:ss.SSS"));
-
-        LocalDateTime dateTime = LocalDateTime.parse(date, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS"));
-//
-//        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS");
-//        LocalDateTime dateTime = LocalDateTime.parse(convertDate, formatter);
-
-        return KbBalancesHistoryDto.builder()
-                .ibhDate(dateTime)
-                .ibhCmpCode(balanceInsureReq.getProxy_driv_coorp_cmpcd())
-                .ibhBalance(Integer.parseInt(balanceInsureReq.getBalance()))
-                .ibhUseAmt(Integer.parseInt(balanceInsureReq.getUse_amt()))
-                .build();
-    }
-}
-
-
-
-여기서 @Column(name = "") 부분에서 name에서 Cannot resolve method 'name' 라고 에러가 떠 어떻게 해결해?
+<mapper namespace="com.gogofnd.kb.insurances.kb.mapper.InsuranceBalanceHistoryMapper">
+    <insert id="insuranceBalnceHistoryInsert" parameterType="java.util.List">
+        insert into insurance_balance_history
+            (ibh_date, ibh_cmp_code, ibh_balance, ibh_use_amt)
+        values
+        <foreach collection="list" item="item" separator=",">
+            (#{item.ibhDate}, #{item.ibhCmpCode}, #{item.ibhBalance}, #{item.ibhUseAmt})
+        </foreach>
+    </insert>
+</mapper>
