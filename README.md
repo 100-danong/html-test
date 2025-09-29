@@ -1,34 +1,11 @@
-오후 4:17:25: Executing ':new_GoPlanV1Application.main()'...
+2025-09-29 16:21:11.451  INFO 9028 --- [actor-tcp-nio-2] com.gogofnd.kb.Kb.service.KbService      : ======================================= 13번 api 호출 ================================
+2025-09-29 16:21:11.453  INFO 9028 --- [actor-tcp-nio-2] com.gogofnd.kb.Kb.service.KbService      : date : 2025-09-29
+2025-09-29 16:21:11.454  INFO 9028 --- [actor-tcp-nio-2] com.gogofnd.kb.Kb.service.KbService      : balance : 2501453
+2025-09-29 16:21:11.455  INFO 9028 --- [actor-tcp-nio-2] com.gogofnd.kb.Kb.service.KbService      : cmpcd : G05
+2025-09-29 16:21:11.455  INFO 9028 --- [actor-tcp-nio-2] com.gogofnd.kb.Kb.service.KbService      : useAmt : 0
+2025-09-29 16:21:11.467 ERROR 9028 --- [nio-8888-exec-7] o.a.c.c.C.[.[.[.[dispatcherServlet]      : Servlet.service() for servlet [dispatcherServlet] threw exception
 
-> Task :compileJava
-> Task :processResources UP-TO-DATE
-> Task :classes
-
-> Task :new_GoPlanV1Application.main()
-
-  .   ____          _            __ _ _
- /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
-( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
- \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
-  '  |____| .__|_| |_|_| |_\__, | / / / /
- =========|_|==============|___/=/_/_/_/
- :: Spring Boot ::               (v2.7.10)
-
-2025-09-29 16:17:37.890  INFO 9028 --- [           main] com.gogofnd.kb.new_GoPlanV1Application   : Starting new_GoPlanV1Application using Java 11.0.15 on Gogofnd002 with PID 9028 (C:\Users\user02gogof\Desktop\new_GoPlanV1\build\classes\java\main started by user02gogof in C:\Users\user02gogof\Desktop\new_GoPlanV1)
-2025-09-29 16:17:37.896 DEBUG 9028 --- [           main] com.gogofnd.kb.new_GoPlanV1Application   : Running with Spring Boot v2.7.10, Spring v5.3.26
-2025-09-29 16:17:37.897  INFO 9028 --- [           main] com.gogofnd.kb.new_GoPlanV1Application   : The following 4 profiles are active: "dev", "logging_daily", "logging_error", "logging_info"
-2025-09-29 16:17:49.310  INFO 9028 --- [           main] c.g.kb.global.config.SecurityConfig      : accessDeniedHandler
-2025-09-29 16:17:49.312  INFO 9028 --- [           main] c.g.kb.global.config.SecurityConfig      : authenticationEntryPoint
-2025-09-29 16:17:51.044  INFO 9028 --- [           main] com.gogofnd.kb.new_GoPlanV1Application   : Started new_GoPlanV1Application in 15.243 seconds (JVM running for 16.79)
-한글 테스트 Start
-2025-09-29 16:18:27.222  INFO 9028 --- [actor-tcp-nio-2] com.gogofnd.kb.Kb.service.KbService      : ======================================= 13번 api 호출 ================================
-2025-09-29 16:18:27.227  INFO 9028 --- [actor-tcp-nio-2] com.gogofnd.kb.Kb.service.KbService      : date : 2025-09-29 04:07:08.546
-2025-09-29 16:18:27.231  INFO 9028 --- [actor-tcp-nio-2] com.gogofnd.kb.Kb.service.KbService      : balance : 2501453
-2025-09-29 16:18:27.231  INFO 9028 --- [actor-tcp-nio-2] com.gogofnd.kb.Kb.service.KbService      : cmpcd : G05
-2025-09-29 16:18:27.232  INFO 9028 --- [actor-tcp-nio-2] com.gogofnd.kb.Kb.service.KbService      : useAmt : 0
-2025-09-29 16:18:27.341 ERROR 9028 --- [nio-8888-exec-5] o.a.c.c.C.[.[.[.[dispatcherServlet]      : Servlet.service() for servlet [dispatcherServlet] threw exception
-
-java.time.format.DateTimeParseException: Text '2025--0-9-29 04:07:08.546 16:18:27.241' could not be parsed at index 5
+java.time.format.DateTimeParseException: Text '2025--0-9-29 16:21:11.455' could not be parsed at index 5
 	at java.base/java.time.format.DateTimeFormatter.parseResolved0(DateTimeFormatter.java:2046)
 	at java.base/java.time.format.DateTimeFormatter.parse(DateTimeFormatter.java:1948)
 	at java.base/java.time.LocalDateTime.parse(LocalDateTime.java:492)
@@ -113,9 +90,9 @@ java.time.format.DateTimeParseException: Text '2025--0-9-29 04:07:08.546 16:18:2
 	at io.netty.util.concurrent.FastThreadLocalRunnable.run(FastThreadLocalRunnable.java:30)
 	at java.base/java.lang.Thread.run(Thread.java:829)
 
-2025-09-29 16:18:27.380 ERROR 9028 --- [nio-8888-exec-5] o.a.c.c.C.[.[.[.[dispatcherServlet]      : Servlet.service() for servlet [dispatcherServlet] in context with path [/api/goplanV1] threw exception [Request processing failed; nested exception is java.time.format.DateTimeParseException: Text '2025--0-9-29 04:07:08.546 16:18:27.241' could not be parsed at index 5] with root cause
+2025-09-29 16:21:11.537 ERROR 9028 --- [nio-8888-exec-7] o.a.c.c.C.[.[.[.[dispatcherServlet]      : Servlet.service() for servlet [dispatcherServlet] in context with path [/api/goplanV1] threw exception [Request processing failed; nested exception is java.time.format.DateTimeParseException: Text '2025--0-9-29 16:21:11.455' could not be parsed at index 5] with root cause
 
-java.time.format.DateTimeParseException: Text '2025--0-9-29 04:07:08.546 16:18:27.241' could not be parsed at index 5
+java.time.format.DateTimeParseException: Text '2025--0-9-29 16:21:11.455' could not be parsed at index 5
 	at java.base/java.time.format.DateTimeFormatter.parseResolved0(DateTimeFormatter.java:2046)
 	at java.base/java.time.format.DateTimeFormatter.parse(DateTimeFormatter.java:1948)
 	at java.base/java.time.LocalDateTime.parse(LocalDateTime.java:492)
@@ -199,17 +176,3 @@ java.time.format.DateTimeParseException: Text '2025--0-9-29 04:07:08.546 16:18:2
 	at io.netty.util.internal.ThreadExecutorMap$2.run(ThreadExecutorMap.java:74)
 	at io.netty.util.concurrent.FastThreadLocalRunnable.run(FastThreadLocalRunnable.java:30)
 	at java.base/java.lang.Thread.run(Thread.java:829)
-
-
-스웨거에서 테스트 중인데 입력한 날짜 형식이 문제가 있다는 거 같은데 
-
-[
-  {
-    "balance": "2501453",
-    "date": "2025-09-29 04:07:08.546",
-    "proxy_driv_coorp_cmpcd": "G05",
-    "use_amt": "0"
-  }
-]
-
-이렇게 테스트 중인데 뭐가 문제야?
