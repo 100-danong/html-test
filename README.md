@@ -1,18 +1,35 @@
-    <select id="findCallsByAppointTimeForAccident" parameterType="com.gogofnd.kb.insurances.accident.dto.AccidentSearch" resultType="com.gogofnd.kb.partner.call.dto.CallInfoDto">
-        select
-        si.si_cmp_code, ri.ri_driver_id, ci.ci_insu_call_id, si.si_policy_number, ci.ci_appoint_time,
-        ci.ci_pickup_address, ci.ci_delivery_address
-        from call_info as ci
-        inner join rider_info as ri on ci.ri_id = ri.ri_id
-        inner join seller_info as si on ri.si_id = si.si_id
-        where 1=1
-        and ci.ci_appoint_time <![CDATA[ >= ]]> #{startTime}
-        and ci.ci_appoint_time <![CDATA[ < ]]> #{endTime}
-        and ri.ri_id = #{riId}
-    </select>
 
-이것도
+    public Flux<CallInfoDto> findCallsByAppointTimeForAccident(AccidentSearch search) {
+        String sql = """
+            SELECT si.si_cmp_code       AS siCmpCode,
+                   ri.ri_driver_id      AS riDriverId,
+                   ci.ci_insu_call_id   AS ciInsuCallId,
+                   si.si_policy_number  AS siPolicyNumber,
+                   ci.ci_appoint_time   AS ciAppointTime,
+                   ci.ci_pickup_address AS ciPickupAddress,
+                   ci.ci_delivery_address AS ciDeliveryAddress
+            FROM call_info ci
+            INNER JOIN rider_info ri ON ci.ri_id = ri.ri_id
+            INNER JOIN seller_info si ON ri.si_id = si.si_id
+            WHERE ci.ci_appoint_time >= :startTime
+              AND ci.ci_appoint_time < :endTime
+              AND ri.ri_id = :riId
+            """;
 
-List<CallInfoDto> callList = callInfoRepository.findCallsByAppointTimeForAccident(search);
-
-이 부분에서 호출할거야
+        return databaseClient.sql(sql)
+                .bind("startTime", search.getStartTime())
+                .bind("endTime", search.getEndTime())
+                .bind("riId", search.getRiId())
+                .map((row, meta) -> {
+                    CallInfoDto dto = new CallInfoDto();
+                    dto.setSiCmpCode(row.get("siCmpCode", String.class));
+                    dto.setRiDriverId(row.get("riDriverId", String.class));
+                    dto.setCiInsuCallId(row.get("ciInsuCallId", String.class));
+                    dto.setSiPolicyNumber(row.get("siPolicyNumber", String.class));
+                    dto.setCiAppointTime(row.get("ciAppointTime", LocalDateTime.class));
+                    dto.setCiPickupAddress(row.get("ciPickupAddress", String.class));
+                    dto.setCiDeliveryAddress(row.get("ciDeliveryAddress", String.class));
+                    return dto;
+                })
+                .all(); // 여러 건 반환이므로 Flux
+    }
