@@ -1,29 +1,18 @@
-    public Mono<Integer> insertAccident(AccidentHistory history) {
-        String sql = """
-            INSERT INTO accident_history
-                (ah_accident_time, ah_claim_number, ah_claim_time, ah_call_id, ah_ins_time, ah_upd_time)
-            VALUES
-                (:ahAccidentTime, :ahClaimNumber, :ahClaimTime, :ahCallId, NOW(), NOW())
-            """;
+    <select id="findCallsByAppointTimeForAccident" parameterType="com.gogofnd.kb.insurances.accident.dto.AccidentSearch" resultType="com.gogofnd.kb.partner.call.dto.CallInfoDto">
+        select
+        si.si_cmp_code, ri.ri_driver_id, ci.ci_insu_call_id, si.si_policy_number, ci.ci_appoint_time,
+        ci.ci_pickup_address, ci.ci_delivery_address
+        from call_info as ci
+        inner join rider_info as ri on ci.ri_id = ri.ri_id
+        inner join seller_info as si on ri.si_id = si.si_id
+        where 1=1
+        and ci.ci_appoint_time <![CDATA[ >= ]]> #{startTime}
+        and ci.ci_appoint_time <![CDATA[ < ]]> #{endTime}
+        and ri.ri_id = #{riId}
+    </select>
 
-        return databaseClient.sql(sql)
-                .bind("ahAccidentTime", history.getAhAccidentTime())
-                .bind("ahClaimNumber", history.getAhClaimNumber())
-                .bind("ahClaimTime", history.getAhClaimTime())
-                .bind("ahCallId", history.getAhCallId())
-                .fetch()
-                .rowsUpdated(); // 영향받은 row 수 반환
-    }
+이것도
 
-    public Mono<Integer> updateAccident(AccidentHistory history) {
-        String sql = """
-            UPDATE accident_history
-               SET ah_upd_time = NOW()
-             WHERE ah_claim_number = :ahClaimNumber
-            """;
+List<CallInfoDto> callList = callInfoRepository.findCallsByAppointTimeForAccident(search);
 
-        return databaseClient.sql(sql)
-                .bind("ahClaimNumber", history.getAhClaimNumber())
-                .fetch()
-                .rowsUpdated();
-    }
+이 부분에서 호출할거야
