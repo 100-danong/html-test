@@ -1,44 +1,32 @@
-    public List<DeliveryInsureAccidentResponseDto> findAccidents(AccidentCreate dto){
+오후 3:37:39: Executing ':new_GoPlanV1Application.main()'...
 
-        log.info("dto -> " + dto);
-        String callCheck = dto.getCall_id().substring(0,1);
 
-        AccidentSearch search = null;
-        String saveCallId = "";
+> Task :compileJava
+Note: Some input files use or override a deprecated API.
+Note: Recompile with -Xlint:deprecation for details.
+Note: C:\Users\user02gogof\Desktop\new_GoPlanV1\src\main\java\com\gogofnd\kb\Accident\controller\AccidentApi.java uses unchecked or unsafe operations.
+Note: Recompile with -Xlint:unchecked for details.
 
-        if(callCheck.equals("G")) {
-            //gci_groupid로 groupcall_info 조회
-            search = accidentRepository.findByGroupCallIdForAccident(dto.getCall_id()).blockOptional().orElseThrow(() -> new BusinessException(ErrorCode.ENTITY_NOT_FOUND));
-        }else {
-            //insu_call_id로 call_info 조회
-            search = accidentRepository.findByInsuCallIdForAccident(dto.getCall_id()).blockOptional().orElseThrow(() -> new BusinessException(ErrorCode.ENTITY_NOT_FOUND));
-        }
+> Task :processResources UP-TO-DATE
+> Task :classes
 
-        //사고 접수 값 db에 저장
-        AccidentHistory history = accidentRepository.findAccident(dto.getClaim_number()).blockOptional().orElse(AccidentHistory.create(dto, search.getCallId()));
+> Task :new_GoPlanV1Application.main() FAILED
+3 actionable tasks: 2 executed, 1 up-to-date
+오류: 기본 클래스 com.gogofnd.kb.new_GoPlanV1Application을(를) 로드하는 중 LinkageError가 발생했습니다.
+	java.lang.UnsupportedClassVersionError: com/gogofnd/kb/new_GoPlanV1Application has been compiled by a more recent version of the Java Runtime (class file version 59.0), this version of the Java Runtime only recognizes class file versions up to 55.0
 
-        if(history.getAhState() == 0) {
-            accidentRepository.insertAccident(history);
-        } else {
-            accidentRepository.updateAccident(history);
-        }
+FAILURE: Build failed with an exception.
 
-        LocalDateTime endDate = LocalDateTime.of(LocalDate.now(), LocalTime.of(23,59,59));
+* What went wrong:
+Execution failed for task ':new_GoPlanV1Application.main()'.
+> Process 'command 'C:/Program Files/ojdkbuild/java-11-openjdk-11.0.15-1/bin/java.exe'' finished with non-zero exit value 1
 
-        search.setEndTime(endDate);
+* Try:
+> Run with --stacktrace option to get the stack trace.
+> Run with --info or --debug option to get more log output.
+> Run with --scan to get full insights.
 
-        List<CallInfoDto> callList = callInfoRepository.findCallsByAppointTimeForAccident(search).collectList().block();
-        List<DeliveryInsureAccidentResponseDto> callResList = new ArrayList<>();
+* Get more help at https://help.gradle.org
 
-        callList.forEach(call -> {
-            DeliveryInsureAccidentResponseDto responseDto = new DeliveryInsureAccidentResponseDto(call);
-            callResList.add(responseDto);
-        });
-
-        log.info("=============================== 사고접수 api호출 ===================================");
-        log.info("사고접수 " + callList);
-
-        callResList.forEach(System.out::println);
-
-        return callResList;
-    }
+BUILD FAILED in 31s
+오후 3:38:12: Execution finished ':new_GoPlanV1Application.main()'.
