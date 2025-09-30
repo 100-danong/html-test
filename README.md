@@ -28,13 +28,6 @@ public class AccidentRepository {
     }
 }
 
-@Service
-@RequiredArgsConstructor
-public class AccidentService {
+Cannot resolve constructor 'AccidentSearch(T, T, T)'
 
-    private final AccidentRepository accidentRepository;
-
-    public Mono<AccidentSearch> getAccidentInfo(String callId) {
-        return accidentRepository.findByGroupCallIdForAccident(callId);
-    }
-}
+라고 에러가 떠
