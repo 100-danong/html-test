@@ -1,20 +1,29 @@
-    <insert id="insertAccident" parameterType="com.gogofnd.kb.insurances.accident.entity.AccidentHistory">
-        INSERT INTO accident_history
-            (ah_accident_time, ah_claim_number, ah_claim_time, ah_call_id, ah_ins_time, ah_upd_time)
-        VALUES
-            (#{ahAccidentTime}, #{ahClaimNumber}, #{ahClaimTime}, #{ahCallId}, NOW(), NOW())
-    </insert>
+    public Mono<Integer> insertAccident(AccidentHistory history) {
+        String sql = """
+            INSERT INTO accident_history
+                (ah_accident_time, ah_claim_number, ah_claim_time, ah_call_id, ah_ins_time, ah_upd_time)
+            VALUES
+                (:ahAccidentTime, :ahClaimNumber, :ahClaimTime, :ahCallId, NOW(), NOW())
+            """;
 
-    <update id="updateAccident" parameterType="com.gogofnd.kb.insurances.accident.entity.AccidentHistory">
-        UPDATE accident_history
-            SET ah_upd_time = NOW()
-        WHERE ah_claim_number = #{ahClaimNumber}
-    </update>
+        return databaseClient.sql(sql)
+                .bind("ahAccidentTime", history.getAhAccidentTime())
+                .bind("ahClaimNumber", history.getAhClaimNumber())
+                .bind("ahClaimTime", history.getAhClaimTime())
+                .bind("ahCallId", history.getAhCallId())
+                .fetch()
+                .rowsUpdated(); // 영향받은 row 수 반환
+    }
 
-이제 이거 두개 해야해 
+    public Mono<Integer> updateAccident(AccidentHistory history) {
+        String sql = """
+            UPDATE accident_history
+               SET ah_upd_time = NOW()
+             WHERE ah_claim_number = :ahClaimNumber
+            """;
 
-        if(history.getAhState() == 0) {
-            accidentRepository.insertAccident(history);
-        } else {
-            accidentRepository.updateAccident(history);
-        }
+        return databaseClient.sql(sql)
+                .bind("ahClaimNumber", history.getAhClaimNumber())
+                .fetch()
+                .rowsUpdated();
+    }
