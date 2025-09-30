@@ -1,33 +1,103 @@
-public Flux<DeliveryInsureAccidentResponseDto> findAccidents(AccidentCreate dto) {
+2025-09-30 16:00:23.634 ERROR 12404 --- [nio-8888-exec-4] o.a.c.c.C.[.[.[.[dispatcherServlet]      : Servlet.service() for servlet [dispatcherServlet] in context with path [/api/goplanV1] threw exception [Request processing failed; nested exception is java.lang.UnsupportedOperationException: Binding parameters is not supported for the statement ' SELECT *  FROM accident_history  WHERE ah_claim_number = #{ahClaimNumber}  ORDER BY ah_id desc limit 1 '] with root cause
 
-    String callCheck = dto.getCall_id().substring(0, 1);
-
-    Mono<AccidentSearch> searchMono;
-    if (callCheck.equals("G")) {
-        searchMono = accidentRepository.findByGroupCallIdForAccident(dto.getCall_id())
-                        .switchIfEmpty(Mono.error(new BusinessException(ErrorCode.ENTITY_NOT_FOUND)));
-    } else {
-        searchMono = accidentRepository.findByInsuCallIdForAccident(dto.getCall_id())
-                        .switchIfEmpty(Mono.error(new BusinessException(ErrorCode.ENTITY_NOT_FOUND)));
-    }
-
-    return searchMono
-            .flatMap(search -> 
-                accidentRepository.findAccident(dto.getClaim_number())
-                        .defaultIfEmpty(AccidentHistory.create(dto, search.getCallId()))
-                        .flatMap(history -> {
-                            Mono<AccidentHistory> saveMono;
-                            if (history.getAhState() == 0) {
-                                saveMono = accidentRepository.insertAccident(history);
-                            } else {
-                                saveMono = accidentRepository.updateAccident(history);
-                            }
-                            return saveMono.thenReturn(search); // 다음 단계로 search 넘김
-                        })
-            )
-            .flatMapMany(search -> {
-                search.setEndTime(LocalDateTime.of(LocalDate.now(), LocalTime.of(23, 59, 59)));
-                return callInfoRepository.findCallsByAppointTimeForAccident(search);
-            })
-            .map(DeliveryInsureAccidentResponseDto::new);
-}
+java.lang.UnsupportedOperationException: Binding parameters is not supported for the statement ' SELECT *  FROM accident_history  WHERE ah_claim_number = #{ahClaimNumber}  ORDER BY ah_id desc limit 1 '
+	at org.mariadb.r2dbc.MariadbSimpleQueryStatement.bind(MariadbSimpleQueryStatement.java:43)
+	at org.mariadb.r2dbc.MariadbSimpleQueryStatement.bind(MariadbSimpleQueryStatement.java:16)
+	at org.springframework.r2dbc.core.DefaultDatabaseClient$DefaultGenericExecuteSpec.lambda$bindByName$4(DefaultDatabaseClient.java:426)
+	at java.base/java.util.LinkedHashMap.forEach(LinkedHashMap.java:684)
+	at org.springframework.r2dbc.core.DefaultDatabaseClient$DefaultGenericExecuteSpec.bindByName(DefaultDatabaseClient.java:423)
+	at org.springframework.r2dbc.core.DefaultDatabaseClient$DefaultGenericExecuteSpec.lambda$getResultFunction$2(DefaultDatabaseClient.java:355)
+	at org.springframework.r2dbc.core.ResultFunction.apply(ResultFunction.java:64)
+	at org.springframework.r2dbc.core.DefaultFetchSpec.lambda$all$2(DefaultFetchSpec.java:85)
+	at org.springframework.r2dbc.core.DelegateConnectionFunction.apply(DelegateConnectionFunction.java:48)
+	at org.springframework.r2dbc.core.DelegateConnectionFunction.apply(DelegateConnectionFunction.java:33)
+	at org.springframework.r2dbc.core.DefaultDatabaseClient.lambda$inConnectionMany$6(DefaultDatabaseClient.java:139)
+	at reactor.core.publisher.FluxUsingWhen.deriveFluxFromResource(FluxUsingWhen.java:120)
+	at reactor.core.publisher.FluxUsingWhen.access$000(FluxUsingWhen.java:54)
+	at reactor.core.publisher.FluxUsingWhen$ResourceSubscriber.onNext(FluxUsingWhen.java:193)
+	at reactor.core.publisher.FluxMap$MapSubscriber.onNext(FluxMap.java:122)
+	at reactor.core.publisher.FluxOnErrorResume$ResumeSubscriber.onNext(FluxOnErrorResume.java:79)
+	at reactor.core.publisher.FluxOnErrorResume$ResumeSubscriber.onNext(FluxOnErrorResume.java:79)
+	at reactor.core.publisher.Operators$MonoSubscriber.complete(Operators.java:1839)
+	at reactor.core.publisher.MonoFlatMap$FlatMapMain.onNext(MonoFlatMap.java:151)
+	at reactor.core.publisher.FluxMap$MapSubscriber.onNext(FluxMap.java:122)
+	at reactor.core.publisher.Operators$ScalarSubscription.request(Operators.java:2400)
+	at reactor.core.publisher.FluxMap$MapSubscriber.request(FluxMap.java:164)
+	at reactor.core.publisher.MonoFlatMap$FlatMapMain.onSubscribe(MonoFlatMap.java:110)
+	at reactor.core.publisher.FluxMap$MapSubscriber.onSubscribe(FluxMap.java:92)
+	at reactor.core.publisher.MonoJust.subscribe(MonoJust.java:55)
+	at reactor.core.publisher.MonoDeferContextual.subscribe(MonoDeferContextual.java:55)
+	at reactor.core.publisher.Mono.subscribe(Mono.java:4490)
+	at reactor.core.publisher.FluxUsingWhen.subscribe(FluxUsingWhen.java:104)
+	at reactor.core.publisher.InternalMonoOperator.subscribe(InternalMonoOperator.java:64)
+	at reactor.core.publisher.MonoFlatMap$FlatMapMain.onNext(MonoFlatMap.java:157)
+	at reactor.core.publisher.FluxSwitchIfEmpty$SwitchIfEmptySubscriber.onNext(FluxSwitchIfEmpty.java:74)
+	at reactor.core.publisher.MonoNext$NextSubscriber.onNext(MonoNext.java:82)
+	at reactor.core.publisher.FluxFlatMap$FlatMapMain.tryEmitScalar(FluxFlatMap.java:489)
+	at reactor.core.publisher.FluxFlatMap$FlatMapMain.onNext(FluxFlatMap.java:422)
+	at reactor.core.publisher.FluxBuffer$BufferExactSubscriber.onComplete(FluxBuffer.java:185)
+	at reactor.core.publisher.Operators$MultiSubscriptionSubscriber.onComplete(Operators.java:2060)
+	at reactor.core.publisher.FluxUsingWhen$UsingWhenSubscriber.deferredComplete(FluxUsingWhen.java:392)
+	at reactor.core.publisher.FluxUsingWhen$CommitInner.onComplete(FluxUsingWhen.java:527)
+	at reactor.core.publisher.Operators$MultiSubscriptionSubscriber.onComplete(Operators.java:2060)
+	at reactor.core.publisher.MonoIgnoreElements$IgnoreElementsSubscriber.onComplete(MonoIgnoreElements.java:89)
+	at reactor.core.publisher.FluxMap$MapSubscriber.onComplete(FluxMap.java:144)
+	at reactor.core.publisher.FluxFilter$FilterSubscriber.onComplete(FluxFilter.java:166)
+	at reactor.core.publisher.FluxFilter$FilterConditionalSubscriber.onComplete(FluxFilter.java:300)
+	at reactor.core.publisher.FluxMap$MapConditionalSubscriber.onComplete(FluxMap.java:275)
+	at reactor.core.publisher.Operators$ScalarSubscription.request(Operators.java:2402)
+	at reactor.core.publisher.FluxMap$MapConditionalSubscriber.request(FluxMap.java:295)
+	at reactor.core.publisher.FluxFilter$FilterConditionalSubscriber.request(FluxFilter.java:321)
+	at reactor.core.publisher.FluxFilter$FilterSubscriber.request(FluxFilter.java:186)
+	at reactor.core.publisher.FluxMap$MapSubscriber.request(FluxMap.java:164)
+	at reactor.core.publisher.MonoIgnoreElements$IgnoreElementsSubscriber.onSubscribe(MonoIgnoreElements.java:72)
+	at reactor.core.publisher.FluxMap$MapSubscriber.onSubscribe(FluxMap.java:92)
+	at reactor.core.publisher.FluxFilter$FilterSubscriber.onSubscribe(FluxFilter.java:85)
+	at reactor.core.publisher.FluxFilter$FilterConditionalSubscriber.onSubscribe(FluxFilter.java:219)
+	at reactor.core.publisher.FluxMap$MapConditionalSubscriber.onSubscribe(FluxMap.java:194)
+	at reactor.core.publisher.MonoJust.subscribe(MonoJust.java:55)
+	at reactor.core.publisher.MonoDeferContextual.subscribe(MonoDeferContextual.java:55)
+	at reactor.core.publisher.InternalMonoOperator.subscribe(InternalMonoOperator.java:64)
+	at reactor.core.publisher.MonoDefer.subscribe(MonoDefer.java:52)
+	at reactor.core.publisher.Mono.subscribe(Mono.java:4490)
+	at reactor.core.publisher.FluxUsingWhen$UsingWhenSubscriber.onComplete(FluxUsingWhen.java:384)
+	at reactor.core.publisher.FluxFlatMap$FlatMapMain.checkTerminated(FluxFlatMap.java:847)
+	at reactor.core.publisher.FluxFlatMap$FlatMapMain.drainLoop(FluxFlatMap.java:609)
+	at reactor.core.publisher.FluxFlatMap$FlatMapMain.drain(FluxFlatMap.java:589)
+	at reactor.core.publisher.FluxFlatMap$FlatMapMain.onComplete(FluxFlatMap.java:466)
+	at reactor.core.publisher.FluxOnAssembly$OnAssemblySubscriber.onComplete(FluxOnAssembly.java:549)
+	at reactor.core.publisher.FluxMapFuseable$MapFuseableSubscriber.onComplete(FluxMapFuseable.java:152)
+	at reactor.core.publisher.FluxContextWrite$ContextWriteSubscriber.onComplete(FluxContextWrite.java:126)
+	at reactor.core.publisher.FluxConcatArray$ConcatArraySubscriber.onComplete(FluxConcatArray.java:230)
+	at reactor.core.publisher.FluxMapFuseable$MapFuseableSubscriber.onComplete(FluxMapFuseable.java:152)
+	at reactor.core.publisher.FluxWindowPredicate$WindowPredicateMain.checkTerminated(FluxWindowPredicate.java:538)
+	at reactor.core.publisher.FluxWindowPredicate$WindowPredicateMain.drainLoop(FluxWindowPredicate.java:486)
+	at reactor.core.publisher.FluxWindowPredicate$WindowPredicateMain.drain(FluxWindowPredicate.java:430)
+	at reactor.core.publisher.FluxWindowPredicate$WindowPredicateMain.onComplete(FluxWindowPredicate.java:310)
+	at reactor.core.publisher.FluxCreate$BaseSink.complete(FluxCreate.java:460)
+	at reactor.core.publisher.FluxCreate$BufferAsyncSink.drain(FluxCreate.java:805)
+	at reactor.core.publisher.FluxCreate$BufferAsyncSink.complete(FluxCreate.java:753)
+	at reactor.core.publisher.FluxCreate$SerializedFluxSink.drainLoop(FluxCreate.java:247)
+	at reactor.core.publisher.FluxCreate$SerializedFluxSink.drain(FluxCreate.java:213)
+	at reactor.core.publisher.FluxCreate$SerializedFluxSink.complete(FluxCreate.java:204)
+	at org.mariadb.r2dbc.client.MariadbPacketDecoder.handleBuffer(MariadbPacketDecoder.java:104)
+	at org.mariadb.r2dbc.client.MariadbPacketDecoder.decode(MariadbPacketDecoder.java:79)
+	at io.netty.handler.codec.ByteToMessageDecoder.decodeRemovalReentryProtection(ByteToMessageDecoder.java:529)
+	at io.netty.handler.codec.ByteToMessageDecoder.callDecode(ByteToMessageDecoder.java:468)
+	at io.netty.handler.codec.ByteToMessageDecoder.channelRead(ByteToMessageDecoder.java:290)
+	at io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:444)
+	at io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:420)
+	at io.netty.channel.AbstractChannelHandlerContext.fireChannelRead(AbstractChannelHandlerContext.java:412)
+	at io.netty.channel.DefaultChannelPipeline$HeadContext.channelRead(DefaultChannelPipeline.java:1410)
+	at io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:440)
+	at io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:420)
+	at io.netty.channel.DefaultChannelPipeline.fireChannelRead(DefaultChannelPipeline.java:919)
+	at io.netty.channel.nio.AbstractNioByteChannel$NioByteUnsafe.read(AbstractNioByteChannel.java:166)
+	at io.netty.channel.nio.NioEventLoop.processSelectedKey(NioEventLoop.java:788)
+	at io.netty.channel.nio.NioEventLoop.processSelectedKeysOptimized(NioEventLoop.java:724)
+	at io.netty.channel.nio.NioEventLoop.processSelectedKeys(NioEventLoop.java:650)
+	at io.netty.channel.nio.NioEventLoop.run(NioEventLoop.java:562)
+	at io.netty.util.concurrent.SingleThreadEventExecutor$4.run(SingleThreadEventExecutor.java:997)
+	at io.netty.util.internal.ThreadExecutorMap$2.run(ThreadExecutorMap.java:74)
+	at io.netty.util.concurrent.FastThreadLocalRunnable.run(FastThreadLocalRunnable.java:30)
+	at java.base/java.lang.Thread.run(Thread.java:829)
