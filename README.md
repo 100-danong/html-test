@@ -1,35 +1,44 @@
+    public List<DeliveryInsureAccidentResponseDto> findAccidents(AccidentCreate dto){
 
-    public Flux<CallInfoDto> findCallsByAppointTimeForAccident(AccidentSearch search) {
-        String sql = """
-            SELECT si.si_cmp_code       AS siCmpCode,
-                   ri.ri_driver_id      AS riDriverId,
-                   ci.ci_insu_call_id   AS ciInsuCallId,
-                   si.si_policy_number  AS siPolicyNumber,
-                   ci.ci_appoint_time   AS ciAppointTime,
-                   ci.ci_pickup_address AS ciPickupAddress,
-                   ci.ci_delivery_address AS ciDeliveryAddress
-            FROM call_info ci
-            INNER JOIN rider_info ri ON ci.ri_id = ri.ri_id
-            INNER JOIN seller_info si ON ri.si_id = si.si_id
-            WHERE ci.ci_appoint_time >= :startTime
-              AND ci.ci_appoint_time < :endTime
-              AND ri.ri_id = :riId
-            """;
+        log.info("dto -> " + dto);
+        String callCheck = dto.getCall_id().substring(0,1);
 
-        return databaseClient.sql(sql)
-                .bind("startTime", search.getStartTime())
-                .bind("endTime", search.getEndTime())
-                .bind("riId", search.getRiId())
-                .map((row, meta) -> {
-                    CallInfoDto dto = new CallInfoDto();
-                    dto.setSiCmpCode(row.get("siCmpCode", String.class));
-                    dto.setRiDriverId(row.get("riDriverId", String.class));
-                    dto.setCiInsuCallId(row.get("ciInsuCallId", String.class));
-                    dto.setSiPolicyNumber(row.get("siPolicyNumber", String.class));
-                    dto.setCiAppointTime(row.get("ciAppointTime", LocalDateTime.class));
-                    dto.setCiPickupAddress(row.get("ciPickupAddress", String.class));
-                    dto.setCiDeliveryAddress(row.get("ciDeliveryAddress", String.class));
-                    return dto;
-                })
-                .all(); // 여러 건 반환이므로 Flux
+        AccidentSearch search = null;
+        String saveCallId = "";
+
+        if(callCheck.equals("G")) {
+            //gci_groupid로 groupcall_info 조회
+            search = accidentRepository.findByGroupCallIdForAccident(dto.getCall_id()).blockOptional().orElseThrow(() -> new BusinessException(ErrorCode.ENTITY_NOT_FOUND));
+        }else {
+            //insu_call_id로 call_info 조회
+            search = accidentRepository.findByInsuCallIdForAccident(dto.getCall_id()).blockOptional().orElseThrow(() -> new BusinessException(ErrorCode.ENTITY_NOT_FOUND));
+        }
+
+        //사고 접수 값 db에 저장
+        AccidentHistory history = accidentRepository.findAccident(dto.getClaim_number()).blockOptional().orElse(AccidentHistory.create(dto, search.getCallId()));
+
+        if(history.getAhState() == 0) {
+            accidentRepository.insertAccident(history);
+        } else {
+            accidentRepository.updateAccident(history);
+        }
+
+        LocalDateTime endDate = LocalDateTime.of(LocalDate.now(), LocalTime.of(23,59,59));
+
+        search.setEndTime(endDate);
+
+        List<CallInfoDto> callList = callInfoRepository.findCallsByAppointTimeForAccident(search).collectList().block();
+        List<DeliveryInsureAccidentResponseDto> callResList = new ArrayList<>();
+
+        callList.forEach(call -> {
+            DeliveryInsureAccidentResponseDto responseDto = new DeliveryInsureAccidentResponseDto(call);
+            callResList.add(responseDto);
+        });
+
+        log.info("=============================== 사고접수 api호출 ===================================");
+        log.info("사고접수 " + callList);
+
+        callResList.forEach(System.out::println);
+
+        return callResList;
     }
