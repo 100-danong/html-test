@@ -1,9 +1,10 @@
-    @PutMapping("/service/update/driverId")
-    @ApiOperation(value = "driverId 업데이트", notes = "고고라에서 갱신된 driverId를 goplan rider에 update하는 API")
-    public void updatedDriverId(@RequestBody UpdateLoginIdReq updateLoginIdReq) throws Exception {
-        businessService.putRiderLoginId(updateLoginIdReq);
-    }
+    public Mono<String> addVroongBalance(AddBalanceReq req) {
 
-     public void putRiderLoginId(UpdateLoginIdReq updateLoginIdReq) throws Exception {
-        riderInfoRepository.updateRiderLoginId(updateLoginIdReq);
+
+        Long balance = sellerInfoRepository.findVroongBalance().block();
+        Long result = balance + req.getBalance();
+
+        sellerInfoRepository.updateVroongBalance(result);
+
+        return "현재 예치금 잔액 : " + result;
     }
