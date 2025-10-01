@@ -1,10 +1,9 @@
-    public Mono<String> addVroongBalance(AddBalanceReq req) {
+public Mono<String> addVroongBalance(AddBalanceReq req) {
+    return sellerInfoRepository.findVroongBalance()
+        .flatMap(balance -> {
+            Long result = balance + req.getBalance();
+            return sellerInfoRepository.updateVroongBalance(result)
+                .thenReturn("현재 예치금 잔액 : " + result);
+        });
+}
 
-
-        Long balance = sellerInfoRepository.findVroongBalance().block();
-        Long result = balance + req.getBalance();
-
-        sellerInfoRepository.updateVroongBalance(result);
-
-        return "현재 예치금 잔액 : " + result;
-    }
