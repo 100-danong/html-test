@@ -1,13 +1,19 @@
-@PostMapping("/service/update/insureDate")
-@ApiOperation(value = "일보험 보험적용일자 update", notes = "고고온에서 라이더가 선택한 보험적용일자를 update하는 API")
-public Mono<ApiResponse<String>> updateInsureDate(@RequestBody UpdateInsureDateReq req) {
-    return businessService.updateInsureDate(req)
-            .map(ApiResponse::new); // Mono<String> → Mono<ApiResponse<String>>
-}
+    public Mono<RiderInfo> findByUserId(String riUserId) {
 
-@GetMapping("/service/check/status")
-@ApiOperation(value = "보험 등재 여부 확인", notes = "고고온에서 라이더의 등재여부를 확인하기 위한 API")
-public Mono<ApiResponse<String>> getCheckInsureStatus(@RequestParam("loginId") String loginId) {
-    return businessService.findRiderInsureStatus(loginId)
-            .map(ApiResponse::new);
-}
+        StringBuffer sb = new StringBuffer();
+        sb.append(" SELECT * ");
+        sb.append(" FROM rider_info ");
+        sb.append(" WHERE ri_userid =  :riUserId ");
+        sb.append(" AND ri_state = 1 ");
+
+        String sql = sb.toString();
+
+        return databaseClient.sql(sql)
+                .bind("riUserId", riUserId)
+                .map((row, metadata) -> {
+                    RiderInfo riderInfo = new RiderInfo();
+                    riderInfo.setRi_id(row.get("ri_id", Long.class));
+                    return riderInfo;
+                })
+                .one();     // 결과가 1개 (LIMIT 1)
+    }
