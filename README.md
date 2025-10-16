@@ -12,8 +12,14 @@
                 .bind("riUserId", riUserId)
                 .map((row, metadata) -> {
                     RiderInfo riderInfo = new RiderInfo();
-                    riderInfo.setRi_id(row.get("ri_id", Long.class));
+                    riderInfo.setRi_total_webview_url(row.get("ri_total_webview_url", String.class));
                     return riderInfo;
                 })
                 .one();     // 결과가 1개 (LIMIT 1)
+    }
+
+
+    public String getTotalUrlApi1(String riUserId) {
+        RiderInfo rider = riderInfoRepository.findByUserId(riUserId).orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND_USER));
+        return rider.getRi_total_webview_url();
     }
