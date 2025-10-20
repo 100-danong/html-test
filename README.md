@@ -1,8 +1,11 @@
-public Mono<String> getTotalUrlApi4(String riUserId) {
-    return riderInfoRepository.findByRenewUserId(riUserId)
-            .switchIfEmpty(
-                riderInfoRepository.findByUserId(riUserId)
-                    .switchIfEmpty(Mono.error(new BusinessException(ErrorCode.NOT_FOUND_USER)))
-            )
-            .map(RiderInfo::getRi_total_webview_url);
-}
+    public User findByPhoneNumber2(String phoneNumber){
+        User resultUser = queryFactory
+                .selectFrom(user)
+                .where(user.phoneNumber.eq(phoneNumber))
+                .where(user.useYN.eq("Y").or(user.useYN.eq("H")))
+                .fetchOne();
+        if(resultUser == null){
+            throw new BusinessException(ErrorCode.NOT_MATCH_USER1);
+        }
+        return resultUser;
+    }
