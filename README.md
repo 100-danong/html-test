@@ -1,16 +1,24 @@
-    @PostMapping("/api/9")
-    @ApiOperation(value = "api9 운행가능여부조회", notes = "운행을 시작하기전 보험적용 여부확인을 위해 라이더의 정보를 kb측에 전송합니다")
-    public Mono<ResultDto> api9(@RequestBody api9Req api9Req) throws IOException {
-        return new ResultDto(kbService.kbApi9th(api9Req.getDriver_id()));
+    public Mono<Map<String, Object>> findByPhoneRiStatus(String phone) {
+
+        StringBuffer sb = new StringBuffer();
+        sb.append(" SELECT r.ri_insu_status as inStatus, i.ih_apply_state as applyState");
+        sb.append(" FROM rider_info r JOIN insurance_history i ");
+        sb.append(" ON r.ri_id = i.ri_id ");
+        sb.append(" WHERE r.ri_phone = :phone ");
+        sb.append(" AND r.ri_state = 1 ");
+
+        String sql = sb.toString();
+
+        return databaseClient.sql(sql)
+                .bind("phone", phone)
+                .map((row, metadata) -> {
+                    
+                    return riderSellerRes;
+                })
+                .one();     // 결과가 1개 (LIMIT 1)
     }
 
-    @Getter
-@AllArgsConstructor
-@NoArgsConstructor
-public class ResultDto {
-    String result;
-
-    public void ResultDTO(Mono<String> result) {
-        this.result = String.valueOf(result);
+        public RiderStatusRes getRiderInsuranceStatus(String phone) {
+        Map<String, Object> rider = businessRiderInfoRepository.findByPhoneRiStatus(phone).orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND_USER));
+        return new RiderStatusRes((String) rider.get("ri_insu_status"),(String) rider.get("ih_apply_state"));
     }
-}
