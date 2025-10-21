@@ -1,23 +1,16 @@
-public Mono<String> kbApi9th(String driverId) {
-    return riderInfoRepository.findByDriverId(driverId)
-            .switchIfEmpty(Mono.error(new BusinessException(ErrorCode.NOT_FOUND_USER)))
-            .flatMap(rider -> {
-                try {
-                    KBRetrofitConfig<ResultDto> KBRetrofitConfig = new KBRetrofitConfig<>();
-                    ResultDto dto = KBRetrofitConfig.create(KbSendApi.class)
-                            .kbApi9Retrofit(new KbApi9thReq(rider))
-                            .execute()
-                            .body();
+    @PostMapping("/api/9")
+    @ApiOperation(value = "api9 운행가능여부조회", notes = "운행을 시작하기전 보험적용 여부확인을 위해 라이더의 정보를 kb측에 전송합니다")
+    public Mono<ResultDto> api9(@RequestBody api9Req api9Req) throws IOException {
+        return new ResultDto(kbService.kbApi9th(api9Req.getDriver_id()));
+    }
 
-                    if (dto == null) {
-                        return Mono.error(new BusinessException(ErrorCode.INTERNAL_SERVER_ERROR));
-                    }
-                    if (!"ok".equals(dto.getResult())) {
-                        return Mono.error(new BusinessException(ErrorCode.DRIVER_ERROR));
-                    }
-                    return Mono.just("ok");
-                } catch (IOException e) {
-                    return Mono.error(e);
-                }
-            });
+    @Getter
+@AllArgsConstructor
+@NoArgsConstructor
+public class ResultDto {
+    String result;
+
+    public void ResultDTO(Mono<String> result) {
+        this.result = String.valueOf(result);
+    }
 }
