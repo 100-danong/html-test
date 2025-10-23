@@ -1,24 +1,32 @@
-    public Mono<Map<String, Object>> findByPhoneRiStatus(String phone) {
+package com.gogofnd.kb.Insurance.service;
 
-        StringBuffer sb = new StringBuffer();
-        sb.append(" SELECT r.ri_insu_status as inStatus, i.ih_apply_state as applyState");
-        sb.append(" FROM rider_info r JOIN insurance_history i ");
-        sb.append(" ON r.ri_id = i.ri_id ");
-        sb.append(" WHERE r.ri_phone = :phone ");
-        sb.append(" AND r.ri_state = 1 ");
+import com.gogofnd.kb.Insurance.entity.SellerInfo;
+import com.gogofnd.kb.Insurance.repository.SellerInfoRepository;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
-        String sql = sb.toString();
+@Service
+@RequiredArgsConstructor
+public class SellerInfoService {
 
-        return databaseClient.sql(sql)
-                .bind("phone", phone)
-                .map((row, metadata) -> {
-                    
-                    return riderSellerRes;
-                })
-                .one();     // 결과가 1개 (LIMIT 1)
+    private final SellerInfoRepository sellerInfoRepository;
+
+    public Flux<SellerInfo> getAll() {
+        return sellerInfoRepository.findAll();
     }
 
-        public RiderStatusRes getRiderInsuranceStatus(String phone) {
-        Map<String, Object> rider = businessRiderInfoRepository.findByPhoneRiStatus(phone).orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND_USER));
-        return new RiderStatusRes((String) rider.get("ri_insu_status"),(String) rider.get("ih_apply_state"));
+    public Mono<SellerInfo> getById(Long si_id) {
+        return sellerInfoRepository.findById(si_id);
     }
+    
+    public Mono<SellerInfo> findBySellerCode(String sellerCode) {
+        return sellerInfoRepository.findBySellerCode(sellerCode);
+    }
+
+    public Mono<SellerInfo> save(SellerInfo sellerInfo){
+        return sellerInfoRepository.save(sellerInfo);
+    }
+
+}
