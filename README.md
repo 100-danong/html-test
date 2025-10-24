@@ -1,1 +1,8 @@
-SQL Error [1503] [HY000]: (conn=783063) A PRIMARY KEY must include all columns in the table's partitioning function
+ALTER TABLE call_count_info
+PARTITION BY RANGE (TO_DAYS(sales_date)) (
+    PARTITION p2025_08 VALUES LESS THAN (TO_DAYS('2025-09-01')),
+    PARTITION p2025_09 VALUES LESS THAN (TO_DAYS('2025-10-01')),
+    PARTITION p2025_10 VALUES LESS THAN (TO_DAYS('2025-11-01')),
+    PARTITION pmax VALUES LESS THAN MAXVALUE
+)
+PRIMARY KEY(id, sales_date);
