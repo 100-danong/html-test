@@ -1,1 +1,1 @@
-SQL Error [1227] [42000]: (conn=783063) Access denied; you need (at least one of) the SUPER privilege(s) for this operation
+SQL Error [1064] [42000]: (conn=36) You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near '' at line 2
