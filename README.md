@@ -1,1 +1,11 @@
-SQL Error [1064] [42000]: (conn=783063) You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near 'PRIMARY KEY(cci_id, sales_date)' at line 8
+ALTER TABLE call_count_info
+DROP PRIMARY KEY,
+ADD PRIMARY KEY (cci_id, sales_date);
+
+ALTER TABLE call_count_info
+PARTITION BY RANGE (TO_DAYS(sales_date)) (
+    PARTITION p2025_08 VALUES LESS THAN (TO_DAYS('2025-09-01')),
+    PARTITION p2025_09 VALUES LESS THAN (TO_DAYS('2025-10-01')),
+    PARTITION p2025_10 VALUES LESS THAN (TO_DAYS('2025-11-01')),
+    PARTITION pmax VALUES LESS THAN MAXVALUE
+);
