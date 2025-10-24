@@ -1,1 +1,1 @@
-SHOW GLOBAL STATUS LIKE 'Uptime';
+@Transactional(noRollbackFor = RuntimeException.class)
