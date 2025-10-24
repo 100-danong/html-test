@@ -1,5 +1,1 @@
-ALTER TABLE call_count_info
-PARTITION BY RANGE (TO_DAYS(sales_date)) (
-    PARTITION p2025_10 VALUES LESS THAN (TO_DAYS('2025-11-01')),
-    PARTITION pmax VALUES LESS THAN MAXVALUE
-);
+SQL Error [1503] [HY000]: (conn=783063) A PRIMARY KEY must include all columns in the table's partitioning function
