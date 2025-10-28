@@ -1,27 +1,2 @@
-C:\Users\user02gogof>ping repo.maven.apache.org
-
-Ping repo.apache.maven.org.cdn.cloudflare.net [104.18.19.12] 32바이트 데이터 사용:
-104.18.19.12의 응답: 바이트=32 시간=1ms TTL=54
-104.18.19.12의 응답: 바이트=32 시간=1ms TTL=54
-104.18.19.12의 응답: 바이트=32 시간=1ms TTL=54
-104.18.19.12의 응답: 바이트=32 시간=1ms TTL=54
-
-104.18.19.12에 대한 Ping 통계:
-    패킷: 보냄 = 4, 받음 = 4, 손실 = 0 (0% 손실),
-왕복 시간(밀리초):
-    최소 = 1ms, 최대 = 1ms, 평균 = 1ms
-
-C:\Users\user02gogof>ping dl.google.com
-
-Ping dl.google.com [142.250.194.110] 32바이트 데이터 사용:
-142.250.194.110의 응답: 바이트=32 시간=33ms TTL=114
-142.250.194.110의 응답: 바이트=32 시간=33ms TTL=114
-142.250.194.110의 응답: 바이트=32 시간=33ms TTL=114
-142.250.194.110의 응답: 바이트=32 시간=33ms TTL=114
-
-142.250.194.110에 대한 Ping 통계:
-    패킷: 보냄 = 4, 받음 = 4, 손실 = 0 (0% 손실),
-왕복 시간(밀리초):
-    최소 = 33ms, 최대 = 33ms, 평균 = 33ms
-
-C:\Users\user02gogof>
+gradlew --stop
+gradlew clean build --refresh-dependencies
