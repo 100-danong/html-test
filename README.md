@@ -1,29 +1,21 @@
-public Mono<RegistrationStatusRes> getRiderInsuranceStatus(RegistrationStatusReq req, String apiKey) throws Exception {
-    // 복호화 및 seller_code 검증
-    String decryptedApiKey = SellerAES_Encryption.decrypt(apiKey);
-    log.info("decrypt : {}", decryptedApiKey);
-    if (!req.getSeller_code().equals(decryptedApiKey)) {
-        throw new BusinessException(ErrorCode.HANDLE_ACCESS_DENIED);
+    public Mono<String> findByRiderAndStatusOrderCrd(HashMap<String, Object> param) {
+
+        StringBuffer sb = new StringBuffer();
+        sb.append(" SELECT ish.ih_reject_code as recode ");
+        sb.append(" FROM insurance_history ih ");
+        sb.append(" INNER JOIN insurance_state_history ish ");
+        sb.append(" ON ih.ih_id = ish.ih_id ");
+        sb.append(" WHERE ih.ri_id = :riId ");
+        sb.append(" AND ish.ih_insu_state = :rrRejectState ");
+        sb.append(" ORDER BY ish.ish_ins_time DESC ");
+        sb.append(" LIMIT 1 ");
+        String sql = sb.toString();
+
+        return databaseClient.sql(sql)
+                .bind("riId", param.get("riId"))
+                .bind("rrRejectState", param.get("rrRejectState"))
+                .map((row, metadata) -> {
+                    return row.get("recode", String.class);
+                })
+                .one();     // 결과가 1개 (LIMIT 1)
     }
-
-    // 주민등록번호 형태 체크
-    String rawSsn = aes256Decode(req.getDriver_ssn());
-    ssnCheck(rawSsn);
-
-    log.debug("rawSsn : {}", rawSsn);
-    String aes128Ssn = aesEncode(rawSsn);
-    System.out.println(rawSsn + " :: " + aes128Ssn + " :: " + req.getDriver_ssn());
-
-    // DB 조회 (동기)
-    List<Map<String, Object>> riderList = (List<Map<String, Object>>) businessRiderInfoRepository.findByRiderSsn(req.getName());
-    if (riderList.isEmpty()) {
-        throw new BusinessException(ErrorCode.NOT_FOUND_USER);
-    }
-    Map<String, Object> rider = checkSsn(riderList, rawSsn);
-
-    String rider_loginId = (String) rider.get("ri_userid");
-    String rider_sellerName = (String) rider.get("si_name");
-
-    // ✅ 리액티브 타입으로 감싸서 리턴
-    return Mono.just(new RegistrationStatusRes(rider_loginId, rider_sellerName));
-}
