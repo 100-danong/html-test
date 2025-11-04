@@ -16,4 +16,4 @@ select DISTINCT
             and gci.gci_first_starttime  < '2025-11-03 06:00:00'
             and spn.spn_effect_startdate  <=  '2025-10-30 06:00:00'
             and spn.spn_effect_enddate  >=  '2025-11-03 06:00:00'
-order by gci.ri_id;
+order by gci.ri_id, gci.gci_first_starttime;
