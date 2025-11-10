@@ -1,4 +1,6 @@
-    <insert id="saveAllStateHistory" parameterType="java.util.List" >
+public Mono<Void> saveAllStateHistory(List<HistoriesSaveDto> histories) {
+
+    String sql = """
         INSERT INTO insurance_state_history (
             ish_ins_time,
             ih_id,
@@ -8,17 +10,23 @@
             ih_effect_startdate,
             ih_effect_enddate,
             ih_until
-        ) VALUES
-        <foreach collection="list" item="r" separator=",">
-        (
-            #{r.ishInsTime},
-            #{r.ihId},
-            #{r.riId},
-            #{r.ihRejectCode},
-            #{r.ihInsuState},
-            #{r.ihEffectStartdate},
-            #{r.ihEffectEnddate},
-            #{r.ihUntil}
         )
-        </foreach>
-    </insert>
+        VALUES (:ishInsTime, :ihId, :riId, :ihRejectCode, :ihInsuState, :ihEffectStartdate, :ihEffectEnddate, :ihUntil)
+    """;
+
+    return Flux.fromIterable(histories)
+            .flatMap(history -> databaseClient.sql(sql)
+                    .bind("ishInsTime", history.getIshInsTime())
+                    .bind("ihId", history.getIhId())
+                    .bind("riId", history.getRiId())
+                    .bind("ihRejectCode", history.getIhRejectCode())
+                    .bind("ihInsuState", history.getIhInsuState())
+                    .bind("ihEffectStartdate", history.getIhEffectStartdate())
+                    .bind("ihEffectEnddate", history.getIhEffectEnddate())
+                    .bind("ihUntil", history.getIhUntil())
+                    .fetch()
+                    .rowsUpdated()
+                    .then()
+            )
+            .then(); // Flux<Void> → Mono<Void>
+}
