@@ -1,20 +1,38 @@
-public Mono<Void> updateAllWithDrawComp(List<HistoriesSaveDto> histories) {
+    public String api4Return(String phone){
+        log.info("계약체결동의 요청 Phone " + phone);
 
-    String sql = """
-        UPDATE rider_insurance_history SET
-            rih_withdraw_complete_time = :rihWithdrawCompleteTime,
-            rih_upd_time               = :ihUpdTime
-        WHERE ri_id = :riId
-    """;
+        RiderInfo rider;
+        rider = businessRiderInfoRepository.findByPhoneRenew(phone).block();
 
-    return Flux.fromIterable(histories)
-            .flatMap(r -> databaseClient.sql(sql)
-                    .bind("rihWithdrawCompleteTime", r.getRihWithdrawCompleteTime())
-                    .bind("ihUpdTime", r.getIhUpdTime())
-                    .bind("riId", r.getRiId())
-                    .fetch()
-                    .rowsUpdated()
-                    .then()
-            )
-            .then(); // 전체 완료 시 Mono<Void> 반환
-}
+        if(ObjectUtils.isEmpty(rider)) {
+            // 일반
+            rider = businessRiderInfoRepository.findByPhone(phone).orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND_USER));
+
+            HistoriesSaveDto update = historyMapper.findForUpdateById(rider.getRi_id(), rider.getRi_state()).block();
+
+            log.info("계약체결동의 완료 " + rider.getRi_id());
+
+            update.setIhInsuState("051");
+            update.setRiId(rider.getRi_id());
+            update.updateTime();
+
+            insuranceHistoryRepository.update(update);
+            historyMapper.saveStateHistory(update);
+            businessRiderInfoRepository.updateRiInsuState(update);
+        } else {
+            // 갱신 중
+            HistoriesSaveDto update = historyMapper.findForUpdateById(rider.getRi_id(), rider.getRi_state()).block();
+
+            log.info("계약체결동의 완료 " + rider.getRi_id());
+
+            update.setIhInsuState("051");
+            update.setRiId(rider.getRi_id());
+            update.updateTime();
+
+            historyMapper.updateRenew(update);
+            historyMapper.saveStateHistoryRenew(update);
+            businessRiderInfoRepository.updateRiInsuStateRenew(update);
+        }
+
+        return "Y";
+    }
