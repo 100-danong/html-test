@@ -1,16 +1,27 @@
-public Mono<Void> riderWebInsuranceHistoryInsert(RiderInsuranceDto dto) {
-    StringBuffer sb = new StringBuffer();
-    sb.append("INSERT INTO rider_insurance_history (");
-    sb.append(" ri_id, ih_id, rih_ins_time, rih_upd_time, rih_state ");
-    sb.append(") VALUES (");
-    sb.append(" :riId, :ihId, :rihInsTime, :rihUpdTime, 1 )");
-
-    return databaseClient.sql(sb.toString())
-            .bind("riId", dto.getRiId())
-            .bind("ihId", dto.getIhId())
-            .bind("rihInsTime", dto.getRihInsTime())
-            .bind("rihUpdTime", dto.getRihInsTime())  // 원래 쿼리처럼 둘 다 동일
-            .fetch()
-            .rowsUpdated()
-            .then(); // Mono<Void> 리턴
-}
+    <insert id="saveStateHistory" parameterType="com.gogofnd.kb.insurances.insurance.dto.WebHistoriesSaveDto">
+        INSERT INTO insurance_state_history (
+        ish_ins_time,
+        ih_id,
+        ri_id,
+        ih_insu_state,
+        ih_effect_startdate,
+        ih_effect_enddate,
+        ih_until
+        ) VALUES (
+        #{ihUpdTime},
+        #{ihId},
+        #{riId},
+        #{ihInsuState},
+        #{ihEffectStartdate},
+        #{ihEffectEnddate},
+        #{ihUntil}
+        );
+    </insert>
+이거랑 밑에있는거랑 두개는 서로 다른거야 2개 만들어줘
+        <update id="update" parameterType="com.gogofnd.kb.partner.rider.entity.RiderWebInfo">
+        UPDATE rider_info SET
+            ri_driver_id = #{riDriverId},
+            ri_upd_time  = #{riUpdTime}
+        WHERE ri_id = #{riId}
+        AND ri_state = 1
+    </update>
