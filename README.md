@@ -1,10 +1,43 @@
-if (riderWebRepositoryByPhone != null) {
-    String rStatus = riderWebRepositoryByPhone.getRiInsuStatus();
-
-    if (!"011".equals(rStatus)) {
-        throw new BusinessException(ErrorCode.INVALID_REQUEST);
-    } else if ("011".equals(rStatus)) {
-        throw new BusinessException(ErrorCode.ALREADY_REQUESTED);
-    }
-    riderWeb.updateRequestData(req);
-}
+    <insert id="insert" parameterType="com.gogofnd.kb.partner.rider.entity.RiderWebInfo" useGeneratedKeys="true" keyProperty="riId">
+        INSERT INTO rider_info (
+            ri_id,
+            ri_name,
+            ri_phone,
+            ri_birthdate,
+            ri_bike_number,
+            ri_driver_id,
+            ri_active_area,
+            ri_userid,
+            ri_insu_status,
+            ri_pay_status,
+            ri_compinsu_enddate,
+            ri_operpurp_code,
+            ri_gender,
+            ri_ss_number,
+            ri_state,
+            si_id,
+            ri_balance,
+            ri_ins_time,
+            ri_upd_time
+        ) VALUES (
+            #{riId},
+            #{riName},
+            #{riPhone},
+            #{riBirthdate},
+            #{riBikeNumber},
+            #{riDriverId},
+            #{riActiveArea},
+            #{riUserid},
+            #{riInsuStatus},
+            #{riPayStatus},
+            #{riCompinsuEnddate},
+            #{riOperpurpCode},
+            #{riGender},
+            #{riSsNumber},
+            #{riState},
+            #{siId},
+            #{riBalance},
+            #{riInsTime},
+            #{riUpdTime}
+        )
+    </insert>
