@@ -1,43 +1,42 @@
-    <insert id="insert" parameterType="com.gogofnd.kb.partner.rider.entity.RiderWebInfo" useGeneratedKeys="true" keyProperty="riId">
-        INSERT INTO rider_info (
-            ri_id,
-            ri_name,
-            ri_phone,
-            ri_birthdate,
-            ri_bike_number,
-            ri_driver_id,
-            ri_active_area,
-            ri_userid,
-            ri_insu_status,
-            ri_pay_status,
-            ri_compinsu_enddate,
-            ri_operpurp_code,
-            ri_gender,
-            ri_ss_number,
-            ri_state,
-            si_id,
-            ri_balance,
-            ri_ins_time,
-            ri_upd_time
-        ) VALUES (
-            #{riId},
-            #{riName},
-            #{riPhone},
-            #{riBirthdate},
-            #{riBikeNumber},
-            #{riDriverId},
-            #{riActiveArea},
-            #{riUserid},
-            #{riInsuStatus},
-            #{riPayStatus},
-            #{riCompinsuEnddate},
-            #{riOperpurpCode},
-            #{riGender},
-            #{riSsNumber},
-            #{riState},
-            #{siId},
-            #{riBalance},
-            #{riInsTime},
-            #{riUpdTime}
-        )
-    </insert>
+public Mono<Integer> insert(RiderWebInfo riderWebInfo) {
+
+    StringBuffer sb = new StringBuffer();
+    sb.append("INSERT INTO rider_info (");
+    sb.append("    ri_id, ");
+    sb.append("    ri_name, ");
+    sb.append("    ri_phone, ");
+    sb.append("    ri_birthdate, ");
+    sb.append("    ri_bike_number, ");
+    sb.append("    ri_driver_id, ");
+    sb.append("    ri_active_area, ");
+    sb.append("    ri_userid, ");
+    sb.append("    ri_insu_status, ");
+    sb.append("    ri_pay_status, ");
+    sb.append("    ri_compinsu_enddate, ");
+    sb.append("    ri_operpurp_code, ");
+    sb.append("    ri_gender, ");
+    sb.append("    ri_ss_number, ");
+    sb.append("    ri_state, ");
+    sb.append("    si_id, ");
+    sb.append("    ri_balance, ");
+    sb.append("    ri_ins_time, ");
+    sb.append("    ri_upd_time ");
+    sb.append(") VALUES (");
+    sb.append("    :riId, :riName, :riPhone, :riBirthdate, :riBikeNumber, ");
+    sb.append("    :riDriverId, :riActiveArea, :riUserid, :riInsuStatus, :riPayStatus, ");
+    sb.append("    :riCompinsuEnddate, :riOperpurpCode, :riGender, :riSsNumber, :riState, ");
+    sb.append("    :siId, :riBalance, :riInsTime, :riUpdTime ");
+    sb.append(")");
+
+    String sql = sb.toString();
+
+    return databaseClient.sql(sql)
+            .bind("riId", riderWebInfo.getRiId())
+            .bind("riName", riderWebInfo.getRiName())
+            .bind("riPhone", riderWebInfo.getRiPhone())
+            .bind("riBirthdate", riderWebInfo.getRiBirthdate())
+            .bind("riBikeNumber", riderWebInfo.getRiBikeNumber())
+            .bind("riDriverId", riderWebInfo.getRiDriverId())
+            .bind("riActiveArea", riderWebInfo.getRiActiveArea())
+            .bind("riUserid", riderWebInfo.getRiUserid())
+            .bind("riInsuStatus", riderWebInf
