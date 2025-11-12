@@ -39,4 +39,17 @@ public Mono<Integer> insert(RiderWebInfo riderWebInfo) {
             .bind("riDriverId", riderWebInfo.getRiDriverId())
             .bind("riActiveArea", riderWebInfo.getRiActiveArea())
             .bind("riUserid", riderWebInfo.getRiUserid())
-            .bind("riInsuStatus", riderWebInf
+            .bind("riInsuStatus", riderWebInfo.getRiInsuStatus())
+            .bind("riPayStatus", riderWebInfo.getRiPayStatus())
+            .bind("riCompinsuEnddate", riderWebInfo.getRiCompinsuEnddate())
+            .bind("riOperpurpCode", riderWebInfo.getRiOperpurpCode())
+            .bind("riGender", riderWebInfo.getRiGender())
+            .bind("riSsNumber", riderWebInfo.getRiSsNumber())
+            .bind("riState", riderWebInfo.getRiState())
+            .bind("siId", riderWebInfo.getSiId())
+            .bind("riBalance", riderWebInfo.getRiBalance())
+            .bind("riInsTime", riderWebInfo.getRiInsTime())
+            .bind("riUpdTime", riderWebInfo.getRiUpdTime())
+            .fetch()
+            .rowsUpdated(); // Mono<Integer> 반환 (영향받은 row 수)
+}
