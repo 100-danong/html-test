@@ -1,81 +1,51 @@
-    <select id="findAllByDriverId" parameterType="java.util.List" resultType="com.gogofnd.kb.partner.rider.entity.RiderInfo">
-        SELECT *
-        FROM (
-            SELECT ri.ri_driver_id, ri.ri_id, ri.ri_state, ri.ri_insu_status, si.si_policy_number
-            FROM rider_info ri
-            INNER JOIN seller_info si
-            ON ri.si_id = si.si_id
-            WHERE 1=1
-            AND ri_state = 1
-            AND ri_driver_id IN
-            <foreach collection='list' item='item' open='(' close=')' separator=','>
-                #{item}
-            </foreach>
-            GROUP BY ri_driver_id
+public Flux<RiderInfo> findAllByDriverId(List<String> driverIds) {
+    if (driverIds == null || driverIds.isEmpty()) {
+        return Flux.empty();
+    }
 
-            UNION ALL
+    // IN절 생성 (예: (?, ?, ?))
+    String inClause = driverIds.stream()
+            .map(id -> "?")
+            .collect(Collectors.joining(", ", "(", ")"));
 
-            SELECT rin.ri_driver_id, rin.ri_id, rin.ri_state, rin.ri_insu_status, spn.spn_policy_number
-            FROM rider_info_renew rin
-            INNER JOIN seller_policy_number spn
-            ON rin.spn_id = spn.spn_id
-            WHERE 1=1
-            AND ri_state = 4
-            AND ri_driver_id IN
-            <foreach collection='list' item='item' open='(' close=')' separator=','>
-                #{item}
-            </foreach>
-            GROUP BY ri_driver_id
-        ) AS t
-        ORDER BY ri_id
-    </select>
+    StringBuffer sb = new StringBuffer();
+    sb.append(" SELECT * FROM ( ");
+    sb.append(" SELECT ri.ri_driver_id, ri.ri_id, ri.ri_state, ri.ri_insu_status, si.si_policy_number ");
+    sb.append(" FROM rider_info ri ");
+    sb.append(" INNER JOIN seller_info si ON ri.si_id = si.si_id ");
+    sb.append(" WHERE ri.ri_state = 1 ");
+    sb.append(" AND ri.ri_driver_id IN " + inClause);
+    sb.append(" GROUP BY ri.ri_driver_id ");
 
-    이 쿼리를 해야하는데
+    sb.append(" UNION ALL ");
 
-    package com.gogofnd.kb.Insurance.entity;
+    sb.append(" SELECT rin.ri_driver_id, rin.ri_id, rin.ri_state, rin.ri_insu_status, spn.spn_policy_number ");
+    sb.append(" FROM rider_info_renew rin ");
+    sb.append(" INNER JOIN seller_policy_number spn ON rin.spn_id = spn.spn_id ");
+    sb.append(" WHERE rin.ri_state = 4 ");
+    sb.append(" AND rin.ri_driver_id IN " + inClause);
+    sb.append(" GROUP BY rin.ri_driver_id ");
+    sb.append(" ) AS t ORDER BY ri_id ");
 
-import lombok.Getter;
-import lombok.Setter;
+    String sql = sb.toString();
 
-import org.springframework.data.annotation.Id;
-import org.springframework.data.relational.core.mapping.Table;
-import java.time.LocalDateTime;
+    // bind()에선 index 기반으로 매핑해야 함
+    DatabaseClient.GenericExecuteSpec spec = databaseClient.sql(sql);
+    for (String id : driverIds) {
+        spec = spec.bind(driverIds.indexOf(id), id);
+    }
+    for (String id : driverIds) {
+        spec = spec.bind(driverIds.size() + driverIds.indexOf(id), id);
+    }
 
-@Table("rider_info")
-@Getter
-@Setter
-public class RiderInfo {
-
-    @Id
-    private Long ri_id;
-
-    private String ri_name;
-    private String ri_phone;
-    private String ri_birthdate;
-    private int ri_gender;
-    private String ri_ss_number;
-    private String ri_bike_number;
-    private String ri_driver_id;
-    private String ri_active_area;
-    private String ri_userid;
-    private String ri_insu_status;
-    private String ri_compinsu_enddate;
-    private String ri_operpurp_code;
-    private LocalDateTime ri_insu_startdate;
-    private LocalDateTime ri_insu_enddate;
-    private String ri_insu_imgpath;
-    private Long si_id;
-    private String ri_total_webview_url;
-    private int ri_balance;
-    private String ri_pay_status;
-    private String ri_received_driver_id;
-    private String ri_ctcagreyn;
-    private LocalDateTime ri_ins_time;
-    private LocalDateTime ri_upd_time;
-    private int ri_state;
-
-
+    return spec.map((row, metadata) -> {
+                RiderInfo riderInfo = new RiderInfo();
+                riderInfo.setRi_driver_id(row.get("ri_driver_id", String.class));
+                riderInfo.setRi_id(row.get("ri_id", Long.class));
+                riderInfo.setRi_state(row.get("ri_state", Integer.class));
+                riderInfo.setRi_insu_status(row.get("ri_insu_status", String.class));
+                // si_policy_number는 RiderInfo에 없으니 필요하면 추가하세요.
+                return riderInfo;
+            })
+            .all(); // 결과 여러 개 → Flux
 }
-
-
-여기에다가 넣어야해 LIST형식이야
