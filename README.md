@@ -1,36 +1,37 @@
-public Mono<HistoriesSaveDto> findForUpdateByPolicyNumber(Long riId, String siPolicyNumber) {
+    <select id="findSellerPolicyNumberByCmpcd" parameterType="java.util.Map" resultType="com.gogofnd.kb.partner.seller.entity.SellerPolicyNumber">
+        SELECT *
+        FROM seller_policy_number
+        WHERE si_cmp_code = #{siCmpCode}
+        AND spn_apply_state = #{spnApplyState}
+    </select>
 
-    StringBuffer sb = new StringBuffer();
+    @NoArgsConstructor
+@Getter
+@Table("seller_policy_number")
+public class SellerPolicyNumber {
+    @Id
+    private Long spnId = 0L;
 
-    sb.append("SELECT ih.*, ri.ri_state ");
-    sb.append("FROM insurance_history ih ");
-    sb.append("INNER JOIN rider_info ri ON ih.ri_id = ri.ri_id ");
-    sb.append("INNER JOIN seller_info si ON ri.si_id = si.si_id ");
-    sb.append("WHERE ih.ri_id = :riId ");
-    sb.append("AND si.si_policy_number = :siPolicyNumber ");
+    private String siCmpCode;
 
-    sb.append("UNION ALL ");
+    private String spnPolicyNumber;
 
-    sb.append("SELECT ih.*, ri.ri_state ");
-    sb.append("FROM insurance_renew_history ih ");
-    sb.append("INNER JOIN rider_info_renew ri ON ih.ri_id = ri.ri_id ");
-    sb.append("INNER JOIN seller_policy_number spn ON ri.spn_id = spn.spn_id ");
-    sb.append("WHERE ih.ri_id = :riId ");
-    sb.append("AND spn.spn_policy_number = :siPolicyNumber ");
-    sb.append("AND ri.ri_state != 9 ");
+    private String spnApplicationNumber;
 
-    String sql = sb.toString();
+    private String spnInsuImgpath;
 
-    return databaseClient.sql(sql)
-            .bind("riId", riId)
-            .bind("siPolicyNumber", siPolicyNumber)
-            .map((row, meta) -> {
+    private String spnApplyState;
 
-                Map<String, Object> map = new HashMap<>();
+    private LocalDateTime spnEffectStartdate;
 
-                meta.getColumnNames().forEach(col -> map.put(col, row.get(col)));
+    private LocalDateTime spnEffectEnddate;
 
-                return HistoriesSaveDto.from(map);
-            })
-            .one();
+    private String spnWriter;
+
+    private Integer spnState;
+
+    private LocalDateTime spnInsTime;
+
+    private LocalDateTime spnUpdTime;
+
 }
