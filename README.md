@@ -1,1 +1,1 @@
-SellerPolicyNumber sellerPolicyNumber = sellerPolicyNumberRepository.findSellerPolicyNumberByCmpcd(d.getProxy_driv_coorp_cmpcd(), "W").orElse(new SellerPolicyNumber());****
+RiderInfo rider = riderInfoRepository.findByPhone(phone).defaultIfEmpty(() -> new BusinessException(ErrorCode.NOT_FOUND_USER));
