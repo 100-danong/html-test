@@ -1,22 +1,4 @@
-public Mono<Integer> insertCallCountInfo(CallCountInfo dto) {
-
-    StringBuffer sb = new StringBuffer();
-    sb.append("INSERT INTO call_count_info ");
-    sb.append("(sales_date, ri_id, si_id, ci_call_id, cci_start_count, cci_end_count, ");
-    sb.append(" cci_group_count, cci_total_count, cci_ins_time, cci_upd_time, flag) ");
-    sb.append("VALUES (:salesDate, :riId, :siId, :ciCallId, :cciStartCount, :cciEndCount, ");
-    sb.append(" :cciGroupCount, :cciTotalCount, NOW(), NOW(), :flag)");
-
-    return databaseClient.sql(sb.toString())
-            .bind("salesDate", dto.getSalesDate())
-            .bind("riId", dto.getRiId())
-            .bind("siId", dto.getSiId())
-            .bind("ciCallId", dto.getCiCallId())
-            .bind("cciStartCount", dto.getCciStartCount())
-            .bind("cciEndCount", dto.getCciEndCount())
-            .bind("cciGroupCount", dto.getCciGroupCount())
-            .bind("cciTotalCount", dto.getCciTotalCount())
-            .bind("flag", dto.getFlag())
-            .fetch()
-            .rowsUpdated();
-}
+    <insert id="insetStartCallInfo" parameterType="com.gogofnd.kb.partner.call.entity.CallInfo">
+        INSERT INTO call_info (ci_pickup_time, ci_appoint_time, ci_pickup_address, ci_call_id, ci_delivery_status, ci_company_name, ri_id, ci_ins_time, ci_upd_time, gci_groupid, sales_date)
+        VALUES(#{ciPickupTime}, #{ciAppointTime}, #{ciPickupAddress}, #{ciCallId}, #{ciDeliveryStatus}, #{ciCompanyName}, #{riId}, #{ciAppointTime}, #{ciAppointTime}, #{gciGroupid}, #{salesDate})
+    </insert>
