@@ -1,23 +1,17 @@
-    <update id="updateEndCallInfo" parameterType="com.gogofnd.kb.domain.rider.dto.tg.TgDTO3">
-        UPDATE call_info
-        SET ci_complete_time = #{endTime},
-        ci_delivery_status = #{status},
-        ci_delivery_address = #{deliveryAddress}
-        WHERE ci_insu_call_id = #{insuCallId}
-    </update>
+public Mono<Integer> updateEndCallInfo(TgDTO3 dto) {
 
-    package com.gogofnd.kb.Gosafe.dto;
+    StringBuffer sb = new StringBuffer();
+    sb.append("UPDATE call_info ");
+    sb.append("SET ci_complete_time = :endTime, ");
+    sb.append("    ci_delivery_status = :status, ");
+    sb.append("    ci_delivery_address = :deliveryAddress ");
+    sb.append("WHERE ci_insu_call_id = :insuCallId");
 
-import lombok.Data;
-
-import java.time.LocalDateTime;
-
-@Data
-public class TgDTO3 {
-
-    private LocalDateTime endTime;
-    private String status = "완료";
-    private String insuCallId;
-    private String deliveryAddress;
-
+    return databaseClient.sql(sb.toString())
+            .bind("endTime", dto.getEndTime())
+            .bind("status", dto.getStatus())
+            .bind("deliveryAddress", dto.getDeliveryAddress())
+            .bind("insuCallId", dto.getInsuCallId())
+            .fetch()
+            .rowsUpdated();
 }
