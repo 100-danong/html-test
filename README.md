@@ -1,43 +1,37 @@
-@Repository
-@RequiredArgsConstructor
-public class GroupCallMapper {
+    <select id="findTgDTO" parameterType="java.lang.Long" resultType="com.gogofnd.kb.domain.rider.dto.tg.TgDTO">
+        SELECT
+        ri.ri_id,
+        ri.si_id,
+        ri.ri_driver_id,
+        si.si_cmp_code,
+        si.si_policy_number,
+        ci.ci_insu_call_id,
+        ci.ci_appoint_time,
+        ci.gci_groupid
+        FROM call_info ci
+        JOIN rider_info ri ON ci.ri_id = ri.ri_id
+        JOIN seller_info si ON ri.si_id = si.si_id
+        WHERE 1=1
+        AND ci.ci_complete_time IS NULL
+        AND ci.ri_id = #{riId}
+        ORDER BY ci.ci_appoint_time DESC
+        LIMIT 1
+    </select>
 
-    private final DatabaseClient databaseClient;
+    package com.gogofnd.kb.Gosafe.dto;
 
-    public Flux<DeliveryInsureHistoryDto> findAllByCallAppointTimeBetweenAndRiderId(
-            LocalDateTime startDate,
-            LocalDateTime endDate,
-            Long riderId
-    ) {
+import lombok.Data;
 
-        StringBuffer sb = new StringBuffer();
-        sb.append("SELECT ");
-        sb.append(" gci.gci_groupid, ");
-        sb.append(" si.si_cmp_code, ");
-        sb.append(" si.si_policy_number, ");
-        sb.append(" UNIX_TIMESTAMP(gci.gci_first_starttime) as start_time, ");
-        sb.append(" IF(gci.gci_last_endtime IS NOT NULL, UNIX_TIMESTAMP(gci.gci_last_endtime), UNIX_TIMESTAMP()) as end_time ");
-        sb.append("FROM groupcall_info gci ");
-        sb.append("INNER JOIN rider_info ri ON gci.ri_id = ri.ri_id ");
-        sb.append("INNER JOIN seller_info si ON ri.si_id = si.si_id ");
-        sb.append("WHERE 1=1 ");
-        sb.append("  AND gci.gci_first_starttime >= :startDate ");
-        sb.append("  AND gci.gci_first_starttime <= :endDate ");
-        sb.append("  AND ri.ri_state = 1 ");
-        sb.append("  AND ri.ri_id = :riderId");
+@Data
+public class TgDTO {
 
-        return databaseClient.sql(sb.toString())
-                .bind("startDate", startDate)
-                .bind("endDate", endDate)
-                .bind("riderId", riderId)
-                .map((row, meta) -> DeliveryInsureHistoryDto.builder()
-                        .gciGroupid(row.get("gci_groupid", String.class))
-                        .siCmpCode(row.get("si_cmp_code", String.class))
-                        .siPolicyNumber(row.get("si_policy_number", String.class))
-                        .startTime(row.get("start_time", Long.class))
-                        .endTime(row.get("end_time", Long.class))
-                        .build()
-                )
-                .all();
-    }
+    private Long riId;
+    private Long siId;
+    private String riDriverId;
+    private String siCmpCode;
+    private String siPolicyNumber;
+    private String ciInsuCallId;
+    private String ciAppointTime;
+    private String ciGroupId;
+
 }
