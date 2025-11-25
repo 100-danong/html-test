@@ -1,36 +1,130 @@
-public Mono<CallInfo> findByInsuCallIds(String ciInsuCallId) {
+    <insert id="insetGroupCallInfo" parameterType="com.gogofnd.kb.partner.call.entity.GroupcallInfo">
+        INSERT INTO groupcall_info (gci_groupid, ri_id, gci_first_starttime, gci_last_endtime, gci_gogo_total_balance, gci_total_balance, gci_total_time, gci_insu_call_id, gci_ins_time, gci_upd_time, sales_date)
+        VALUES(#{gciGroupid}, #{riId}, #{gciFirstStarttime}, #{gciLastEndtime}, #{gciGogoTotalBalance}, #{gciTotalBalance}, #{gciTotalTime}, #{gciInsuCallId}, #{gciLastEndtime}, #{gciLastEndtime}, #{salesDate})
+    </insert>
 
-    StringBuffer sb = new StringBuffer();
-    sb.append("SELECT * ");
-    sb.append("FROM call_info ");
-    sb.append("WHERE ci_insu_call_id = :ciInsuCallId");
+    package com.gogofnd.kb.Call.entity;
 
-    return databaseClient.sql(sb.toString())
-            .bind("ciInsuCallId", ciInsuCallId)
-            .map((row, meta) -> {
-                CallInfo callInfo = new CallInfo();
-                callInfo.setCi_id(row.get("ci_id", Integer.class));
-                callInfo.setRi_id(row.get("ri_id", Long.class));
-                callInfo.setGci_groupid(row.get("gci_groupid", String.class));
-                callInfo.setCi_appoint_time(row.get("ci_appoint_time", LocalDateTime.class));
-                callInfo.setCi_complete_time(row.get("ci_complete_time", LocalDateTime.class));
-                callInfo.setCi_call_id(row.get("ci_call_id", String.class));
-                callInfo.setCi_req_delivery_time(row.get("ci_req_delivery_time", LocalDateTime.class));
-                callInfo.setCi_delivery_address(row.get("ci_delivery_address", String.class));
-                callInfo.setCi_delivery_status(row.get("ci_delivery_status", String.class));
-                callInfo.setCi_company_name(row.get("ci_company_name", String.class));
-                callInfo.setCi_pickup_time(row.get("ci_pickup_time", LocalDateTime.class));
-                callInfo.setCi_pickup_address(row.get("ci_pickup_address", String.class));
-                callInfo.setCi_insu_call_id(row.get("ci_insu_call_id", String.class));
-                callInfo.setCi_recv_group_id(row.get("ci_recv_group_id", String.class));
-                callInfo.setCi_ins_time(row.get("ci_ins_time", LocalDateTime.class));
-                callInfo.setCi_upd_time(row.get("ci_upd_time", LocalDateTime.class));
-                callInfo.setSales_date(row.get("sales_date", LocalDate.class));
-                callInfo.setRi_driver_id(row.get("ri_driver_id", String.class));
-                callInfo.setSi_cmp_code(row.get("si_cmp_code", String.class));
-                callInfo.setSi_policy_number(row.get("si_policy_number", String.class));
-                callInfo.setEnd_date(row.get("end_date", LocalDateTime.class));
-                return callInfo;
-            })
-            .one();
+import lombok.*;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.relational.core.mapping.Table;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+
+import static java.time.LocalDateTime.now;
+
+@Table("groupcall_info")
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+public class GroupCallInfo {
+
+    @Id
+    private String gciGroupid;// 운행누적정보ID(GR+yyyyMMdd-증번6자리) : GR20230101-000001
+
+    private Long riId;// 라이더ID
+
+    private LocalDateTime gciFirstStarttime;// 그룹별 최초시작일시
+
+    private LocalDateTime gciLastEndtime;// 그룹별 최종마감일시
+
+    private Integer gciTotalBalance;// 운행 차감금액
+
+    private float gciGogoTotalBalance;// 운행 차감금액(고고)
+
+    private Integer gciTotalTime;// 그룹별 총 누적운행시간(minute)
+
+    private String gciInsuCallId;// 보험사용 운행정보ID(GR라이더IDyyyyMMdd증번6자리) : GR123420230101000001
+
+    private LocalDateTime gciInsTime;// 등록일시
+
+    private LocalDateTime gciUpdTime;// 수정일시
+
+    //--api 12--
+    private String ciCallId;
+
+    private String ciDeliveryAddress;
+
+    private String riDriverId;
+
+    private String siCmpCode;
+
+    private String siPolicyNumber;
+
+    private LocalDate salesDate;//영업기준일
+
+    // 재그룹핑
+    private Integer totalMinute;
+    private Long siId;
+
+    // 재그룹핑 후 groupcall_info에 저장시 필요
+    private Long ciId;
+
+    // 갱신 관련 필요
+    private String spnPolicyNumber;
+    private LocalDateTime spnEffectEnddate;
+
+
+    public GroupCallInfo(String gciGroupid) {
+        this.gciGroupid = gciGroupid;
+    }
+
+    public static GroupCallInfo create(String gci_groupid, long ri_id, LocalDateTime gci_first_starttime, LocalDateTime gci_last_endtime, float gci_gogo_total_balance, Integer gci_total_balance, Integer gci_total_time){
+        return GroupCallInfo
+                .builder()
+                .gciGroupid(gci_groupid)
+                .riId(ri_id)
+                .gciFirstStarttime(gci_first_starttime)
+                .gciLastEndtime(gci_last_endtime)
+                .gciGogoTotalBalance(gci_gogo_total_balance)
+                .gciTotalBalance(gci_total_balance)
+                .gciTotalTime(gci_total_time)
+                .gciInsTime(now())
+                .gciUpdTime(now())
+                .build();
+    }
+
+    public static GroupCallInfo create(String gci_groupid, long ri_id, LocalDateTime gci_first_starttime, LocalDateTime gci_last_endtime, float gci_gogo_total_balance, Integer gci_total_balance, Integer gci_total_time, LocalDate salesDate){
+        return GroupCallInfo
+                .builder()
+                .gciGroupid(gci_groupid)
+                .riId(ri_id)
+                .gciFirstStarttime(gci_first_starttime)
+                .gciLastEndtime(gci_last_endtime)
+                .gciGogoTotalBalance(gci_gogo_total_balance)
+                .gciTotalBalance(gci_total_balance)
+                .gciTotalTime(gci_total_time)
+                .gciInsTime(now())
+                .gciUpdTime(now())
+                .salesDate(salesDate)
+                .build();
+    }
+
+    public static GroupCallInfo create(String gci_groupid, long ri_id, LocalDateTime gci_first_starttime, LocalDateTime gci_last_endtime, int gci_total_balance, Integer gci_total_time, Long si_id ){
+        return GroupCallInfo
+                .builder()
+                .gciGroupid(gci_groupid)
+                .riId(ri_id)
+                .gciFirstStarttime(gci_first_starttime)
+                .gciLastEndtime(gci_last_endtime)
+                .gciTotalBalance(gci_total_balance)
+                .gciTotalTime(gci_total_time)
+                .siId(si_id)
+                .gciInsTime(now())
+                .gciUpdTime(now())
+                .build();
+    }
+
+    public static GroupCallInfo create(String gci_groupid, long ri_id, Integer gci_total_balance, Integer gci_total_time){
+        return GroupCallInfo
+                .builder()
+                .gciGroupid(gci_groupid)
+                .riId(ri_id)
+                .gciTotalBalance(gci_total_balance)
+                .gciTotalTime(gci_total_time)
+                .build();
+    }
 }
