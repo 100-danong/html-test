@@ -1,5 +1,5 @@
-public Mono<Map<String, Object>> findDailyTotalData(Long riId, String gciGroupId,
-                                                    LocalDateTime startTime, LocalDateTime endTime) {
+public Mono<Map<Integer, Object>> findDailyTotalData(Long riId, String gciGroupId,
+                                                     LocalDateTime startTime, LocalDateTime endTime) {
 
     StringBuffer sb = new StringBuffer();
     sb.append("SELECT ");
@@ -17,9 +17,10 @@ public Mono<Map<String, Object>> findDailyTotalData(Long riId, String gciGroupId
             .bind("startTime", startTime)
             .bind("endTime", endTime)
             .map((row, meta) -> {
-                Map<String, Object> result = new HashMap<>();
-                result.put("cumulation_time", row.get("cumulation_time", Long.class));
-                result.put("cumulation_balance", row.get("cumulation_balance", Long.class));
+                Map<Integer, Object> result = new HashMap<>();
+                // index 1 → cumulation_time, index 2 → cumulation_balance
+                result.put(1, row.get("cumulation_time"));
+                result.put(2, row.get("cumulation_balance"));
                 return result;
             })
             .one();
