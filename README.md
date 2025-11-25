@@ -1,28 +1,23 @@
-public Mono<CallBalanceDto> findTotalBalance(Long riId,
-                                             String gciGroupId,
-                                             LocalDateTime startTime,
-                                             LocalDateTime endTime) {
+    <select id="findByInsuCallId" parameterType="java.lang.String" resultType="com.gogofnd.kb.domain.rider.dto.tg.TgDTO2">
+        SELECT
+        ci.gci_groupid AS groupId,
+        ci.ci_pickup_time AS startTime
+        FROM
+        call_info ci
+        WHERE ci_insu_call_id = #{insuCallId}
+    </select>
 
-    StringBuffer sb = new StringBuffer();
-    sb.append("SELECT ");
-    sb.append("       IFNULL(SUM(gci_total_balance), 0) AS kbBalance, ");
-    sb.append("       IFNULL(SUM(gci_gogo_total_balance), 0) AS gogoBalance ");
-    sb.append("FROM groupcall_info ");
-    sb.append("WHERE ri_id = :riId ");
-    sb.append("  AND gci_groupid != :gciGroupId ");
-    sb.append("  AND gci_first_starttime >= :startTime ");
-    sb.append("  AND gci_first_starttime < :endTime");
+    package com.gogofnd.kb.Gosafe.dto;
 
-    return databaseClient.sql(sb.toString())
-            .bind("riId", riId)
-            .bind("gciGroupId", gciGroupId)
-            .bind("startTime", startTime)
-            .bind("endTime", endTime)
-            .map((row, meta) -> {
-                CallBalanceDto dto = new CallBalanceDto();
-                dto.setKbBalance(row.get("kbBalance", Integer.class));
-                dto.setGogoBalance(row.get("gogoBalance", Float.class));
-                return dto;
-            })
-            .one();
+import lombok.Data;
+
+import java.time.LocalDateTime;
+
+@Data
+public class TgDTO2 {
+
+    private String groupId;
+    private LocalDateTime startTime;
+
 }
+
