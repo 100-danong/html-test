@@ -1,23 +1,19 @@
-    <select id="findByInsuCallId" parameterType="java.lang.String" resultType="com.gogofnd.kb.domain.rider.dto.tg.TgDTO2">
-        SELECT
-        ci.gci_groupid AS groupId,
-        ci.ci_pickup_time AS startTime
-        FROM
-        call_info ci
-        WHERE ci_insu_call_id = #{insuCallId}
-    </select>
+public Mono<TgDTO2> findByInsuCallId(String insuCallId) {
 
-    package com.gogofnd.kb.Gosafe.dto;
+    StringBuffer sb = new StringBuffer();
+    sb.append("SELECT ");
+    sb.append("       ci.gci_groupid AS groupId, ");
+    sb.append("       ci.ci_pickup_time AS startTime ");
+    sb.append("FROM call_info ci ");
+    sb.append("WHERE ci_insu_call_id = :insuCallId");
 
-import lombok.Data;
-
-import java.time.LocalDateTime;
-
-@Data
-public class TgDTO2 {
-
-    private String groupId;
-    private LocalDateTime startTime;
-
+    return databaseClient.sql(sb.toString())
+            .bind("insuCallId", insuCallId)
+            .map((row, meta) -> {
+                TgDTO2 dto = new TgDTO2();
+                dto.setGroupId(row.get("groupId", String.class));
+                dto.setStartTime(row.get("startTime", LocalDateTime.class));
+                return dto;
+            })
+            .one();
 }
-
