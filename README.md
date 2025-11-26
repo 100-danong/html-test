@@ -1,12 +1,17 @@
-public Mono<Integer> updateKbCallId(CallInfo callInfo) {
-    StringBuffer sql = new StringBuffer();
-    sql.append("UPDATE call_info ");
-    sql.append("SET ci_insu_call_id = :ciInsuCallId ");
-    sql.append("WHERE ci_id = :ciId");
+    <select id="findRejectReason" parameterType="java.util.Map" resultType="java.lang.String">
+        select cci.cci_content
+        from common_code_info as cci
+        inner join insurance_state_history as ish
+            ON cci.cci_code = ish.ih_reject_code
+        inner join insurance_history AS ih
+            ON ih.ih_id = ish.ih_id
+        where 1 = 1
+            and ih.ri_id = #{ri_id}
+            and ih.ih_insu_state = #{ri_insu_status}
+            and cci.cci_isuse = 'Y'
+            and cci.cci_state = 1
+        order by ish.ish_ins_time desc
+        limit 1;
+    </select>
 
-    return databaseClient.sql(sql.toString())
-            .bind("ciInsuCallId", callInfo.getCi_insu_call_id())
-            .bind("ciId", callInfo.getCi_id())
-            .fetch()
-            .rowsUpdated();  // 성공하면 1, 실패하면 0
-}
+    resultMessage = callMapper.findRejectReason(riId, riInsuStatus);
