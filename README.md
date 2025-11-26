@@ -1,17 +1,20 @@
-    <select id="findRejectReason" parameterType="java.util.Map" resultType="java.lang.String">
-        select cci.cci_content
-        from common_code_info as cci
-        inner join insurance_state_history as ish
-            ON cci.cci_code = ish.ih_reject_code
-        inner join insurance_history AS ih
-            ON ih.ih_id = ish.ih_id
-        where 1 = 1
-            and ih.ri_id = #{ri_id}
-            and ih.ih_insu_state = #{ri_insu_status}
-            and cci.cci_isuse = 'Y'
-            and cci.cci_state = 1
-        order by ish.ish_ins_time desc
-        limit 1;
-    </select>
+public Mono<String> findRejectReason(Long riId, String riInsuStatus) {
+    StringBuffer sql = new StringBuffer();
+    sql.append("SELECT cci.cci_content ");
+    sql.append("FROM common_code_info AS cci ");
+    sql.append("INNER JOIN insurance_state_history AS ish ON cci.cci_code = ish.ih_reject_code ");
+    sql.append("INNER JOIN insurance_history AS ih ON ih.ih_id = ish.ih_id ");
+    sql.append("WHERE 1=1 ");
+    sql.append("AND ih.ri_id = :riId ");
+    sql.append("AND ih.ih_insu_state = :riInsuStatus ");
+    sql.append("AND cci.cci_isuse = 'Y' ");
+    sql.append("AND cci.cci_state = 1 ");
+    sql.append("ORDER BY ish.ish_ins_time DESC ");
+    sql.append("LIMIT 1");
 
-    resultMessage = callMapper.findRejectReason(riId, riInsuStatus);
+    return databaseClient.sql(sql.toString())
+            .bind("riId", riId)
+            .bind("riInsuStatus", riInsuStatus)
+            .map(row -> row.get("cci_content", String.class))
+            .one(); // Mono<String> 반환, 값 없으면 empty
+}
