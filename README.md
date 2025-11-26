@@ -1,7 +1,12 @@
-    <select id="findByCallIdForDupl" parameterType="java.lang.String" resultType="java.lang.Integer">
-        select
-            count(*)
-        from call_info
-        where 1=1
-            and ci_call_id = #{ci_call_id}
-    </select>
+public Mono<Integer> findByCallIdForDupl(String ciCallId) {
+    StringBuffer sql = new StringBuffer();
+    sql.append("SELECT count(*) ");
+    sql.append("FROM call_info ");
+    sql.append("WHERE 1=1 ");
+    sql.append("AND ci_call_id = :ciCallId ");
+
+    return client.sql(sql.toString())
+            .bind("ciCallId", ciCallId)
+            .map((row, metadata) -> row.get(0, Integer.class))
+            .one();
+}
