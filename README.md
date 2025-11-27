@@ -1,13 +1,5 @@
-public Mono<Integer> updateSellerInfoForBalance(Long siId, Long siBalance) {
-    StringBuffer sb = new StringBuffer();
-    sb.append("UPDATE seller_info ")
-      .append("SET si_balance = si_balance - :siBalance, ")
-      .append("si_upd_time = NOW() ")
-      .append("WHERE si_id = :siId");
-
-    return databaseClient.sql(sb.toString())
-            .bind("siBalance", siBalance)
-            .bind("siId", siId)
-            .fetch()
-            .rowsUpdated();
-}
+    <select id="findMinTime" parameterType="java.lang.String" resultType="com.gogofnd.kb.partner.call.entity.CallInfo">
+        SELECT MIN(ci_appoint_time) AS ciAppointTime
+        FROM call_info
+        WHERE gci_groupid = #{gciGroupId}
+    </select>
