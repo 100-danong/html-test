@@ -1,12 +1,12 @@
-public Mono<Integer> findCountByGciGroupId(String gciGroupId) {
+    <update id="UpdateGroupcallInfoWhenDeliveryQuit" parameterType="java.util.Map">
+        UPDATE groupcall_info
+           SET
+               gci_last_endtime = #{gciLastEndTime},
+               gci_gogo_total_balance = #{gciGogoTotalBalance},
+               gci_total_balance = #{gciTotalBalance},
+               gci_total_time = #{updTotalTime},
+               gci_upd_time = #{gciUpdTime}
+         WHERE gci_groupId = #{gciGroupId}
+    </update>
 
-    StringBuffer sql = new StringBuffer();
-    sql.append("SELECT COUNT(gci_groupid) AS cnt ");
-    sql.append("FROM groupcall_info ");
-    sql.append("WHERE gci_groupid = :gciGroupId");
-
-    return databaseClient.sql(sql.toString())
-            .bind("gciGroupId", gciGroupId)
-            .map((row, meta) -> row.get("cnt", Integer.class))
-            .one();
-}
+    int resUpdtGroupcallInfo = groupCallMapper.UpdateGroupcallInfoWhenDeliveryQuit(groupId, completeTime, gogoBalance, kbBalance, runMinute, updTime);
