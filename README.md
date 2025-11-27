@@ -29,4 +29,11 @@ public Mono<CallInfo> findByCallId(String ci_call_id) {
                 info.setSales_date(row.get("sales_date", LocalDate.class));
 
                 info.setRi_driver_id(row.get("ri_driver_id", String.class));
-                info.setSi_cmp_code(row.get("
+                info.setSi_cmp_code(row.get("si_cmp_code", String.class));
+                info.setSi_policy_number(row.get("si_policy_number", String.class));
+                info.setEnd_date(row.get("end_date", LocalDateTime.class));
+
+                return info;
+            })
+            .one();   // 결과 없으면 Mono.empty()
+}
