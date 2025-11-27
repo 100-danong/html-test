@@ -1,124 +1,134 @@
-package com.gogofnd.kb.Accident.entity;
+    <insert id="InsertGroupCallInfoWhenDeliveryQuit" parameterType="com.gogofnd.kb.partner.call.entity.GroupcallInfo">
+        insert into groupcall_info
+        (gci_groupid, ri_id, gci_first_starttime, gci_last_endtime, gci_gogo_total_balance,
+        gci_total_balance, gci_total_time, gci_ins_time, gci_upd_time, sales_date)
+        values
+            (#{gciGroupid}, #{riId}, #{gciFirstStarttime}, #{gciLastEndtime}, #{gciGogoTotalBalance},
+             #{gciTotalBalance}, #{gciTotalTime}, #{gciInsTime}, #{gciUpdTime}, #{salesDate})
+    </insert>
 
-import com.gogofnd.kb.Kb.dto.Kb10thRequest;
-import com.google.common.base.CharMatcher;
+    package com.gogofnd.kb.Call.entity;
+
 import lombok.*;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.Table;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import static java.time.LocalDateTime.now;
 
-@AllArgsConstructor
-@NoArgsConstructor
+@Table("groupcall_info")
 @Getter
 @Setter
+@NoArgsConstructor
+@AllArgsConstructor
 @Builder
-@Table(name = "call_info")
-public class CallInfo {
+public class GroupCallInfo {
 
     @Id
-    private Integer ci_id; //PK
+    private String gciGroupid;// 운행누적정보ID(GR+yyyyMMdd-증번6자리) : GR20230101-000001
 
-    private Long ri_id;//라이더ID
+    private Long riId;// 라이더ID
 
-    private String gci_groupid;//운행누적정보ID
+    private LocalDateTime gciFirstStarttime;// 그룹별 최초시작일시
 
-    private LocalDateTime ci_appoint_time;//배차시간
+    private LocalDateTime gciLastEndtime;// 그룹별 최종마감일시
 
-    private LocalDateTime ci_complete_time;//배달완료시간
+    private Integer gciTotalBalance;// 운행 차감금액
 
-    private String ci_call_id;//배달 콜ID(플랫폼사제공)
+    private float gciGogoTotalBalance;// 운행 차감금액(고고)
 
-    private LocalDateTime ci_req_delivery_time;//배달요청시간
+    private Integer gciTotalTime;// 그룹별 총 누적운행시간(minute)
 
-    private String ci_delivery_address;//배달주소
+    private String gciInsuCallId;// 보험사용 운행정보ID(GR라이더IDyyyyMMdd증번6자리) : GR123420230101000001
 
-    private String ci_delivery_status;//배달진행상태
+    private LocalDateTime gciInsTime;// 등록일시
 
-    private String ci_company_name;//배달요청사명
+    private LocalDateTime gciUpdTime;// 수정일시
 
-    private LocalDateTime ci_pickup_time;//픽업시간
+    //--api 12--
+    private String ciCallId;
 
-    private String ci_pickup_address;//픽업주소
+    private String ciDeliveryAddress;
 
-    private String ci_insu_call_id;//운행번호(보험사전송용 콜ID)
+    private String riDriverId;
 
-    private String ci_recv_group_id;//플랫폼 측에서 보내준 그룹 콜 아이디(온나)
+    private String siCmpCode;
 
-    private LocalDateTime ci_ins_time;//등록일시
+    private String siPolicyNumber;
 
-    private LocalDateTime ci_upd_time;//수정일시
+    private LocalDate salesDate;//영업기준일
 
-    private LocalDate sales_date;//영업기준일
+    // 재그룹핑
+    private Integer totalMinute;
+    private Long siId;
 
-    //배차 시간으로 운행 조회 LIST 사용 목적
-    private String ri_driver_id;
-    private String si_cmp_code;
-    private String si_policy_number;
-    private LocalDateTime end_date;
+    // 재그룹핑 후 groupcall_info에 저장시 필요
+    private Long ciId;
 
-    public static String extract(String text) {
-        Pattern pattern = Pattern.compile("[^ㄱ-ㅎㅏ-ㅣ가-힣a-zA-Z0-9]");
-        Matcher matcher = pattern.matcher(text);
-        return matcher.replaceAll(" ");
+    // 갱신 관련 필요
+    private String spnPolicyNumber;
+    private LocalDateTime spnEffectEnddate;
+
+
+    public GroupCallInfo(String gciGroupid) {
+        this.gciGroupid = gciGroupid;
     }
 
-    public void updateCallPickUpTime(String pickUpTime) {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-        this.ci_pickup_time = LocalDateTime.parse(pickUpTime, formatter);
-    }
-
-    public void updateCallPickUpTime() {
-        this.ci_pickup_time = now();
-    }
-
-    public void updateCallAppointtime(String ciAppointTime) {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-        this.ci_pickup_time = LocalDateTime.parse(ciAppointTime, formatter);
-    }
-
-    public void updateCallAppointtime() {
-        this.ci_pickup_time = now();
-    }
-
-    public void updateDelivery_status(String delivery_status) {
-        this.ci_delivery_status = delivery_status;
-    }
-
-    public void updateGroupId(String groupId) {
-        this.gci_groupid = groupId;
-    }
-
-    public void createKbCallId(String leftPadCallId) {
-        this.ci_insu_call_id = leftPadCallId;
-    }
-
-    public void updateRecvGroupId(String ciRecvGroupId){
-        this.ci_recv_group_id = ciRecvGroupId;
-    }
-
-    public static CallInfo create(long riderId, Kb10thRequest dto, String riDriverId, String siCmpCode, String siPolicyNumber){
-        return CallInfo
+    public static GroupCallInfo create(String gci_groupid, long ri_id, LocalDateTime gci_first_starttime, LocalDateTime gci_last_endtime, float gci_gogo_total_balance, Integer gci_total_balance, Integer gci_total_time){
+        return GroupCallInfo
                 .builder()
-                .ri_id(riderId)
-                .ci_call_id(dto.getCall_id())
-                .ci_delivery_address(dto.getDriver_deliveryaddress())
-                .ci_delivery_status("요청")
-                .ri_driver_id(riDriverId)
-                .si_cmp_code(siCmpCode)
-                .si_policy_number(siPolicyNumber)
-                .ci_pickup_address(dto.getDriver_pickupaddress())
-                .ci_company_name(extract(dto.getDriver_client()))
-                .ci_req_delivery_time(now())
-                .ci_pickup_time(now())
-                .ci_ins_time(now())
-                .ci_upd_time(now())
+                .gciGroupid(gci_groupid)
+                .riId(ri_id)
+                .gciFirstStarttime(gci_first_starttime)
+                .gciLastEndtime(gci_last_endtime)
+                .gciGogoTotalBalance(gci_gogo_total_balance)
+                .gciTotalBalance(gci_total_balance)
+                .gciTotalTime(gci_total_time)
+                .gciInsTime(now())
+                .gciUpdTime(now())
+                .build();
+    }
+
+    public static GroupCallInfo create(String gci_groupid, long ri_id, LocalDateTime gci_first_starttime, LocalDateTime gci_last_endtime, float gci_gogo_total_balance, Integer gci_total_balance, Integer gci_total_time, LocalDate salesDate){
+        return GroupCallInfo
+                .builder()
+                .gciGroupid(gci_groupid)
+                .riId(ri_id)
+                .gciFirstStarttime(gci_first_starttime)
+                .gciLastEndtime(gci_last_endtime)
+                .gciGogoTotalBalance(gci_gogo_total_balance)
+                .gciTotalBalance(gci_total_balance)
+                .gciTotalTime(gci_total_time)
+                .gciInsTime(now())
+                .gciUpdTime(now())
+                .salesDate(salesDate)
+                .build();
+    }
+
+    public static GroupCallInfo create(String gci_groupid, long ri_id, LocalDateTime gci_first_starttime, LocalDateTime gci_last_endtime, int gci_total_balance, Integer gci_total_time, Long si_id ){
+        return GroupCallInfo
+                .builder()
+                .gciGroupid(gci_groupid)
+                .riId(ri_id)
+                .gciFirstStarttime(gci_first_starttime)
+                .gciLastEndtime(gci_last_endtime)
+                .gciTotalBalance(gci_total_balance)
+                .gciTotalTime(gci_total_time)
+                .siId(si_id)
+                .gciInsTime(now())
+                .gciUpdTime(now())
+                .build();
+    }
+
+    public static GroupCallInfo create(String gci_groupid, long ri_id, Integer gci_total_balance, Integer gci_total_time){
+        return GroupCallInfo
+                .builder()
+                .gciGroupid(gci_groupid)
+                .riId(ri_id)
+                .gciTotalBalance(gci_total_balance)
+                .gciTotalTime(gci_total_time)
                 .build();
     }
 }
