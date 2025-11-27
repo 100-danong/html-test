@@ -1,34 +1,82 @@
-public Mono<GroupCallInfo> findGroupcallInfoByGciGroupId(String gciGroupId) {
+    <select id="findFailCallStart" parameterType="java.lang.String" resultType="com.gogofnd.kb.partner.call.entity.CallInfoFailStart">
+        SELECT cifs_call_id, cifs_error_code
+        FROM call_info_fail_start
+        WHERE cifs_call_id = #{cifsCallId}
+        ORDER BY cifs_id DESC
+        LIMIT 1
+    </select>
 
-    StringBuffer sql = new StringBuffer();
-    sql.append("select * ");
-    sql.append("from groupcall_info ");
-    sql.append("where gci_groupid = :gciGroupId");
+    package com.gogofnd.kb.Call.entity;
 
-    return databaseClient.sql(sql.toString())
-            .bind("gciGroupId", gciGroupId)
-            .map((row, meta) -> GroupCallInfo.builder()
-                    .gciGroupid(row.get("gci_groupid", String.class))
-                    .riId(row.get("ri_id", Long.class))
-                    .gciFirstStarttime(row.get("gci_first_starttime", LocalDateTime.class))
-                    .gciLastEndtime(row.get("gci_last_endtime", LocalDateTime.class))
-                    .gciTotalBalance(row.get("gci_total_balance", Integer.class))
-                    .gciGogoTotalBalance(row.get("gci_gogo_total_balance", Float.class))
-                    .gciTotalTime(row.get("gci_total_time", Integer.class))
-                    .gciInsuCallId(row.get("gci_insu_call_id", String.class))
-                    .gciInsTime(row.get("gci_ins_time", LocalDateTime.class))
-                    .gciUpdTime(row.get("gci_upd_time", LocalDateTime.class))
-                    .ciCallId(row.get("ci_call_id", String.class))
-                    .ciDeliveryAddress(row.get("ci_delivery_address", String.class))
-                    .riDriverId(row.get("ri_driver_id", String.class))
-                    .siCmpCode(row.get("si_cmp_code", String.class))
-                    .siPolicyNumber(row.get("si_policy_number", String.class))
-                    .salesDate(row.get("sales_date", LocalDate.class))
-                    .totalMinute(row.get("total_minute", Integer.class))
-                    .siId(row.get("si_id", Long.class))
-                    .ciId(row.get("ci_id", Long.class))
-                    .spnPolicyNumber(row.get("spn_policy_number", String.class))
-                    .spnEffectEnddate(row.get("spn_effect_enddate", LocalDateTime.class))
-                    .build())
-            .one();
+import com.gogofnd.kb.Kb.dto.Kb10thRequest;
+import com.gogofnd.kb.global.model.ErrorCode;
+import lombok.*;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.relational.core.mapping.Table;
+
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+@AllArgsConstructor
+@NoArgsConstructor
+@Getter
+@Setter
+@Builder
+@Table("call_info_fail_start")
+public class CallInfoFailStart {
+
+    @Id
+    private String cifsId;
+
+    private String cifsCallId;
+
+    private String cifsDriverPickupaddress;
+
+    private String cifsDriverDeliveryaddress;
+
+    private LocalDateTime cifsReqDeliveryTime;
+
+    private LocalDateTime cifsAppointTime;
+
+    private LocalDateTime cifsPickupTime;
+
+    private String cifsDriverId; // rider_info의 ri_userid
+
+    private String cifsCompanyName;
+
+    private String cifsRecvGroupId;
+
+    private String cifsErrorCode;
+
+    private String cifsComment;
+
+    public static CallInfoFailStart create(Kb10thRequest request, ErrorCode errorCode) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        return CallInfoFailStart.builder()
+                .cifsCallId(request.getCall_id())
+                .cifsDriverPickupaddress(request.getDriver_pickupaddress())
+                .cifsDriverDeliveryaddress(request.getDriver_deliveryaddress())
+                //.cifsReqDeliveryTime(LocalDateTime.parse(request.getCall_requesttime(), formatter))
+                .cifsAppointTime(LocalDateTime.parse(request.getCall_appointtime(), formatter))
+//                .cifsPickupTime(LocalDateTime.parse(request.getPickup_time(), formatter))
+                .cifsDriverId(request.getDriver_id())
+                .cifsCompanyName(extract(request.getDriver_client()))
+                .cifsRecvGroupId(request.getGroup_id())
+                .cifsErrorCode(errorCode.name())
+                .cifsComment(errorCode.getMessage())
+                .build();
+    }
+
+    public CallInfoFailStart(String cifsCallId) {
+        this.cifsCallId = cifsCallId;
+    }
+
+    public static String extract(String text) {
+        Pattern pattern = Pattern.compile("[^ㄱ-ㅎㅏ-ㅣ가-힣a-zA-Z0-9]");
+        Matcher matcher = pattern.matcher(text);
+        return matcher.replaceAll(" ");
+    }
+
 }
