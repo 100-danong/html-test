@@ -1,14 +1,13 @@
-public Mono<Integer> updateReGrouping(String ciCallId, String gciGroupId) {
+    <select id="findReGroupSeller" parameterType="java.util.Map" resultType="java.lang.Long">
+        select ci.ri_id
+        from call_info ci
+        join rider_info ri
+        on ci.ri_id = ri.ri_id
+        join seller_info si
+        on ri.si_id = si.si_id
+        WHERE ci.sales_date = #{salesDate} and si.si_seller_code = #{sellerCode}
+        group by ci.ri_id
+        ORDER BY ci.ci_appoint_time;
+    </select>
 
-    StringBuffer sb = new StringBuffer();
-    sb.append("UPDATE call_info ")
-      .append("SET gci_groupid = :gciGroupId, ")
-      .append("    ci_upd_time = NOW() ")
-      .append("WHERE ci_call_id = :ciCallId");
-
-    return databaseClient.sql(sb.toString())
-            .bind("gciGroupId", gciGroupId)
-            .bind("ciCallId", ciCallId)
-            .fetch()
-            .rowsUpdated();
-}
+    List<Long> calls = callMapper.findReGroupSeller(salesDate, sellerCode);
