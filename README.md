@@ -1,13 +1,18 @@
-    <select id="findReGroupSeller" parameterType="java.util.Map" resultType="java.lang.Long">
-        select ci.ri_id
-        from call_info ci
-        join rider_info ri
-        on ci.ri_id = ri.ri_id
-        join seller_info si
-        on ri.si_id = si.si_id
-        WHERE ci.sales_date = #{salesDate} and si.si_seller_code = #{sellerCode}
-        group by ci.ri_id
-        ORDER BY ci.ci_appoint_time;
-    </select>
+public Flux<Long> findReGroupSeller(LocalDate salesDate, String sellerCode) {
 
-    List<Long> calls = callMapper.findReGroupSeller(salesDate, sellerCode);
+    StringBuffer sb = new StringBuffer();
+    sb.append("SELECT ci.ri_id ")
+      .append("FROM call_info ci ")
+      .append("JOIN rider_info ri ON ci.ri_id = ri.ri_id ")
+      .append("JOIN seller_info si ON ri.si_id = si.si_id ")
+      .append("WHERE ci.sales_date = :salesDate ")
+      .append("  AND si.si_seller_code = :sellerCode ")
+      .append("GROUP BY ci.ri_id ")
+      .append("ORDER BY ci.ci_appoint_time");
+
+    return databaseClient.sql(sb.toString())
+            .bind("salesDate", salesDate)
+            .bind("sellerCode", sellerCode)
+            .map((row, meta) -> row.get("ri_id", Long.class))
+            .all();
+}
