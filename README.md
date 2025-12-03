@@ -1,93 +1,37 @@
-public Flux<RiderInfoDto> findRequestsRiderByInsuranceStatusYesterday(String status) {
+    <select id="findSellerPolicyNumber" parameterType="java.util.Map" resultType="com.gogofnd.kb.partner.seller.entity.SellerPolicyNumber">
+        SELECT *
+        FROM seller_policy_number spn
+        INNER JOIN seller_info si
+        ON spn.si_cmp_code = si.si_cmp_code
+        WHERE si.si_seller_code = #{siSellerCode}
+        AND spn.spn_apply_state = #{spnApplyState}
+    </select>
 
-    StringBuffer sb = new StringBuffer();
+    riders.forEach(r -> {
+            sellerPolicyNumberMapper.findSellerPolicyNumber(r.getSiSellerCode(),"W");
+            // renew 테이블과 기존 테이블의 rih_id의 순번을 맞추기위해 rih_id값 가져옴
+            Long rihId = riderInsuranceHistoryMapper.findMaxRihId().block();
+            System.out.println("r.getRiState() = " + r.getRiState());
+            // 보험 상태 컬럼 생성
+            RiderInsuranceDto riderInsuranceDto = RiderInsuranceDto.create(rihId,r.getRiId(), r.getIhId());
 
-    sb.append("SELECT r.ri_id, ")
-      .append("       s.si_id, ")
-      .append("       i.ih_id, ")
-      .append("       r.ri_driver_id, ")
-      .append("       r.ri_phone, ")
-      .append("       r.ri_bike_number, ")
-      .append("       r.ri_name, ")
-      .append("       r.ri_ss_number, ")
-      .append("       s.si_cmp_code, ")
-      .append("       s.si_policy_number, ")
-      .append("       r.ri_total_webview_url, ")
-      .append("       r.ri_compinsu_enddate, ")
-      .append("       r.ri_operpurp_code, ")
-      .append("       r.ri_active_area, ")
-      .append("       r.ri_insu_status, ")
-      .append("       s.si_application_number, ")
-      .append("       s.si_seller_code, ")
-      .append("       r.ri_state, ")
-      .append("       IFNULL(r.ri_ctcagreyn, 'Y') AS ri_ctcagreyn ")
-      .append("FROM rider_info r ")
-      .append("JOIN seller_info s ON r.si_id = s.si_id ")
-      .append("JOIN insurance_history i ON r.ri_id = i.ri_id ")
-      .append("WHERE i.ih_insu_state = :status ")
-      .append("  AND r.ri_insu_status != '062' ")
-      .append("  AND i.ih_upd_time < NOW() ")
-      .append("  AND i.ih_upd_time >= SUBTIME(DATE_ADD(NOW(), INTERVAL -1 DAY), ")
-      .append("          TIMEDIFF(NOW() , CAST(DATE(NOW()) AS DATETIME))) ")
-      .append("  AND r.ri_state = 1 ")
-      .append("GROUP BY r.ri_id ")
+            riderInsuranceDto.updateUnderWritingRequestTime();
 
-      .append("UNION ALL ")
+            if(r.getRiState() == 4) {
+                insuranceHistoriesRenew.add(riderInsuranceDto);
+            } else {
+                insuranceHistories.add(riderInsuranceDto);
+            }
 
-      .append("SELECT r.ri_id, ")
-      .append("       r.si_id, ")
-      .append("       i.ih_id, ")
-      .append("       r.ri_driver_id, ")
-      .append("       r.ri_phone, ")
-      .append("       r.ri_bike_number, ")
-      .append("       r.ri_name, ")
-      .append("       r.ri_ss_number, ")
-      .append("       s.si_cmp_code, ")
-      .append("       s.spn_policy_number, ")
-      .append("       r.ri_total_webview_url, ")
-      .append("       r.ri_compinsu_enddate, ")
-      .append("       r.ri_operpurp_code, ")
-      .append("       r.ri_active_area, ")
-      .append("       r.ri_insu_status, ")
-      .append("       s.spn_application_number, ")
-      .append("       si.si_seller_code, ")
-      .append("       r.ri_state, ")
-      .append("       IFNULL(r.ri_ctcagreyn, 'Y') AS ri_ctcagreyn ")
-      .append("FROM rider_info_renew r ")
-      .append("JOIN seller_policy_number s ON r.spn_id = s.spn_id ")
-      .append("JOIN insurance_renew_history i ON r.ri_id = i.ri_id ")
-      .append("JOIN seller_info si ON si.si_id = r.si_id ")
-      .append("WHERE i.ih_insu_state = :status ")
-      .append("  AND r.ri_insu_status != '062' ")
-      .append("  AND i.ih_upd_time < NOW() ")
-      .append("  AND i.ih_upd_time >= SUBTIME(DATE_ADD(NOW(), INTERVAL -1 DAY), ")
-      .append("          TIMEDIFF(NOW() , CAST(DATE(NOW()) AS DATETIME))) ")
-      .append("  AND r.ri_state = 4 ")
-      .append("  AND s.spn_apply_state = 'W' ")
-      .append("GROUP BY r.ri_id");
+            //231026 - 딜버, 온나 자동기명등재로 로직 변경 : KB는 policy_number로 자동기명등재대상 판단
+            KbApiRiderDto dto = new KbApiRiderDto(r);
+            String ssn = dto.getSsn();
 
-    return databaseClient.sql(sb.toString())
-            .bind("status", status)
-            .map((row, meta) -> RiderInfoDto.builder()
-                    .riId(row.get("ri_id", Long.class))
-                    .siId(row.get("si_id", Long.class))
-                    .ihId(row.get("ih_id", Long.class))
-                    .riDriverId(row.get("ri_driver_id", String.class))
-                    .riPhone(row.get("ri_phone", String.class))
-                    .riBikeNumber(row.get("ri_bike_number", String.class))
-                    .riName(row.get("ri_name", String.class))
-                    .riSsNumber(row.get("ri_ss_number", String.class))
-                    .siCmpCode(row.get("si_cmp_code", String.class))
-                    .siPolicyNumber(row.get("si_policy_number", String.class))   // 또는 spn_policy_number
-                    .riTotalWebviewUrl(row.get("ri_total_webview_url", String.class))
-                    .riCompinsuEnddate(row.get("ri_compinsu_enddate", String.class))
-                    .riOperpurpCode(row.get("ri_operpurp_code", String.class))
-                    .riActiveArea(row.get("ri_active_area", String.class))
-                    .riInsuStatus(row.get("ri_insu_status", String.class))
-                    .siApplicationNumber(row.get("si_application_number", String.class)) // 또는 spn_application_number
-                    .siSellerCode(row.get("si_seller_code", String.class))
-                    .riState(row.get("ri_state", Integer.class))
-                    .riCtcagreyn(row.get("ri_ctcagreyn", String.class))
-                    .build())
-            .all();
-}
+            //암호화되서 저장된 주민등록번호를 복호화 한 뒤, kb에서 정한 방식으로 암호화한다.
+            try {
+                updateSsn(dto, ssn);
+                riderDtoList.add(dto);
+            } catch (Exception e) {
+                throw new BusinessException(ErrorCode.INTERNAL_SERVER_ERROR);
+            }
+        });
