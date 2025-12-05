@@ -1,12 +1,17 @@
-    <select id="sumGroupCallTotalTime" parameterType="java.util.Map" resultType="java.lang.Integer">
-        SELECT SUM(gci.gci_total_time)
-        FROM groupcall_info as gci
-        INNER JOIN rider_info as ri
-        ON gci.ri_id = ri.ri_id
-        INNER JOIN seller_info as si
-        ON ri.si_id = si.si_id
-        WHERE 1=1
-        AND ri.ri_driver_id = #{riDriverId}
-        AND gci.gci_first_starttime <![CDATA[ >= ]]> #{startTime}
-        AND gci.gci_first_starttime <![CDATA[ < ]]> #{endTime}
-    </select>
+public Mono<Integer> sumGroupCallTotalTime(String riDriverId, LocalDateTime startTime, LocalDateTime endTime) {
+    StringBuffer sql = new StringBuffer();
+    sql.append("SELECT SUM(gci.gci_total_time) ")
+       .append("FROM groupcall_info gci ")
+       .append("INNER JOIN rider_info ri ON gci.ri_id = ri.ri_id ")
+       .append("INNER JOIN seller_info si ON ri.si_id = si.si_id ")
+       .append("WHERE ri.ri_driver_id = :riDriverId ")
+       .append("AND gci.gci_first_starttime >= :startTime ")
+       .append("AND gci.gci_first_starttime < :endTime");
+
+    return databaseClient.sql(sql.toString())
+            .bind("riDriverId", riDriverId)
+            .bind("startTime", startTime)
+            .bind("endTime", endTime)
+            .map((row, metadata) -> row.get(0, Integer.class))
+            .one();
+}
