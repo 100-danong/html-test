@@ -1,5 +1,7 @@
-[root@coself-2686 /]# sudo firewall-cmd --list-ports
-80/tcp 81/tcp 443/tcp 444/tcp 3306/tcp 19100/tcp 13100/tcp 9800/tcp 3600/tcp 9900/tcp 6379/tcp 9500/tcp 3700/tcp 9910/tcp 9920/tcp 9901/tcp 9911/tcp 9922/tcp 9888/tcp 9889/tcp 3400/tcp 3500/tcp 9840/tcp 9841/tcp 9301/tcp 9700/tcp 3450/tcp 9040/tcp 3150/tcp 10007/tcp 7500/tcp 7001/tcp 3080/tcp 9410/tcp 9420/tcp 3160/tcp 9810/tcp 9000/tcp 9600/tcp 4000/tcp 5000/udp 5000/tcp 7000/tcp 8000/tcp 8001/tcp 4020/tcp 4050/tcp 4070/tcp 7100/tcp 7110/tcp 7120/tcp 445/tcp 139/tcp
-[root@coself-2686 /]# sudo firewall-cmd --list-services
-dhcpv6-client samba ssh
+[root@coself-2686 /]# sudo ss -tulnp | grep -E "445|139"
+tcp    LISTEN     0      1024   127.0.0.1:8080                  *:*                   users:(("bundle",pid=39111,fd=18),("bundle",pid=36051,fd=18),("bundle",pid=32576,fd=18),("bundle",pid=32320,fd=18),("bundle",pid=32113,fd=18),("bundle",pid=29242,fd=18),("bundle",pid=27662,fd=18),("bundle",pid=23781,fd=18),("bundle",pid=21147,fd=18),("bundle",pid=19070,fd=18),("bundle",pid=18424,fd=18),("bundle",pid=16947,fd=18),("bundle",pid=16503,fd=18),("bundle",pid=16121,fd=18),("bundle",pid=15091,fd=18),("bundle",pid=13944,fd=18),("bundle",pid=12780,fd=18),("bundle",pid=11570,fd=18),("bundle",pid=10274,fd=18),("bundle",pid=8886,fd=18),("bundle",pid=8074,fd=18),("bundle",pid=7977,fd=18),("bundle",pid=7919,fd=18),("bundle",pid=6725,fd=18),("bundle",pid=5918,fd=18),("bundle",pid=4939,fd=18),("bundle",pid=4548,fd=18),("bundle",pid=4302,fd=18),("bundle",pid=2725,fd=18),("bundle",pid=991,fd=18))
+tcp    LISTEN     0      50        *:445                   *:*                   users:(("smbd",pid=10464,fd=36))
+tcp    LISTEN     0      50        *:139                   *:*                   users:(("smbd",pid=10464,fd=37))
+tcp    LISTEN     0      50     [::]:445                [::]:*                   users:(("smbd",pid=10464,fd=34))
+tcp    LISTEN     0      50     [::]:139                [::]:*                   users:(("smbd",pid=10464,fd=35))
 [root@coself-2686 /]#
