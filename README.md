@@ -1,6 +1,34 @@
+[root@coself-2686 /]# firewall-cmd --permanent --add-port=445/tcp
+Warning: ALREADY_ENABLED: 445:tcp
+success
+[root@coself-2686 /]# firewall-cmd --reload
+success
+[root@coself-2686 /]#
+[root@coself-2686 /]#
+[root@coself-2686 /]#
+[root@coself-2686 /]#
+[root@coself-2686 /]#
+[root@coself-2686 /]#
+[root@coself-2686 /]# iptables -I INPUT -p tcp --dport 445 -j ACCEPT
+[root@coself-2686 /]# service iptables save
+iptables: Saving firewall rules to /etc/sysconfig/iptables:[  OK  ]
+[root@coself-2686 /]#
+[root@coself-2686 /]#
+[root@coself-2686 /]#
+[root@coself-2686 /]#
+[root@coself-2686 /]# iptables -S | grep 445
+-A INPUT -p tcp -m tcp --dport 445 -j ACCEPT
+-A IN_public_allow -p tcp -m tcp --dport 445 -m conntrack --ctstate NEW,UNTRACKED -j ACCEPT
+-A IN_public_allow -p tcp -m tcp --dport 445 -m conntrack --ctstate NEW,UNTRACKED -j ACCEPT
+[root@coself-2686 /]#
+[root@coself-2686 /]#
+[root@coself-2686 /]#
+[root@coself-2686 /]#
+[root@coself-2686 /]#
 [root@coself-2686 /]# iptables -L
 Chain INPUT (policy ACCEPT)
 target     prot opt source               destination
+ACCEPT     tcp  --  anywhere             anywhere             tcp dpt:microsoft-ds
 ACCEPT     all  --  anywhere             anywhere             ctstate RELATED,ESTABLISHED
 ACCEPT     all  --  anywhere             anywhere
 INPUT_direct  all  --  anywhere             anywhere
@@ -8,9 +36,6 @@ INPUT_ZONES_SOURCE  all  --  anywhere             anywhere
 INPUT_ZONES  all  --  anywhere             anywhere
 DROP       all  --  anywhere             anywhere             ctstate INVALID
 REJECT     all  --  anywhere             anywhere             reject-with icmp-host-prohibited
-ACCEPT     tcp  --  anywhere             anywhere             tcp dpt:microsoft-ds
-ACCEPT     tcp  --  anywhere             anywhere             tcp dpt:microsoft-ds
-ACCEPT     tcp  --  anywhere             anywhere             tcp dpt:netbios-ssn
 
 Chain FORWARD (policy ACCEPT)
 target     prot opt source               destination
