@@ -1,17 +1,26 @@
-public Mono<Integer> sumGroupCallTotalTime(String riDriverId, LocalDateTime startTime, LocalDateTime endTime) {
-    StringBuffer sql = new StringBuffer();
-    sql.append("SELECT SUM(gci.gci_total_time) ")
-       .append("FROM groupcall_info gci ")
-       .append("INNER JOIN rider_info ri ON gci.ri_id = ri.ri_id ")
-       .append("INNER JOIN seller_info si ON ri.si_id = si.si_id ")
-       .append("WHERE ri.ri_driver_id = :riDriverId ")
-       .append("AND gci.gci_first_starttime >= :startTime ")
-       .append("AND gci.gci_first_starttime < :endTime");
+C:\Users\user02gogof>tcping ga.navers.co.kr 10007
 
-    return databaseClient.sql(sql.toString())
-            .bind("riDriverId", riDriverId)
-            .bind("startTime", startTime)
-            .bind("endTime", endTime)
-            .map((row, metadata) -> row.get(0, Integer.class))
-            .one();
-}
+Probing 112.175.41.190:10007/tcp - Port is open - time=2.423ms
+Probing 112.175.41.190:10007/tcp - Port is open - time=16.051ms
+Probing 112.175.41.190:10007/tcp - Port is open - time=2.804ms
+Probing 112.175.41.190:10007/tcp - Port is open - time=2.651ms
+
+Ping statistics for 112.175.41.190:10007
+     4 probes sent.
+     4 successful, 0 failed.  (0.00% fail)
+Approximate trip times in milli-seconds:
+     Minimum = 2.423ms, Maximum = 16.051ms, Average = 5.982ms
+
+C:\Users\user02gogof>tcping ga.navers.co.kr 445
+
+Probing 112.175.41.190:445/tcp - No response - time=2005.635ms
+Probing 112.175.41.190:445/tcp - No response - time=2011.496ms
+Probing 112.175.41.190:445/tcp - No response - time=2004.353ms
+Probing 112.175.41.190:445/tcp - No response - time=2007.081ms
+
+Ping statistics for 112.175.41.190:445
+     4 probes sent.
+     0 successful, 4 failed.  (100.00% fail)
+Was unable to connect, cannot provide trip statistics.
+
+C:\Users\user02gogof>
