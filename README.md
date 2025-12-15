@@ -1,48 +1,39 @@
-    public Mono<RegistrationStatusRes> getRiderInsuranceStatus(RegistrationStatusReq req, String apiKey) throws Exception {
-        //복호화 . sellecode랑 비교
-        String decryptedApiKey = SellerAES_Encryption.decrypt(apiKey);
-        log.info("decrypt : {}", decryptedApiKey);
-        if (!req.getSeller_code().equals(decryptedApiKey)) {
-            throw new BusinessException(ErrorCode.HANDLE_ACCESS_DENIED);
-        }
+public Mono<RegistrationStatusRes> getRiderInsuranceStatus(RegistrationStatusReq req, String apiKey) {
 
-        // 주민등록번호 형태 체크 (13자리인지. 하이픈 없는지)
-        String rawSsn = aes256Decode(req.getDriver_ssn());
-        ssnCheck(rawSsn);
-
-        log.debug("rawSsn : {}", rawSsn);
-        log.info("rawSsn = {}", rawSsn);
-        String aes128Ssn = aesEncode(rawSsn);
-        log.info("aes128Ssn = {}", aes128Ssn);
-
-        log.info("{} :: {} :: {}",rawSsn ,aesEncode(rawSsn) , req.getDriver_ssn());
-
-        List<Map<String, Object>> riderList = (List<Map<String, Object>>) businessRiderInfoRepository.findByRiderSsn(req.getName());
-        if (riderList.isEmpty()) {
-            throw new BusinessException(ErrorCode.NOT_FOUND_USER);
-        }
-        Map<String, Object> rider = checkSsn(riderList, rawSsn);
-
-        String rider_loginId = "";
-        rider_loginId = (String) rider.get("ri_userid");
-
-        String rider_sellerName = "";
-        rider_sellerName = (String) rider.get("si_name");
-
-        return Mono.just(new RegistrationStatusRes(rider_loginId, rider_sellerName));
+    // 1. apiKey 검증 (동기)
+    String decryptedApiKey = SellerAES_Encryption.decrypt(apiKey);
+    if (!req.getSeller_code().equals(decryptedApiKey)) {
+        return Mono.error(new BusinessException(ErrorCode.HANDLE_ACCESS_DENIED));
     }
 
-        public Map<String, Object> checkSsn(List<Map<String, Object>> riderList, String ssn) {
-        for (Map<String, Object> rider: riderList) {
+    // 2. 주민번호 복호화 + 형식 체크 (동기)
+    String rawSsn = aes256Decode(req.getDriver_ssn());
+    ssnCheck(rawSsn);  // 형식 맞지 않으면 여기서 예외 발생
+
+    String aes128Ssn = aesEncode(rawSsn);
+    log.info("rawSsn = {}, aes128Ssn = {}", rawSsn, aes128Ssn);
+
+    // 3. 리액티브하게 rider 조회 + 주민번호 매칭
+    return businessRiderInfoRepository.findByRiderSsn(req.getName())        // Flux<Map<String,Object>>
+        .flatMap(rider -> {
+            // 각 row의 주민번호 복호화 후 비교
+            String enc = (String) rider.get("ri_ss_number");
             try {
-                String decode_ssn = aesDecode((String) rider.get("ri_ss_number"));
-                System.out.println("decode_ssn" + decode_ssn);
-                if (decode_ssn.equals(ssn)) {
-                    return rider;
+                String decoded = aesDecode(enc);
+                if (decoded.equals(rawSsn)) {
+                    return Mono.just(rider);
+                } else {
+                    return Mono.empty();
                 }
             } catch (Exception e) {
-                throw new RuntimeException(e);
+                return Mono.error(e);
             }
-        }
-        throw new BusinessException(ErrorCode.NOT_FOUND_USER);
-    }
+        })
+        .next()  // 첫 매칭만 사용
+        .switchIfEmpty(Mono.error(new BusinessException(ErrorCode.NOT_FOUND_USER)))
+        .map(rider -> {
+            String rider_loginId = (String) rider.get("ri_userid");
+            String rider_sellerName = (String) rider.get("si_name");
+            return new RegistrationStatusRes(rider_loginId, rider_sellerName);
+        });
+}
