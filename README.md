@@ -185,8 +185,247 @@ javax.crypto.BadPaddingException: Given final block not properly padded. Such is
 	at io.netty.util.concurrent.FastThreadLocalRunnable.run(FastThreadLocalRunnable.java:30)
 	at java.base/java.lang.Thread.run(Thread.java:829)
 
-{
-  "driver_ssn": "doAZbX2bvxN22CMA+VTQkI6ozxriUIQbKY7MjkiLJenoqSzsujkQxJiqZ6IWbZlnj1CUu0D7S7tx1YuR3gBw63Pl2i73PpnsRfwKmcKvICPXjYWUt9BErvdocVPv5KOO5YAZZCN/zNeGKvWyO0ahikmXYc9c4bvc3K7fAMcTYDkPQbXk2amqi1INZ1ITuL0B",
-  "name": "정해훈",
-  "seller_code": "c1f15172d8a"
+
+Daemon will be stopped at the end of the build stop command received
+
+> Task :new_GoPlanV1Application.main()
+2025-12-15 15:02:53.229  INFO 9600 --- [actor-tcp-nio-3] c.g.kb.Business.service.RiderService     : decrypt : c1f15172d8a
+2025-12-15 15:02:53.410 ERROR 9600 --- [nio-8888-exec-7] o.a.c.c.C.[.[.[.[dispatcherServlet]      : Servlet.service() for servlet [dispatcherServlet] threw exception
+
+java.lang.ClassCastException: class java.lang.Byte cannot be cast to class java.lang.Integer (java.lang.Byte and java.lang.Integer are in module java.base of loader 'bootstrap')
+	at com.gogofnd.kb.Insurance.dto.HistoriesSaveDto.from(HistoriesSaveDto.java:77)
+	at reactor.core.publisher.FluxMap$MapSubscriber.onNext(FluxMap.java:106)
+	at reactor.core.publisher.FluxOnErrorResume$ResumeSubscriber.onNext(FluxOnErrorResume.java:79)
+	at reactor.core.publisher.FluxUsingWhen$UsingWhenSubscriber.onNext(FluxUsingWhen.java:345)
+	at reactor.core.publisher.FluxFlatMap$FlatMapMain.tryEmit(FluxFlatMap.java:544)
+	at reactor.core.publisher.FluxFlatMap$FlatMapInner.onNext(FluxFlatMap.java:985)
+	at reactor.core.publisher.FluxHandle$HandleSubscriber.onNext(FluxHandle.java:126)
+	at reactor.core.publisher.FluxTakeUntil$TakeUntilPredicateSubscriber.onNext(FluxTakeUntil.java:84)
+	at reactor.core.publisher.FluxWindowPredicate$WindowFlux.drainRegular(FluxWindowPredicate.java:668)
+	at reactor.core.publisher.FluxWindowPredicate$WindowFlux.drain(FluxWindowPredicate.java:746)
+	at reactor.core.publisher.FluxWindowPredicate$WindowFlux.onNext(FluxWindowPredicate.java:788)
+	at reactor.core.publisher.FluxWindowPredicate$WindowPredicateMain.onNext(FluxWindowPredicate.java:266)
+	at reactor.core.publisher.FluxCreate$BufferAsyncSink.drain(FluxCreate.java:814)
+	at reactor.core.publisher.FluxCreate$BufferAsyncSink.next(FluxCreate.java:739)
+	at reactor.core.publisher.FluxCreate$SerializedFluxSink.next(FluxCreate.java:161)
+	at org.mariadb.r2dbc.client.MariadbPacketDecoder.handleBuffer(MariadbPacketDecoder.java:98)
+	at org.mariadb.r2dbc.client.MariadbPacketDecoder.decode(MariadbPacketDecoder.java:79)
+	at io.netty.handler.codec.ByteToMessageDecoder.decodeRemovalReentryProtection(ByteToMessageDecoder.java:529)
+	at io.netty.handler.codec.ByteToMessageDecoder.callDecode(ByteToMessageDecoder.java:468)
+	at io.netty.handler.codec.ByteToMessageDecoder.channelRead(ByteToMessageDecoder.java:290)
+	at io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:444)
+	at io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:420)
+	at io.netty.channel.AbstractChannelHandlerContext.fireChannelRead(AbstractChannelHandlerContext.java:412)
+	at io.netty.channel.DefaultChannelPipeline$HeadContext.channelRead(DefaultChannelPipeline.java:1410)
+	at io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:440)
+	at io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:420)
+	at io.netty.channel.DefaultChannelPipeline.fireChannelRead(DefaultChannelPipeline.java:919)
+	at io.netty.channel.nio.AbstractNioByteChannel$NioByteUnsafe.read(AbstractNioByteChannel.java:166)
+	at io.netty.channel.nio.NioEventLoop.processSelectedKey(NioEventLoop.java:788)
+	at io.netty.channel.nio.NioEventLoop.processSelectedKeysOptimized(NioEventLoop.java:724)
+	at io.netty.channel.nio.NioEventLoop.processSelectedKeys(NioEventLoop.java:650)
+	at io.netty.channel.nio.NioEventLoop.run(NioEventLoop.java:562)
+	at io.netty.util.concurrent.SingleThreadEventExecutor$4.run(SingleThreadEventExecutor.java:997)
+	at io.netty.util.internal.ThreadExecutorMap$2.run(ThreadExecutorMap.java:74)
+	at io.netty.util.concurrent.FastThreadLocalRunnable.run(FastThreadLocalRunnable.java:30)
+	at java.base/java.lang.Thread.run(Thread.java:829)
+
+2025-12-15 15:02:53.441 ERROR 9600 --- [nio-8888-exec-7] o.a.c.c.C.[.[.[.[dispatcherServlet]      : Servlet.service() for servlet [dispatcherServlet] in context with path [/api/goplanV1] threw exception [Request processing failed; nested exception is java.lang.ClassCastException: class java.lang.Byte cannot be cast to class java.lang.Integer (java.lang.Byte and java.lang.Integer are in module java.base of loader 'bootstrap')] with root cause
+
+java.lang.ClassCastException: class java.lang.Byte cannot be cast to class java.lang.Integer (java.lang.Byte and java.lang.Integer are in module java.base of loader 'bootstrap')
+	at com.gogofnd.kb.Insurance.dto.HistoriesSaveDto.from(HistoriesSaveDto.java:77)
+	at reactor.core.publisher.FluxMap$MapSubscriber.onNext(FluxMap.java:106)
+	at reactor.core.publisher.FluxOnErrorResume$ResumeSubscriber.onNext(FluxOnErrorResume.java:79)
+	at reactor.core.publisher.FluxUsingWhen$UsingWhenSubscriber.onNext(FluxUsingWhen.java:345)
+	at reactor.core.publisher.FluxFlatMap$FlatMapMain.tryEmit(FluxFlatMap.java:544)
+	at reactor.core.publisher.FluxFlatMap$FlatMapInner.onNext(FluxFlatMap.java:985)
+	at reactor.core.publisher.FluxHandle$HandleSubscriber.onNext(FluxHandle.java:126)
+	at reactor.core.publisher.FluxTakeUntil$TakeUntilPredicateSubscriber.onNext(FluxTakeUntil.java:84)
+	at reactor.core.publisher.FluxWindowPredicate$WindowFlux.drainRegular(FluxWindowPredicate.java:668)
+	at reactor.core.publisher.FluxWindowPredicate$WindowFlux.drain(FluxWindowPredicate.java:746)
+	at reactor.core.publisher.FluxWindowPredicate$WindowFlux.onNext(FluxWindowPredicate.java:788)
+	at reactor.core.publisher.FluxWindowPredicate$WindowPredicateMain.onNext(FluxWindowPredicate.java:266)
+	at reactor.core.publisher.FluxCreate$BufferAsyncSink.drain(FluxCreate.java:814)
+	at reactor.core.publisher.FluxCreate$BufferAsyncSink.next(FluxCreate.java:739)
+	at reactor.core.publisher.FluxCreate$SerializedFluxSink.next(FluxCreate.java:161)
+	at org.mariadb.r2dbc.client.MariadbPacketDecoder.handleBuffer(MariadbPacketDecoder.java:98)
+	at org.mariadb.r2dbc.client.MariadbPacketDecoder.decode(MariadbPacketDecoder.java:79)
+	at io.netty.handler.codec.ByteToMessageDecoder.decodeRemovalReentryProtection(ByteToMessageDecoder.java:529)
+	at io.netty.handler.codec.ByteToMessageDecoder.callDecode(ByteToMessageDecoder.java:468)
+	at io.netty.handler.codec.ByteToMessageDecoder.channelRead(ByteToMessageDecoder.java:290)
+	at io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:444)
+	at io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:420)
+	at io.netty.channel.AbstractChannelHandlerContext.fireChannelRead(AbstractChannelHandlerContext.java:412)
+	at io.netty.channel.DefaultChannelPipeline$HeadContext.channelRead(DefaultChannelPipeline.java:1410)
+	at io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:440)
+	at io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:420)
+	at io.netty.channel.DefaultChannelPipeline.fireChannelRead(DefaultChannelPipeline.java:919)
+	at io.netty.channel.nio.AbstractNioByteChannel$NioByteUnsafe.read(AbstractNioByteChannel.java:166)
+	at io.netty.channel.nio.NioEventLoop.processSelectedKey(NioEventLoop.java:788)
+	at io.netty.channel.nio.NioEventLoop.processSelectedKeysOptimized(NioEventLoop.java:724)
+	at io.netty.channel.nio.NioEventLoop.processSelectedKeys(NioEventLoop.java:650)
+	at io.netty.channel.nio.NioEventLoop.run(NioEventLoop.java:562)
+	at io.netty.util.concurrent.SingleThreadEventExecutor$4.run(SingleThreadEventExecutor.java:997)
+	at io.netty.util.internal.ThreadExecutorMap$2.run(ThreadExecutorMap.java:74)
+	at io.netty.util.concurrent.FastThreadLocalRunnable.run(FastThreadLocalRunnable.java:30)
+	at java.base/java.lang.Thread.run(Thread.java:829)
+
+    public Mono<HistoriesSaveDto> findForUpdateById(Long ri_id, int ri_state) {
+
+        StringBuilder sb = new StringBuilder();
+        sb.append(" SELECT ih.*, ri.ri_state ");
+        sb.append(" FROM insurance_history ih ");
+        sb.append(" INNER JOIN rider_info ri ");
+        sb.append(" ON ih.ri_id = ri.ri_id ");
+        sb.append(" WHERE ih.ri_id = :riId ");
+        sb.append(" AND ri.ri_state = :riState ");
+        sb.append(" UNION ALL ");
+        sb.append(" SELECT ih.*, ri.ri_state ");
+        sb.append(" FROM insurance_renew_history ih ");
+        sb.append(" INNER JOIN rider_info_renew ri ");
+        sb.append(" ON ih.ri_id = ri.ri_id ");
+        sb.append(" WHERE ih.ri_id = :riId ");
+        sb.append(" AND ri.ri_state = :riState ");
+
+        String sql = sb.toString();
+
+        return databaseClient.sql(sql)
+                .bind("riId", ri_id)
+                .bind("riState", ri_state)
+                .fetch()
+                .all()
+                .map(HistoriesSaveDto::from)
+                .next();
+    }
+
+	package com.gogofnd.kb.Insurance.dto;
+
+import lombok.*;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.relational.core.mapping.Table;
+
+import java.time.LocalDateTime;
+import java.util.Map;
+
+import static java.time.LocalDateTime.now;
+
+@AllArgsConstructor
+@NoArgsConstructor
+@Getter
+@Setter
+@Builder
+public class HistoriesSaveDto {
+
+    @Id
+    private Long ihId;
+
+    private Long riId;
+
+    private Long siId;
+
+    private String ihInsuState;
+
+    private String ihPolicyNumber;
+
+    private String ihApplicationNumber;
+
+    private LocalDateTime ihEffectStartdate;
+    private LocalDateTime ihEffectEnddate;
+    private LocalDateTime ihUntil;
+
+    private String ihAgeYn;
+
+    private String ihApplyState; // 적용(Y), 만료(N), 대기(W)
+
+    private LocalDateTime ihInsTime;
+    private LocalDateTime ihUpdTime;
+
+    private LocalDateTime ishInsTime;
+
+    private String riTotalWebviewUrl;
+
+    private LocalDateTime rihWithdrawCompleteTime;
+
+    private LocalDateTime rihUnderCompleteTime;
+
+    private LocalDateTime rihEndoCompleteTime;
+
+    // insurance_state_history 테이블 데이터 추가
+    private String ihRejectCode;
+
+    // 증권 갱신 시 필요
+    private Integer riState;
+
+    private Long pastRiId;
+
+    public static HistoriesSaveDto from(Map<String, Object> row) {
+        HistoriesSaveDto dto = new HistoriesSaveDto();
+
+        dto.ihId = row.get("ih_id") != null ? ((Number) row.get("ih_id")).longValue() : null;
+        dto.riId = (Long) row.get("ri_id");
+        dto.siId = (Long) row.get("si_id");
+        dto.ihInsuState = (String) row.get("ih_insu_state");
+        dto.ihPolicyNumber = (String) row.get("ih_policy_number");
+        dto.ihApplicationNumber = (String) row.get("ih_application_number");
+        dto.ihEffectStartdate = (LocalDateTime) row.get("ih_effect_startdate");
+        dto.ihEffectEnddate = (LocalDateTime) row.get("ih_effect_enddate");
+        dto.ihUntil = (LocalDateTime) row.get("ih_until");
+        dto.ihAgeYn = (String) row.get("ih_age_yn");
+        dto.ihApplyState = (String) row.get("ih_apply_state");
+        dto.ihInsTime = (LocalDateTime) row.get("ih_ins_time");
+        dto.ihUpdTime = (LocalDateTime) row.get("ih_upd_time");
+        dto.riState = (Integer) row.get("ri_state");
+
+        return dto;
+    }
+
+
+    public void updateEndoCompl() {
+        this.rihEndoCompleteTime = now();
+    }
+
+    public void updateWithdrawCompl() {
+        this.rihWithdrawCompleteTime = now();
+    }
+
+    public void updateUnderCompl() {
+        this.rihUnderCompleteTime = now();
+
+    }
+
+    public void updateTime() {
+        this.ihUpdTime = now();
+    }
+
+    public void updateIshInsTime() {this.ishInsTime = now();}
+
+    public void updateRejectCode(String ihRejectCode) {this.ihRejectCode = ihRejectCode;}
+
+    public void updateUntil(LocalDateTime ihUntil) {this.ihUntil = ihUntil;}
+
+    public void updateEffectTime(LocalDateTime ihEffectStartdate, LocalDateTime ihEffectEnddate, LocalDateTime ihUntil) {
+        this.ihEffectStartdate = ihEffectStartdate;
+        this.ihEffectEnddate = ihEffectEnddate;
+    }
+
+    public void updateIhId(Long ihId) {
+        this.ihId = ihId;
+    }
+
+    public static HistoriesSaveDto create(Long riId, Long siId, String ihInsuState, String ihPolicyNumber, String ihApplicationNumber, String ihAgeYn, String riTotalWebviewUrl) {
+        return HistoriesSaveDto.builder()
+                .riId(riId)
+                .siId(siId)
+                .ihInsuState(ihInsuState)
+                .ihPolicyNumber(ihPolicyNumber)
+                .ihApplicationNumber(ihApplicationNumber)
+                .ihAgeYn(ihAgeYn)
+                .ihApplyState("W") // 적용(Y), 만료(N), 대기(W)
+                .ihInsTime(now())
+                .ihUpdTime(now())
+                .ishInsTime(now())
+                .riTotalWebviewUrl(riTotalWebviewUrl)
+                .build();
+    }
+
 }
