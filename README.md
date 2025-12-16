@@ -1,200 +1,96 @@
-    public Mono<CountDto> kbApi8th(List<KbApi8thReq> dto) {
-        log.info("dto --> " + dto);
-        List<String> driverIds = dto.stream().map(KbApi8thReq::getDriver_id).collect(Collectors.toList());
+public Mono<CountDto> kbApi8th(List<KbApi8thReq> dto) {
 
-        return riderInfoRepository.findAllByDriverIdForCancel(driverIds)
-                .collectList()
-                .flatMap(riders -> {
-                    List<HistoriesSaveDto> histories = new ArrayList<>();
-                    List<HistoriesSaveDto> historiesRenew = new ArrayList<>();
+    log.info("dto --> {}", dto);
 
-                    for (RiderInfo e : riders) {
-                        for (KbApi8thReq d : dto) {
-                            if (d.getDriver_id().equals(e.getRi_driver_id()) && Objects.equals(e.getRi_insu_status(), "071")) {
-                                log.info("Proxy_driv_coorp_cmpcd : {}",d.getProxy_driv_coorp_cmpcd());
-                                log.info("Driver_id : {}",d.getDriver_id());
-                                log.info("result : {}",d.getResult());
-                                log.info("Policy_number : {}",d.getPolicy_number());
-                                log.info("Effective_time : {}",d.getEffective_time());
-                                log.info("Auto_cancel : {}",d.getAuto_cancel());
+    List<String> driverIds = dto.stream()
+            .map(KbApi8thReq::getDriver_id)
+            .collect(Collectors.toList());
 
-                                // 기명 취소 거절
-                                if (!d.getResult().equals("canceled")) {
-                                    //////////// updateAll
-                                    return historyMapper.findForUpdateById(e.getRi_id(), e.getRi_state())
-                                            .flatMap(update -> {
-                                                log.info("기명취소 거부" + e.getRi_id());
+    return riderInfoRepository.findAllByDriverIdForCancel(driverIds)
+            .collectList()
+            .flatMapMany(riders -> Flux.fromIterable(riders))
+            .flatMap(rider ->
+                Flux.fromIterable(dto)
+                    .filter(d ->
+                        d.getDriver_id().equals(rider.getRi_driver_id())
+                        && Objects.equals(rider.getRi_insu_status(), "071")
+                    )
+                    .flatMap(d ->
+                        historyMapper.findForUpdateById(rider.getRi_id(), rider.getRi_state())
+                            .flatMap(update -> {
 
-                                                update.setIhInsuState("083");
+                                log.info("Driver_id : {}", d.getDriver_id());
+                                log.info("result : {}", d.getResult());
 
-                                                update.setIhAgeYn("-");
+                                // 기명취소 거부
+                                if (!"canceled".equals(d.getResult())) {
 
-                                                update.updateTime();
+                                    log.info("기명취소 거부 {}", rider.getRi_id());
 
-                                                update.updateIshInsTime();
+                                    update.setIhInsuState("083");
+                                    update.setIhAgeYn("-");
+                                    update.updateRejectCode(d.getResult());
 
-                                                update.updateRejectCode(d.getResult());
-
-                                                update.setRiId(e.getRi_id());
-
-                                                if(e.getRi_state() == 2) {
-                                                    historiesRenew.add(update);
-                                                } else {
-                                                    histories.add(update);
-                                                }
-                                                return null;
-                                            });
-                                    // 기명 취소 승인
+                                // 기명취소 승인
                                 } else {
-                                    //////////// updateAll
-                                    return historyMapper.findForUpdateById(e.getRi_id(), e.getRi_state())
-                                            .flatMap(update -> {
-                                                log.info("기명취소 " + e.getRi_id());
 
-                                                update.setIhEffectStartdate(convertDate(d.getEffective_time().get(0)));
-                                                update.setIhEffectEnddate(convertDate(d.getEffective_time().get(1)));
+                                    log.info("기명취소 승인 {}", rider.getRi_id());
 
-                                                update.setIhInsuState("082");
-                                                update.setIhAgeYn("-");
-                                                update.setIhApplyState("N");
-                                                update.setRiState(9);
-                                                update.setRiId(e.getRi_id());
+                                    update.setIhEffectStartdate(convertDate(d.getEffective_time().get(0)));
+                                    update.setIhEffectEnddate(convertDate(d.getEffective_time().get(1)));
+                                    update.setIhInsuState("082");
+                                    update.setIhAgeYn("-");
+                                    update.setIhApplyState("N");
+                                    update.setRiState(9);
 
-                                                Mono<RiderInsuranceDto> riderInsuranceDto = riderInsuranceHistoryMapper.findByRiderId(e.getRi_id(), e.getRi_state())
-                                                        .switchIfEmpty(update.updateWithdrawCompl());
-                                                
-                                                update.updateTime();
-
-                                                update.updateIshInsTime();
-
-                                                if(e.getRi_state() == 2) {
-                                                    historiesRenew.add(update);
-                                                } else {
-                                                    histories.add(update);
-                                                }
-                                                
-                                                return null;
-                                            });
+                                    return riderInsuranceHistoryMapper
+                                            .findByRiderId(rider.getRi_id(), rider.getRi_state())
+                                            .flatMap(ins -> update.updateWithdrawCompl())
+                                            .switchIfEmpty(update.updateWithdrawCompl())
+                                            .thenReturn(update);
                                 }
-                            }
-                        }
-                    }
 
-                    //리스트들 db에 저장
-                    historyMapper.updateAll(histories);
-                    historyMapper.saveAllStateHistory(histories);
-                    riderInfoRepository.updateRiderInsurStatusAndApplyDateAll(histories);
-                    riderInsuranceHistoryMapper.updateAllWithDrawComp(histories);
+                                update.updateTime();
+                                update.updateIshInsTime();
+                                update.setRiId(rider.getRi_id());
 
-                    if (!historiesRenew.isEmpty()) {
-                        historyMapper.updateAllRenew(historiesRenew);
-                        historyMapper.saveAllStateHistoryRenew(historiesRenew);
-                        riderInfoRepository.updateRiderInsurStatusAndApplyDateAllRenew(historiesRenew);
-                        riderInsuranceHistoryMapper.updateAllWithDrawCompRenew(historiesRenew);
-                    }
-                    
-                    return Mono.just(new CountDto(0));
-                });
-    }
+                                return Mono.just(update);
+                            })
+                    )
+            )
+            .collectList()
+            .flatMap(updates -> {
 
-    이게 수정한 코드고
+                List<HistoriesSaveDto> histories = new ArrayList<>();
+                List<HistoriesSaveDto> historiesRenew = new ArrayList<>();
 
-    public CountDto kbApi8th(List<KbApi8thReq> dto){
-
-        log.info("dto --> " + dto);
-
-        List<String> driverIds = dto.stream().map(KbApi8thReq::getDriver_id).collect(Collectors.toList());
-
-        List<RiderInfo> riders = riderMapper.findAllByDriverIdForCancel(driverIds);
-
-        List<HistoriesSaveDto> histories = new ArrayList<>();
-        List<HistoriesSaveDto> historiesRenew = new ArrayList<>();
-
-        riders.forEach(e->{
-            dto.forEach(d->{
-                if(d.getDriver_id().equals(e.getRiDriverId()) && Objects.equals(e.getRiInsuStatus(), "071")) {
-                    log.info("Proxy_driv_coorp_cmpcd : {}",d.getProxy_driv_coorp_cmpcd());
-                    log.info("Driver_id : {}",d.getDriver_id());
-                    log.info("result : {}",d.getResult());
-                    log.info("Policy_number : {}",d.getPolicy_number());
-                    log.info("Effective_time : {}",d.getEffective_time());
-                    log.info("Auto_cancel : {}",d.getAuto_cancel());
-
-                    // 기명취소가 승인된게 아니면
-                    if (!d.getResult().equals("canceled")) {
-                        //////////// updateAll
-                        HistoriesSaveDto update = historyMapper.findForUpdateById(e.getRiId(), e.getRiState());
-
-                        log.info("기명취소 거부" + e.getRiId());
-
-                        update.setIhInsuState("083");
-
-                        update.setIhAgeYn("-");
-
-                        update.updateTime();
-
-                        update.updateIshInsTime();
-
-                        update.updateRejectCode(d.getResult());
-
-                        update.setRiId(e.getRiId());
-
-                        if(e.getRiState() == 2) {
-                            historiesRenew.add(update);
-                        } else {
-                            histories.add(update);
-                        }
-
-                        //기명 취소가 승인되었으면
+                for (HistoriesSaveDto h : updates) {
+                    if (h.getRiState() == 2) {
+                        historiesRenew.add(h);
                     } else {
-                        //////////// updateAll
-                        HistoriesSaveDto update = historyMapper.findForUpdateById(e.getRiId(), e.getRiState());
-
-                        log.info("기명취소 " + e.getRiId());
-
-                        update.setIhEffectStartdate(convertDate(d.getEffective_time().get(0)));
-                        update.setIhEffectEnddate(convertDate(d.getEffective_time().get(1)));
-
-                        update.setIhInsuState("082");
-                        update.setIhAgeYn("-");
-                        update.setIhApplyState("N");
-                        update.setRiState(9);
-                        update.setRiId(e.getRiId());
-
-                        RiderInsuranceDto riderInsuranceDto = riderInsuranceHistoryMapper.findByRiderId(e.getRiId(), e.getRiState());
-
-                        if(riderInsuranceDto != null){
-                            update.updateWithdrawCompl();
-                        }
-
-                        update.updateTime();
-
-                        update.updateIshInsTime();
-
-                        if(e.getRiState() == 2) {
-                            historiesRenew.add(update);
-                        } else {
-                            histories.add(update);
-                        }
+                        histories.add(h);
                     }
                 }
+
+                Mono<Void> normalFlow =
+                        Mono.when(
+                            historyMapper.updateAll(histories),
+                            historyMapper.saveAllStateHistory(histories),
+                            riderInfoRepository.updateRiderInsurStatusAndApplyDateAll(histories),
+                            riderInsuranceHistoryMapper.updateAllWithDrawComp(histories)
+                        );
+
+                Mono<Void> renewFlow =
+                        historiesRenew.isEmpty()
+                            ? Mono.empty()
+                            : Mono.when(
+                                historyMapper.updateAllRenew(historiesRenew),
+                                historyMapper.saveAllStateHistoryRenew(historiesRenew),
+                                riderInfoRepository.updateRiderInsurStatusAndApplyDateAllRenew(historiesRenew),
+                                riderInsuranceHistoryMapper.updateAllWithDrawCompRenew(historiesRenew)
+                              );
+
+                return Mono.when(normalFlow, renewFlow)
+                        .thenReturn(new CountDto(updates.size()));
             });
-        });
-
-        //리스트들 db에 저장
-        historyMapper.updateAll(histories);
-        historyMapper.saveAllStateHistory(histories);
-        riderMapper.updateRiderInsurStatusAndApplyDateAll(histories);
-        riderInsuranceHistoryMapper.updateAllWithDrawComp(histories);
-
-        if (!historiesRenew.isEmpty()) {
-            historyMapper.updateAllRenew(historiesRenew);
-            historyMapper.saveAllStateHistoryRenew(historiesRenew);
-            riderMapper.updateRiderInsurStatusAndApplyDateAllRenew(historiesRenew);
-            riderInsuranceHistoryMapper.updateAllWithDrawCompRenew(historiesRenew);
-        }
-
-        return new CountDto(riders.size());
-    }
-
-    
+}
