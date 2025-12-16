@@ -30,7 +30,7 @@ public Mono<Integer> update(HistoriesSaveDto dto) {
                 .bind("ihId", dto.getIhId())
                 .fetch()
                 .rowsUpdated()
-                .flatMap(rows ->
+                .then(
                     databaseClient.sql(RiderSQL.toString())
                             .bind("ihInsuState", dto.getIhInsuState())
                             .bind("ihUpdTime", dto.getIhUpdTime())
@@ -40,12 +40,10 @@ public Mono<Integer> update(HistoriesSaveDto dto) {
                 );
     }
 
-	오후 12:03:38: Executing ':new_GoPlanV1Application.main()'...
+오후 12:14:20: Executing ':new_GoPlanV1Application.main()'...
 
 
 > Task :compileJava
-Note: C:\Users\user02gogof\Desktop\new_GoPlanV1\src\main\java\com\gogofnd\kb\Insurance\repository\HistoryRepository.java uses or overrides a deprecated API.
-Note: Recompile with -Xlint:deprecation for details.
 Note: Some input files use unchecked or unsafe operations.
 Note: Recompile with -Xlint:unchecked for details.
 
@@ -62,16 +60,18 @@ Note: Recompile with -Xlint:unchecked for details.
  =========|_|==============|___/=/_/_/_/
  :: Spring Boot ::               (v2.7.10)
 
-2025-12-16 12:03:59.017  INFO 6800 --- [           main] com.gogofnd.kb.new_GoPlanV1Application   : Starting new_GoPlanV1Application using Java 11.0.15 on Gogofnd002 with PID 6800 (C:\Users\user02gogof\Desktop\new_GoPlanV1\build\classes\java\main started by user02gogof in C:\Users\user02gogof\Desktop\new_GoPlanV1)
-2025-12-16 12:03:59.026 DEBUG 6800 --- [           main] com.gogofnd.kb.new_GoPlanV1Application   : Running with Spring Boot v2.7.10, Spring v5.3.26
-2025-12-16 12:03:59.027  INFO 6800 --- [           main] com.gogofnd.kb.new_GoPlanV1Application   : The following 4 profiles are active: "dev", "logging_daily", "logging_error", "logging_info"
-2025-12-16 12:04:12.913  INFO 6800 --- [           main] c.g.kb.global.config.SecurityConfig      : accessDeniedHandler
-2025-12-16 12:04:12.927  INFO 6800 --- [           main] c.g.kb.global.config.SecurityConfig      : authenticationEntryPoint
-2025-12-16 12:04:16.396  INFO 6800 --- [           main] com.gogofnd.kb.new_GoPlanV1Application   : Started new_GoPlanV1Application in 20.079 seconds (JVM running for 22.117)
+2025-12-16 12:14:33.549  INFO 5516 --- [           main] com.gogofnd.kb.new_GoPlanV1Application   : Starting new_GoPlanV1Application using Java 11.0.15 on Gogofnd002 with PID 5516 (C:\Users\user02gogof\Desktop\new_GoPlanV1\build\classes\java\main started by user02gogof in C:\Users\user02gogof\Desktop\new_GoPlanV1)
+2025-12-16 12:14:33.560 DEBUG 5516 --- [           main] com.gogofnd.kb.new_GoPlanV1Application   : Running with Spring Boot v2.7.10, Spring v5.3.26
+2025-12-16 12:14:33.566  INFO 5516 --- [           main] com.gogofnd.kb.new_GoPlanV1Application   : The following 4 profiles are active: "dev", "logging_daily", "logging_error", "logging_info"
+2025-12-16 12:14:46.853  INFO 5516 --- [           main] c.g.kb.global.config.SecurityConfig      : accessDeniedHandler
+2025-12-16 12:14:46.860  INFO 5516 --- [           main] c.g.kb.global.config.SecurityConfig      : authenticationEntryPoint
+2025-12-16 12:14:50.225  INFO 5516 --- [           main] com.gogofnd.kb.new_GoPlanV1Application   : Started new_GoPlanV1Application in 18.878 seconds (JVM running for 20.511)
 한글 테스트 Start
-2025-12-16 12:04:55.140  INFO 6800 --- [actor-tcp-nio-2] c.g.kb.Business.service.RiderService     : 계약체결동의 요청 Phone 01097591397
-2025-12-16 12:04:55.423  INFO 6800 --- [actor-tcp-nio-2] c.g.kb.Business.service.RiderService     : 계약체결동의 완료 34023
-2025-12-16 12:04:55.649 ERROR 6800 --- [nio-8888-exec-2] o.a.c.c.C.[.[.[.[dispatcherServlet]      : Servlet.service() for servlet [dispatcherServlet] threw exception
+2025-12-16 12:15:03.520  INFO 5516 --- [actor-tcp-nio-2] c.g.kb.Business.service.RiderService     : 계약체결동의 요청 Phone 01097591397
+2025-12-16 12:15:03.747  INFO 5516 --- [actor-tcp-nio-2] c.g.kb.Business.service.RiderService     : 계약체결동의 완료 34023
+2025-12-16 12:15:03.786  INFO 5516 --- [actor-tcp-nio-2] c.g.kb.Business.service.RiderService     : 업데이트타임이 없는건가? 2025-12-16T12:15:03.786108300
+2025-12-16 12:15:03.790  INFO 5516 --- [actor-tcp-nio-2] c.g.kb.Business.service.RiderService     : 진짜 뭐지? 1
+2025-12-16 12:15:03.964 ERROR 5516 --- [nio-8888-exec-2] o.a.c.c.C.[.[.[.[dispatcherServlet]      : Servlet.service() for servlet [dispatcherServlet] threw exception
 
 java.lang.IllegalArgumentException: No parameter with name 'ihUpdTime' found (possible values [null, null])
 	at org.mariadb.r2dbc.MariadbClientParameterizedQueryStatement.getColumn(MariadbClientParameterizedQueryStatement.java:114)
@@ -177,7 +177,7 @@ java.lang.IllegalArgumentException: No parameter with name 'ihUpdTime' found (po
 	at io.netty.util.concurrent.FastThreadLocalRunnable.run(FastThreadLocalRunnable.java:30)
 	at java.base/java.lang.Thread.run(Thread.java:829)
 
-2025-12-16 12:04:55.664 ERROR 6800 --- [nio-8888-exec-2] o.a.c.c.C.[.[.[.[dispatcherServlet]      : Servlet.service() for servlet [dispatcherServlet] in context with path [/api/goplanV1] threw exception [Request processing failed; nested exception is java.lang.IllegalArgumentException: No parameter with name 'ihUpdTime' found (possible values [null, null])] with root cause
+2025-12-16 12:15:03.974 ERROR 5516 --- [nio-8888-exec-2] o.a.c.c.C.[.[.[.[dispatcherServlet]      : Servlet.service() for servlet [dispatcherServlet] in context with path [/api/goplanV1] threw exception [Request processing failed; nested exception is java.lang.IllegalArgumentException: No parameter with name 'ihUpdTime' found (possible values [null, null])] with root cause
 
 java.lang.IllegalArgumentException: No parameter with name 'ihUpdTime' found (possible values [null, null])
 	at org.mariadb.r2dbc.MariadbClientParameterizedQueryStatement.getColumn(MariadbClientParameterizedQueryStatement.java:114)
@@ -282,4 +282,6 @@ java.lang.IllegalArgumentException: No parameter with name 'ihUpdTime' found (po
 	at io.netty.util.internal.ThreadExecutorMap$2.run(ThreadExecutorMap.java:74)
 	at io.netty.util.concurrent.FastThreadLocalRunnable.run(FastThreadLocalRunnable.java:30)
 	at java.base/java.lang.Thread.run(Thread.java:829)
+
+
 
