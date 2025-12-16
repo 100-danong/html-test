@@ -1,8 +1,61 @@
-오전 11:04:38: Executing ':new_GoPlanV1Application.main()'...
+    @ApiOperation(value = "api4(계약체결동의) 리턴 url", notes = "계약체결 이행 동의가 완료된 라이더의 경우, kb에서 이 url로 리턴을 해줍니다.")
+    @GetMapping("/4/return&tel={tel}")
+    public Mono<ModelAndView> api4Return(@PathVariable String tel){
+
+        String[] params = tel.split("&");
+
+        String phone = params[0];
+
+        log.info("뭐임 로그 안 찍힘?");
+        riderService.api4Return(phone);
+        log.info("에반데?");
+
+        ModelAndView view = new ModelAndView();
+
+        view.setViewName("api4Success.html");
+
+        return Mono.just(view);
+    }
+
+	public Mono<String> api4Return(String phone){
+        log.info("계약체결동의 요청 Phone " + phone);
+
+        //갱신 라이더가 있는지 조회
+        return businessRiderInfoRepository.findByPhoneRenew(phone)
+                //만약 갱신 라이더가 없다면 일반 조회
+                .switchIfEmpty(businessRiderInfoRepository.findByPhone(phone)
+                        .switchIfEmpty(Mono.error(new BusinessException(ErrorCode.NOT_FOUND_USER))))
+                .flatMap(rider -> {
+                    log.info("계약체결동의 완료 {}", rider.getRi_id());
+
+                    return historyMapper.findForUpdateById(rider.getRi_id(), rider.getRi_state())
+                            .flatMap(update -> {
+                                update.setIhInsuState("051");
+                                update.setRiId(rider.getRi_id());
+                                update.updateTime();
+
+                                if (rider.getRi_state() == 4) {
+                                    log.info("갱신임?");
+                                    return historyMapper.updateRenew(update)
+                                            .then(historyMapper.saveStateHistoryRenew(update))
+                                            .then(businessRiderInfoRepository.updateRiInsuStateRenew(update))
+                                            .then(Mono.just("Y"));
+                                } else {
+                                    log.info("왜 업뎃 안 되지..?");
+                                    return historyMapper.update(update)
+                                            .then(historyMapper.saveStateHistory(update))
+                                            .then(businessRiderInfoRepository.updateRiInsuState(update))
+                                            .then(Mono.just("Y"));
+                                }
+                            });
+                });
+    }
+
+	오전 11:17:10: Executing ':new_GoPlanV1Application.main()'...
 
 
 > Task :compileJava
-Note: Some input files use unchecked or unsafe operations.
+Note: C:\Users\user02gogof\Desktop\new_GoPlanV1\src\main\java\com\gogofnd\kb\Insurance\controller\InsuranceApi.java uses unchecked or unsafe operations.
 Note: Recompile with -Xlint:unchecked for details.
 
 > Task :processResources UP-TO-DATE
@@ -18,268 +71,12 @@ Note: Recompile with -Xlint:unchecked for details.
  =========|_|==============|___/=/_/_/_/
  :: Spring Boot ::               (v2.7.10)
 
-2025-12-16 11:05:10.121  INFO 9084 --- [           main] com.gogofnd.kb.new_GoPlanV1Application   : Starting new_GoPlanV1Application using Java 11.0.15 on Gogofnd002 with PID 9084 (C:\Users\user02gogof\Desktop\new_GoPlanV1\build\classes\java\main started by user02gogof in C:\Users\user02gogof\Desktop\new_GoPlanV1)
-2025-12-16 11:05:10.127 DEBUG 9084 --- [           main] com.gogofnd.kb.new_GoPlanV1Application   : Running with Spring Boot v2.7.10, Spring v5.3.26
-2025-12-16 11:05:10.128  INFO 9084 --- [           main] com.gogofnd.kb.new_GoPlanV1Application   : The following 4 profiles are active: "dev", "logging_daily", "logging_error", "logging_info"
-2025-12-16 11:05:24.288  INFO 9084 --- [           main] c.g.kb.global.config.SecurityConfig      : accessDeniedHandler
-2025-12-16 11:05:24.362  INFO 9084 --- [           main] c.g.kb.global.config.SecurityConfig      : authenticationEntryPoint
-2025-12-16 11:05:34.992  INFO 9084 --- [           main] com.gogofnd.kb.new_GoPlanV1Application   : Started new_GoPlanV1Application in 27.667 seconds (JVM running for 29.903)
+2025-12-16 11:17:23.441  INFO 10992 --- [           main] com.gogofnd.kb.new_GoPlanV1Application   : Starting new_GoPlanV1Application using Java 11.0.15 on Gogofnd002 with PID 10992 (C:\Users\user02gogof\Desktop\new_GoPlanV1\build\classes\java\main started by user02gogof in C:\Users\user02gogof\Desktop\new_GoPlanV1)
+2025-12-16 11:17:23.448 DEBUG 10992 --- [           main] com.gogofnd.kb.new_GoPlanV1Application   : Running with Spring Boot v2.7.10, Spring v5.3.26
+2025-12-16 11:17:23.466  INFO 10992 --- [           main] com.gogofnd.kb.new_GoPlanV1Application   : The following 4 profiles are active: "dev", "logging_daily", "logging_error", "logging_info"
+2025-12-16 11:17:38.464  INFO 10992 --- [           main] c.g.kb.global.config.SecurityConfig      : accessDeniedHandler
+2025-12-16 11:17:38.472  INFO 10992 --- [           main] c.g.kb.global.config.SecurityConfig      : authenticationEntryPoint
+2025-12-16 11:17:42.760  INFO 10992 --- [           main] com.gogofnd.kb.new_GoPlanV1Application   : Started new_GoPlanV1Application in 21.945 seconds (JVM running for 23.543)
 한글 테스트 Start
-2025-12-16 11:06:20.362 ERROR 9084 --- [nio-8888-exec-1] org.thymeleaf.TemplateEngine             : [THYMELEAF][http-nio-8888-exec-1] Exception processing template "api4Success.html": Error resolving template [api4Success.html], template might not exist or might not be accessible by any of the configured Template Resolvers
-
-org.thymeleaf.exceptions.TemplateInputException: Error resolving template [api4Success.html], template might not exist or might not be accessible by any of the configured Template Resolvers
-	at org.thymeleaf.engine.TemplateManager.resolveTemplate(TemplateManager.java:869)
-	at org.thymeleaf.engine.TemplateManager.parseAndProcess(TemplateManager.java:607)
-	at org.thymeleaf.TemplateEngine.process(TemplateEngine.java:1098)
-	at org.thymeleaf.TemplateEngine.process(TemplateEngine.java:1072)
-	at org.thymeleaf.spring5.view.ThymeleafView.renderFragment(ThymeleafView.java:366)
-	at org.thymeleaf.spring5.view.ThymeleafView.render(ThymeleafView.java:190)
-	at org.springframework.web.servlet.DispatcherServlet.render(DispatcherServlet.java:1406)
-	at org.springframework.web.servlet.DispatcherServlet.processDispatchResult(DispatcherServlet.java:1150)
-	at org.springframework.web.servlet.DispatcherServlet.doDispatch(DispatcherServlet.java:1089)
-	at org.springframework.web.servlet.DispatcherServlet.doService(DispatcherServlet.java:965)
-	at org.springframework.web.servlet.FrameworkServlet.processRequest(FrameworkServlet.java:1006)
-	at org.springframework.web.servlet.FrameworkServlet.doGet(FrameworkServlet.java:898)
-	at javax.servlet.http.HttpServlet.service(HttpServlet.java:502)
-	at org.springframework.web.servlet.FrameworkServlet.service(FrameworkServlet.java:883)
-	at javax.servlet.http.HttpServlet.service(HttpServlet.java:596)
-	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:209)
-	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:153)
-	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:337)
-	at org.springframework.security.web.access.intercept.FilterSecurityInterceptor.invoke(FilterSecurityInterceptor.java:106)
-	at org.springframework.security.web.access.intercept.FilterSecurityInterceptor.doFilter(FilterSecurityInterceptor.java:81)
-	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:346)
-	at org.springframework.security.web.access.ExceptionTranslationFilter.doFilter(ExceptionTranslationFilter.java:122)
-	at org.springframework.security.web.access.ExceptionTranslationFilter.doFilter(ExceptionTranslationFilter.java:116)
-	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:346)
-	at org.springframework.security.web.session.SessionManagementFilter.doFilter(SessionManagementFilter.java:87)
-	at org.springframework.security.web.session.SessionManagementFilter.doFilter(SessionManagementFilter.java:81)
-	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:346)
-	at org.springframework.security.web.authentication.AnonymousAuthenticationFilter.doFilter(AnonymousAuthenticationFilter.java:109)
-	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:346)
-	at org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter.doFilter(SecurityContextHolderAwareRequestFilter.java:149)
-	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:346)
-	at org.springframework.security.web.savedrequest.RequestCacheAwareFilter.doFilter(RequestCacheAwareFilter.java:63)
-	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:346)
-	at org.springframework.security.web.authentication.logout.LogoutFilter.doFilter(LogoutFilter.java:103)
-	at org.springframework.security.web.authentication.logout.LogoutFilter.doFilter(LogoutFilter.java:89)
-	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:346)
-	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:102)
-	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:346)
-	at org.springframework.security.web.context.SecurityContextPersistenceFilter.doFilter(SecurityContextPersistenceFilter.java:112)
-	at org.springframework.security.web.context.SecurityContextPersistenceFilter.doFilter(SecurityContextPersistenceFilter.java:82)
-	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:346)
-	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:102)
-	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:346)
-	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:102)
-	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:346)
-	at org.springframework.security.web.FilterChainProxy.doFilterInternal(FilterChainProxy.java:221)
-	at org.springframework.security.web.FilterChainProxy.doFilter(FilterChainProxy.java:186)
-	at org.springframework.web.filter.DelegatingFilterProxy.invokeDelegate(DelegatingFilterProxy.java:354)
-	at org.springframework.web.filter.DelegatingFilterProxy.doFilter(DelegatingFilterProxy.java:267)
-	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:178)
-	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:153)
-	at org.springframework.web.filter.RequestContextFilter.doFilterInternal(RequestContextFilter.java:100)
-	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:117)
-	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:178)
-	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:153)
-	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:102)
-	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:178)
-	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:153)
-	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:102)
-	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:178)
-	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:153)
-	at org.apache.catalina.core.ApplicationDispatcher.invoke(ApplicationDispatcher.java:661)
-	at org.apache.catalina.core.ApplicationDispatcher.doDispatch(ApplicationDispatcher.java:589)
-	at org.apache.catalina.core.ApplicationDispatcher.dispatch(ApplicationDispatcher.java:558)
-	at org.apache.catalina.core.AsyncContextImpl$AsyncRunnable.run(AsyncContextImpl.java:562)
-	at org.apache.catalina.core.AsyncContextImpl.doInternalDispatch(AsyncContextImpl.java:337)
-	at org.apache.catalina.core.StandardWrapperValve.invoke(StandardWrapperValve.java:165)
-	at org.apache.catalina.core.StandardContextValve.invoke(StandardContextValve.java:90)
-	at org.apache.catalina.authenticator.AuthenticatorBase.invoke(AuthenticatorBase.java:492)
-	at org.apache.catalina.core.StandardHostValve.invoke(StandardHostValve.java:130)
-	at org.apache.catalina.valves.ErrorReportValve.invoke(ErrorReportValve.java:93)
-	at org.apache.catalina.core.StandardEngineValve.invoke(StandardEngineValve.java:74)
-	at org.apache.catalina.connector.CoyoteAdapter.asyncDispatch(CoyoteAdapter.java:237)
-	at org.apache.coyote.AbstractProcessor.dispatch(AbstractProcessor.java:240)
-	at org.apache.coyote.AbstractProcessorLight.process(AbstractProcessorLight.java:57)
-	at org.apache.coyote.AbstractProtocol$ConnectionHandler.process(AbstractProtocol.java:926)
-	at org.apache.tomcat.util.net.NioEndpoint$SocketProcessor.doRun(NioEndpoint.java:1791)
-	at org.apache.tomcat.util.net.SocketProcessorBase.run(SocketProcessorBase.java:49)
-	at org.apache.tomcat.util.threads.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1191)
-	at org.apache.tomcat.util.threads.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:659)
-	at org.apache.tomcat.util.threads.TaskThread$WrappingRunnable.run(TaskThread.java:61)
-	at java.base/java.lang.Thread.run(Thread.java:829)
-
-2025-12-16 11:06:20.443 ERROR 9084 --- [nio-8888-exec-1] o.a.c.c.C.[.[.[.[dispatcherServlet]      : Servlet.service() for servlet [dispatcherServlet] threw exception
-
-org.thymeleaf.exceptions.TemplateInputException: Error resolving template [api4Success.html], template might not exist or might not be accessible by any of the configured Template Resolvers
-	at org.thymeleaf.engine.TemplateManager.resolveTemplate(TemplateManager.java:869)
-	at org.thymeleaf.engine.TemplateManager.parseAndProcess(TemplateManager.java:607)
-	at org.thymeleaf.TemplateEngine.process(TemplateEngine.java:1098)
-	at org.thymeleaf.TemplateEngine.process(TemplateEngine.java:1072)
-	at org.thymeleaf.spring5.view.ThymeleafView.renderFragment(ThymeleafView.java:366)
-	at org.thymeleaf.spring5.view.ThymeleafView.render(ThymeleafView.java:190)
-	at org.springframework.web.servlet.DispatcherServlet.render(DispatcherServlet.java:1406)
-	at org.springframework.web.servlet.DispatcherServlet.processDispatchResult(DispatcherServlet.java:1150)
-	at org.springframework.web.servlet.DispatcherServlet.doDispatch(DispatcherServlet.java:1089)
-	at org.springframework.web.servlet.DispatcherServlet.doService(DispatcherServlet.java:965)
-	at org.springframework.web.servlet.FrameworkServlet.processRequest(FrameworkServlet.java:1006)
-	at org.springframework.web.servlet.FrameworkServlet.doGet(FrameworkServlet.java:898)
-	at javax.servlet.http.HttpServlet.service(HttpServlet.java:502)
-	at org.springframework.web.servlet.FrameworkServlet.service(FrameworkServlet.java:883)
-	at javax.servlet.http.HttpServlet.service(HttpServlet.java:596)
-	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:209)
-	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:153)
-	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:337)
-	at org.springframework.security.web.access.intercept.FilterSecurityInterceptor.invoke(FilterSecurityInterceptor.java:106)
-	at org.springframework.security.web.access.intercept.FilterSecurityInterceptor.doFilter(FilterSecurityInterceptor.java:81)
-	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:346)
-	at org.springframework.security.web.access.ExceptionTranslationFilter.doFilter(ExceptionTranslationFilter.java:122)
-	at org.springframework.security.web.access.ExceptionTranslationFilter.doFilter(ExceptionTranslationFilter.java:116)
-	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:346)
-	at org.springframework.security.web.session.SessionManagementFilter.doFilter(SessionManagementFilter.java:87)
-	at org.springframework.security.web.session.SessionManagementFilter.doFilter(SessionManagementFilter.java:81)
-	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:346)
-	at org.springframework.security.web.authentication.AnonymousAuthenticationFilter.doFilter(AnonymousAuthenticationFilter.java:109)
-	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:346)
-	at org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter.doFilter(SecurityContextHolderAwareRequestFilter.java:149)
-	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:346)
-	at org.springframework.security.web.savedrequest.RequestCacheAwareFilter.doFilter(RequestCacheAwareFilter.java:63)
-	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:346)
-	at org.springframework.security.web.authentication.logout.LogoutFilter.doFilter(LogoutFilter.java:103)
-	at org.springframework.security.web.authentication.logout.LogoutFilter.doFilter(LogoutFilter.java:89)
-	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:346)
-	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:102)
-	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:346)
-	at org.springframework.security.web.context.SecurityContextPersistenceFilter.doFilter(SecurityContextPersistenceFilter.java:112)
-	at org.springframework.security.web.context.SecurityContextPersistenceFilter.doFilter(SecurityContextPersistenceFilter.java:82)
-	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:346)
-	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:102)
-	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:346)
-	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:102)
-	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:346)
-	at org.springframework.security.web.FilterChainProxy.doFilterInternal(FilterChainProxy.java:221)
-	at org.springframework.security.web.FilterChainProxy.doFilter(FilterChainProxy.java:186)
-	at org.springframework.web.filter.DelegatingFilterProxy.invokeDelegate(DelegatingFilterProxy.java:354)
-	at org.springframework.web.filter.DelegatingFilterProxy.doFilter(DelegatingFilterProxy.java:267)
-	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:178)
-	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:153)
-	at org.springframework.web.filter.RequestContextFilter.doFilterInternal(RequestContextFilter.java:100)
-	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:117)
-	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:178)
-	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:153)
-	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:102)
-	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:178)
-	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:153)
-	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:102)
-	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:178)
-	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:153)
-	at org.apache.catalina.core.ApplicationDispatcher.invoke(ApplicationDispatcher.java:661)
-	at org.apache.catalina.core.ApplicationDispatcher.doDispatch(ApplicationDispatcher.java:589)
-	at org.apache.catalina.core.ApplicationDispatcher.dispatch(ApplicationDispatcher.java:558)
-	at org.apache.catalina.core.AsyncContextImpl$AsyncRunnable.run(AsyncContextImpl.java:562)
-	at org.apache.catalina.core.AsyncContextImpl.doInternalDispatch(AsyncContextImpl.java:337)
-	at org.apache.catalina.core.StandardWrapperValve.invoke(StandardWrapperValve.java:165)
-	at org.apache.catalina.core.StandardContextValve.invoke(StandardContextValve.java:90)
-	at org.apache.catalina.authenticator.AuthenticatorBase.invoke(AuthenticatorBase.java:492)
-	at org.apache.catalina.core.StandardHostValve.invoke(StandardHostValve.java:130)
-	at org.apache.catalina.valves.ErrorReportValve.invoke(ErrorReportValve.java:93)
-	at org.apache.catalina.core.StandardEngineValve.invoke(StandardEngineValve.java:74)
-	at org.apache.catalina.connector.CoyoteAdapter.asyncDispatch(CoyoteAdapter.java:237)
-	at org.apache.coyote.AbstractProcessor.dispatch(AbstractProcessor.java:240)
-	at org.apache.coyote.AbstractProcessorLight.process(AbstractProcessorLight.java:57)
-	at org.apache.coyote.AbstractProtocol$ConnectionHandler.process(AbstractProtocol.java:926)
-	at org.apache.tomcat.util.net.NioEndpoint$SocketProcessor.doRun(NioEndpoint.java:1791)
-	at org.apache.tomcat.util.net.SocketProcessorBase.run(SocketProcessorBase.java:49)
-	at org.apache.tomcat.util.threads.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1191)
-	at org.apache.tomcat.util.threads.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:659)
-	at org.apache.tomcat.util.threads.TaskThread$WrappingRunnable.run(TaskThread.java:61)
-	at java.base/java.lang.Thread.run(Thread.java:829)
-
-2025-12-16 11:06:20.476 ERROR 9084 --- [nio-8888-exec-1] o.a.c.c.C.[.[.[.[dispatcherServlet]      : Servlet.service() for servlet [dispatcherServlet] in context with path [/api/goplanV1] threw exception [Request processing failed; nested exception is org.thymeleaf.exceptions.TemplateInputException: Error resolving template [api4Success.html], template might not exist or might not be accessible by any of the configured Template Resolvers] with root cause
-
-org.thymeleaf.exceptions.TemplateInputException: Error resolving template [api4Success.html], template might not exist or might not be accessible by any of the configured Template Resolvers
-	at org.thymeleaf.engine.TemplateManager.resolveTemplate(TemplateManager.java:869)
-	at org.thymeleaf.engine.TemplateManager.parseAndProcess(TemplateManager.java:607)
-	at org.thymeleaf.TemplateEngine.process(TemplateEngine.java:1098)
-	at org.thymeleaf.TemplateEngine.process(TemplateEngine.java:1072)
-	at org.thymeleaf.spring5.view.ThymeleafView.renderFragment(ThymeleafView.java:366)
-	at org.thymeleaf.spring5.view.ThymeleafView.render(ThymeleafView.java:190)
-	at org.springframework.web.servlet.DispatcherServlet.render(DispatcherServlet.java:1406)
-	at org.springframework.web.servlet.DispatcherServlet.processDispatchResult(DispatcherServlet.java:1150)
-	at org.springframework.web.servlet.DispatcherServlet.doDispatch(DispatcherServlet.java:1089)
-	at org.springframework.web.servlet.DispatcherServlet.doService(DispatcherServlet.java:965)
-	at org.springframework.web.servlet.FrameworkServlet.processRequest(FrameworkServlet.java:1006)
-	at org.springframework.web.servlet.FrameworkServlet.doGet(FrameworkServlet.java:898)
-	at javax.servlet.http.HttpServlet.service(HttpServlet.java:502)
-	at org.springframework.web.servlet.FrameworkServlet.service(FrameworkServlet.java:883)
-	at javax.servlet.http.HttpServlet.service(HttpServlet.java:596)
-	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:209)
-	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:153)
-	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:337)
-	at org.springframework.security.web.access.intercept.FilterSecurityInterceptor.invoke(FilterSecurityInterceptor.java:106)
-	at org.springframework.security.web.access.intercept.FilterSecurityInterceptor.doFilter(FilterSecurityInterceptor.java:81)
-	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:346)
-	at org.springframework.security.web.access.ExceptionTranslationFilter.doFilter(ExceptionTranslationFilter.java:122)
-	at org.springframework.security.web.access.ExceptionTranslationFilter.doFilter(ExceptionTranslationFilter.java:116)
-	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:346)
-	at org.springframework.security.web.session.SessionManagementFilter.doFilter(SessionManagementFilter.java:87)
-	at org.springframework.security.web.session.SessionManagementFilter.doFilter(SessionManagementFilter.java:81)
-	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:346)
-	at org.springframework.security.web.authentication.AnonymousAuthenticationFilter.doFilter(AnonymousAuthenticationFilter.java:109)
-	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:346)
-	at org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter.doFilter(SecurityContextHolderAwareRequestFilter.java:149)
-	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:346)
-	at org.springframework.security.web.savedrequest.RequestCacheAwareFilter.doFilter(RequestCacheAwareFilter.java:63)
-	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:346)
-	at org.springframework.security.web.authentication.logout.LogoutFilter.doFilter(LogoutFilter.java:103)
-	at org.springframework.security.web.authentication.logout.LogoutFilter.doFilter(LogoutFilter.java:89)
-	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:346)
-	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:102)
-	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:346)
-	at org.springframework.security.web.context.SecurityContextPersistenceFilter.doFilter(SecurityContextPersistenceFilter.java:112)
-	at org.springframework.security.web.context.SecurityContextPersistenceFilter.doFilter(SecurityContextPersistenceFilter.java:82)
-	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:346)
-	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:102)
-	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:346)
-	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:102)
-	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:346)
-	at org.springframework.security.web.FilterChainProxy.doFilterInternal(FilterChainProxy.java:221)
-	at org.springframework.security.web.FilterChainProxy.doFilter(FilterChainProxy.java:186)
-	at org.springframework.web.filter.DelegatingFilterProxy.invokeDelegate(DelegatingFilterProxy.java:354)
-	at org.springframework.web.filter.DelegatingFilterProxy.doFilter(DelegatingFilterProxy.java:267)
-	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:178)
-	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:153)
-	at org.springframework.web.filter.RequestContextFilter.doFilterInternal(RequestContextFilter.java:100)
-	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:117)
-	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:178)
-	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:153)
-	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:102)
-	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:178)
-	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:153)
-	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:102)
-	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:178)
-	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:153)
-	at org.apache.catalina.core.ApplicationDispatcher.invoke(ApplicationDispatcher.java:661)
-	at org.apache.catalina.core.ApplicationDispatcher.doDispatch(ApplicationDispatcher.java:589)
-	at org.apache.catalina.core.ApplicationDispatcher.dispatch(ApplicationDispatcher.java:558)
-	at org.apache.catalina.core.AsyncContextImpl$AsyncRunnable.run(AsyncContextImpl.java:562)
-	at org.apache.catalina.core.AsyncContextImpl.doInternalDispatch(AsyncContextImpl.java:337)
-	at org.apache.catalina.core.StandardWrapperValve.invoke(StandardWrapperValve.java:165)
-	at org.apache.catalina.core.StandardContextValve.invoke(StandardContextValve.java:90)
-	at org.apache.catalina.authenticator.AuthenticatorBase.invoke(AuthenticatorBase.java:492)
-	at org.apache.catalina.core.StandardHostValve.invoke(StandardHostValve.java:130)
-	at org.apache.catalina.valves.ErrorReportValve.invoke(ErrorReportValve.java:93)
-	at org.apache.catalina.core.StandardEngineValve.invoke(StandardEngineValve.java:74)
-	at org.apache.catalina.connector.CoyoteAdapter.asyncDispatch(CoyoteAdapter.java:237)
-	at org.apache.coyote.AbstractProcessor.dispatch(AbstractProcessor.java:240)
-	at org.apache.coyote.AbstractProcessorLight.process(AbstractProcessorLight.java:57)
-	at org.apache.coyote.AbstractProtocol$ConnectionHandler.process(AbstractProtocol.java:926)
-	at org.apache.tomcat.util.net.NioEndpoint$SocketProcessor.doRun(NioEndpoint.java:1791)
-	at org.apache.tomcat.util.net.SocketProcessorBase.run(SocketProcessorBase.java:49)
-	at org.apache.tomcat.util.threads.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1191)
-	at org.apache.tomcat.util.threads.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:659)
-	at org.apache.tomcat.util.threads.TaskThread$WrappingRunnable.run(TaskThread.java:61)
-	at java.base/java.lang.Thread.run(Thread.java:829)
-
+2025-12-16 11:17:51.445  INFO 10992 --- [nio-8888-exec-1] c.g.k.Insurance.controller.InsuranceApi  : 뭐임 로그 안 찍힘?
+2025-12-16 11:17:51.632  INFO 10992 --- [nio-8888-exec-1] c.g.k.Insurance.controller.InsuranceApi  : 에반데?
