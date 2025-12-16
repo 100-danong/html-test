@@ -1,34 +1,33 @@
-    public Mono<Integer> update(HistoriesSaveDto dto) {
+    public Mono<Void> saveAllStateHistory(List<HistoriesSaveDto> histories) {
 
         StringBuffer sb = new StringBuffer();
-        sb.append(" UPDATE insurance_history SET ");
-        sb.append("     ih_insu_state = :ihInsuState, ");
-        sb.append("     ih_effect_startdate = :ihEffectStartdate, ");
-        sb.append("     ih_effect_enddate = :ihEffectEnddate, ");
-        sb.append("     ih_until = :ihUntil, ");
-        sb.append("     ih_upd_time = :ihUpdTime, ");
-        sb.append("     ih_age_yn = :ihAgeYn, ");
-        sb.append("     ih_apply_state = :ihApplyState ");
-        sb.append(" WHERE ih_id = :ihId; ");
-
-        sb.append(" UPDATE rider_info SET ");
-        sb.append("     ri_insu_status = :ihInsuState, ");
-        sb.append("     ri_upd_time = :ihUpdTime ");
-        sb.append(" WHERE ri_id = :riId ");
-        sb.append(" AND ri_state = 1 ");
+        sb.append(" INSERT INTO insurance_state_history ( ");
+        sb.append(" ish_ins_time, ");
+        sb.append(" ih_id, ");
+        sb.append(" ri_id, ");
+        sb.append(" ih_reject_code, ");
+        sb.append(" ih_insu_state, ");
+        sb.append(" ih_effect_startdate, ");
+        sb.append(" ih_effect_enddate, ");
+        sb.append(" ih_until ");
+        sb.append(" ) ");
+        sb.append(" VALUES (:ishInsTime, :ihId, :riId, :ihRejectCode, :ihInsuState, :ihEffectStartdate, :ihEffectEnddate, :ihUntil) ");
 
         String sql = sb.toString();
 
-        return databaseClient.sql(sql)
-                .bind("ihInsuState", dto.getIhInsuState())
-                .bind("ihEffectStartdate", dto.getIhEffectStartdate())
-                .bind("ihEffectEnddate", dto.getIhEffectEnddate())
-                .bind("ihUntil", dto.getIhUntil())
-                .bind("ihUpdTime", dto.getIhUpdTime())
-                .bind("ihAgeYn", dto.getIhAgeYn())
-                .bind("ihApplyState", dto.getIhApplyState())
-                .bind("ihId", dto.getIhId())
-                .bind("riId", dto.getRiId())
-                .fetch()
-                .rowsUpdated();
+        return Flux.fromIterable(histories)
+                .flatMap(history -> databaseClient.sql(sql)
+                        .bind("ishInsTime", history.getIshInsTime())
+                        .bind("ihId", history.getIhId())
+                        .bind("riId", history.getRiId())
+                        .bind("ihRejectCode", history.getIhRejectCode())
+                        .bind("ihInsuState", history.getIhInsuState())
+                        .bind("ihEffectStartdate", history.getIhEffectStartdate())
+                        .bind("ihEffectEnddate", history.getIhEffectEnddate())
+                        .bind("ihUntil", history.getIhUntil())
+                        .fetch()
+                        .rowsUpdated()
+                        .then()
+                )
+                .then(); // Flux<Void> → Mono<Void>
     }
