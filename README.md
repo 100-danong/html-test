@@ -1,64 +1,71 @@
-    public Mono<Void> signUpRequest() {
-        Flux<RiderInfoDto> riders = riderMapper.findRequestsRiderByInsuranceStatusYesterday("051");
+public Mono<Void> signUpRequest() {
 
-        List<KbSignUpReq> signUpRequests = new ArrayList<>();
-        List<RiderInsuranceDto> insuranceHistories = new ArrayList<>();
-        List<RiderInsuranceDto> insuranceHistoriesRenew = new ArrayList<>();
+    return riderMapper
+            .findRequestsRiderByInsuranceStatusYesterday("051")
+            .collectList()
+            .flatMap(riders -> {
 
-        return riders
-                .flatMap(r -> {
+                List<KbSignUpReq> signUpRequests = new ArrayList<>();
+                List<RiderInsuranceDto> insuranceHistories = new ArrayList<>();
+                List<RiderInsuranceDto> insuranceHistoriesRenew = new ArrayList<>();
 
-                    log.info("1");
+                for (RiderInfoDto r : riders) {
 
-                    if (!r.getSiPolicyNumber().isEmpty()) {
-
-                        return riderInsuranceHistoryMapper.findByRiderId(r.getRiId(), r.getRiState())
-                                .flatMap(riderInsurancedto -> {
-
-                                    log.info("2");
-
-                                    riderInsurancedto.updateEndorsementRequestTime();
-
-                                    if (r.getRiState() == 4) {
-                                        insuranceHistoriesRenew.add(riderInsurancedto);
-                                    } else {
-                                        log.info("3");
-                                        insuranceHistories.add(riderInsurancedto);
-                                    }
-
-                                    log.info("4");
-
-                                    KbSignUpReq kbSignUpReq = new KbSignUpReq(r);
-
-                                    try {
-                                        String rawSsn = ssnDecode(kbSignUpReq.getSsn());
-                                        kbSignUpReq.updateSsn(kbSsnEncode(rawSsn));
-                                        signUpRequests.add(kbSignUpReq);
-                                    } catch (Exception e) {
-                                        return Mono.error(new BusinessException(ErrorCode.INTERNAL_SERVER_ERROR));
-                                    }
-                                    return Mono.empty();
-                                });
+                    if (r.getSiPolicyNumber() == null || r.getSiPolicyNumber().isEmpty()) {
+                        continue;
                     }
-                    return Mono.empty();
-                })
-                .then(
-                        log.info("기명등재 요청 대상 명단 : {}", signUpRequests);
-                        log.info("기명등재 요청 대상 인원 : {}", signUpRequests.size());
 
-                        if (insuranceHistories.isEmpty()) {
-                            log.info("(정규)기명요청신청 건 없음");
-                        } else {
-                            // 기명 요청시간 update
-                            return riderInsuranceHistoryMapper.riderInsuranceHistoryEndoUpdateAll(insuranceHistories).then();
-                        }
+                    RiderInsuranceDto riderInsurancedto =
+                            riderInsuranceHistoryMapper
+                                    .findByRiderId(r.getRiId(), r.getRiState())
+                                    .block();
 
-                        if (insuranceHistoriesRenew.isEmpty()) {
-                            log.info("(갱신)기명요청신청 건 없음");
-                        } else {
-                            // 기명 요청시간 update
-                            return riderInsuranceHistoryMapper.riderInsuranceHistoryEndoUpdateAllRenew(insuranceHistoriesRenew).then();
-                        }
-                        
-                );
-    }
+                    if (riderInsurancedto == null) {
+                        continue;
+                    }
+
+                    riderInsurancedto.updateEndorsementRequestTime();
+
+                    if (r.getRiState() == 4) {
+                        insuranceHistoriesRenew.add(riderInsurancedto);
+                    } else {
+                        insuranceHistories.add(riderInsurancedto);
+                    }
+
+                    try {
+                        KbSignUpReq kbSignUpReq = new KbSignUpReq(r);
+                        String rawSsn = ssnDecode(kbSignUpReq.getSsn());
+                        kbSignUpReq.updateSsn(kbSsnEncode(rawSsn));
+                        signUpRequests.add(kbSignUpReq);
+                    } catch (Exception e) {
+                        return Mono.error(new BusinessException(ErrorCode.INTERNAL_SERVER_ERROR));
+                    }
+                }
+
+                log.info("기명등재 요청 대상 명단 : {}", signUpRequests);
+                log.info("기명등재 요청 대상 인원 : {}", signUpRequests.size());
+
+                if (!insuranceHistories.isEmpty() && !insuranceHistoriesRenew.isEmpty()) {
+                    return Mono.when(
+                            riderInsuranceHistoryMapper
+                                    .riderInsuranceHistoryEndoUpdateAll(insuranceHistories),
+                            riderInsuranceHistoryMapper
+                                    .riderInsuranceHistoryEndoUpdateAllRenew(insuranceHistoriesRenew)
+                    ).then();
+                }
+
+                if (!insuranceHistories.isEmpty()) {
+                    return riderInsuranceHistoryMapper
+                            .riderInsuranceHistoryEndoUpdateAll(insuranceHistories)
+                            .then();
+                }
+
+                if (!insuranceHistoriesRenew.isEmpty()) {
+                    return riderInsuranceHistoryMapper
+                            .riderInsuranceHistoryEndoUpdateAllRenew(insuranceHistoriesRenew)
+                            .then();
+                }
+
+                return Mono.empty();
+            });
+}
