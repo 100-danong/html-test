@@ -53,4 +53,29 @@ public Mono<Void> withDrawRiderBatch() {
                                                 }
                                         }
 
-                                        log.info("기명등재 취소 요청 명단 : {}", signUpRe
+                                        log.info("기명등재 취소 요청 명단 : {}", signUpRequests);
+                                        log.info("기명등재 취소 요청 인원 : {}", signUpRequests.size());
+
+                                        if (!withdrawNormal.isEmpty() && !withdrawRenew.isEmpty()) {
+                                                return Mono.when(
+                                                        riderInsuranceHistoryMapper.riderInsuranceHistoryWithdrawUpdate(withdrawNormal),
+                                                        riderInsuranceHistoryMapper.riderInsuranceHistoryWithdrawUpdateRenew(withdrawRenew)
+                                                ).then();
+                                        }
+
+                                        if (!withdrawNormal.isEmpty()) {
+                                                return riderInsuranceHistoryMapper
+                                                        .riderInsuranceHistoryWithdrawUpdate(withdrawNormal)
+                                                        .then();
+                                        }
+
+                                        if (!withdrawRenew.isEmpty()) {
+                                                return riderInsuranceHistoryMapper
+                                                        .riderInsuranceHistoryWithdrawUpdateRenew(withdrawRenew)
+                                                        .then();
+                                        }
+
+                                        return Mono.empty();
+                                })
+                );
+}
