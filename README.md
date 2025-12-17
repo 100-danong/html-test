@@ -4,60 +4,53 @@ public Mono<Void> signUpRequest() {
     Flux<RiderInfoDto> riders =
             riderMapper.findRequestsRiderByInsuranceStatusYesterday("051");
 
+    // 🔴 기존 위치 그대로 유지
+    List<KbSignUpReq> signUpRequests = new ArrayList<>();
+    List<RiderInsuranceDto> insuranceHistories = new ArrayList<>();
+    List<RiderInsuranceDto> insuranceHistoriesRenew = new ArrayList<>();
+
     return riders
-            .filter(r -> r.getSiPolicyNumber() != null && !r.getSiPolicyNumber().isEmpty())
             .flatMap(r -> {
+
+                // 증권번호가 있는 경우만 처리(추가 : 2025-04-18)
+                if (r.getSiPolicyNumber() == null || r.getSiPolicyNumber().isEmpty()) {
+                    return Mono.empty();
+                }
 
                 // 보험 상태 업데이트
                 Mono<RiderInsuranceDto> insuranceMono =
                         riderInsuranceHistoryMapper.findByRiderId(r.getRiId(), r.getRiState())
-                                .map(dto -> {
+                                .doOnNext(dto -> {
                                     dto.updateEndorsementRequestTime();
-                                    return dto;
+
+                                    if (r.getRiState() == 4) {
+                                        insuranceHistoriesRenew.add(dto);
+                                    } else {
+                                        insuranceHistories.add(dto);
+                                    }
                                 });
 
                 // 암호화 시작
-                Mono<KbSignUpReq> signUpReqMono = Mono.fromCallable(() -> {
+                Mono<Void> signUpMono = Mono.fromRunnable(() -> {
                     KbSignUpReq kbSignUpReq = new KbSignUpReq(r);
 
                     String ssn = kbSignUpReq.getSsn();
-                    String rawSsn = ssnDecode(ssn);
-                    String encodeSsn = kbSsnEncode(rawSsn);
-
-                    kbSignUpReq.updateSsn(encodeSsn);
-                    return kbSignUpReq;
+                    try {
+                        String rawSsn = ssnDecode(ssn);
+                        String encodeSsn = kbSsnEncode(rawSsn);
+                        kbSignUpReq.updateSsn(encodeSsn);
+                        signUpRequests.add(kbSignUpReq);
+                    } catch (Exception e) {
+                        throw new BusinessException(ErrorCode.INTERNAL_SERVER_ERROR);
+                    }
                 });
 
-                return Mono.zip(insuranceMono.defaultIfEmpty(null), signUpReqMono)
-                        .map(tuple -> new Object[] {
-                                r.getRiState(),
-                                tuple.getT1(),
-                                tuple.getT2()
-                        });
+                // 🔴 기존 흐름 그대로: 보험 → 암호화
+                return insuranceMono.then(signUpMono);
             })
-            .collectList()
-            .flatMap(list -> {
+            .then(Mono.fromRunnable(() -> {
 
-                List<KbSignUpReq> signUpRequests = new ArrayList<>();
-                List<RiderInsuranceDto> insuranceHistories = new ArrayList<>();
-                List<RiderInsuranceDto> insuranceHistoriesRenew = new ArrayList<>();
-
-                for (Object[] obj : list) {
-                    Integer riState = (Integer) obj[0];
-                    RiderInsuranceDto insuranceDto = (RiderInsuranceDto) obj[1];
-                    KbSignUpReq signUpReq = (KbSignUpReq) obj[2];
-
-                    signUpRequests.add(signUpReq);
-
-                    if (insuranceDto != null) {
-                        if (riState == 4) {
-                            insuranceHistoriesRenew.add(insuranceDto);
-                        } else {
-                            insuranceHistories.add(insuranceDto);
-                        }
-                    }
-                }
-
+                // 🔴 이후 로직 위치 / 순서 그대로
                 log.info("기명등재 요청 대상 명단 : {}", signUpRequests);
                 log.info("기명등재 요청 대상 인원 : {}", signUpRequests.size());
 
@@ -82,7 +75,5 @@ public Mono<Void> signUpRequest() {
                     riderInsuranceHistoryMapper
                             .riderInsuranceHistoryEndoUpdateAllRenew(insuranceHistoriesRenew);
                 }
-
-                return Mono.empty();
-            });
+            }));
 }
