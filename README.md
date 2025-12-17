@@ -1,36 +1,48 @@
 //@Scheduled(cron = "0 10 06 * * *")
-    public List<DeliveryInsureHistoryReq> getTotalDelivery(){
+public Mono<List<DeliveryInsureHistoryReq>> getTotalDelivery() {
 
-        LocalDateTime startTime = LocalDateTime.of(LocalDate.now(), LocalTime.of(6,0,0)).minusDays(2);
-        LocalDateTime endTime = LocalDateTime.of(LocalDate.now(), LocalTime.of(6,0,0)).minusDays(1);
+    LocalDateTime startTime = LocalDateTime.of(LocalDate.now(), LocalTime.of(6,0,0)).minusDays(2);
+    LocalDateTime endTime   = LocalDateTime.of(LocalDate.now(), LocalTime.of(6,0,0)).minusDays(1);
 
-        // 운행이력 구함(요청시간 기반)
-        Flux<GroupCallInfo> calls = groupCallMapper.findAllByCallPickUpTimeBetween(startTime, endTime);
+    // 운행이력 구함(요청시간 기반)
+    Flux<GroupCallInfo> calls =
+            groupCallMapper.findAllByCallPickUpTimeBetween(startTime, endTime);
 
-        List<DeliveryInsureHistoryReq> deliveryInsureHistoryReqList = new ArrayList<>();
+    return calls
+            .flatMap(call -> {
+                DeliveryInsureHistoryReq dto = new DeliveryInsureHistoryReq(call);
 
-        calls.forEach(call -> {
-            DeliveryInsureHistoryReq dto = new DeliveryInsureHistoryReq(call);
+                return groupCallMapper
+                        .sumGroupCallTotalTime(call.getRiDriverId(), startTime, endTime)
+                        .map(totalTime -> {
+                            dto.TotalTimeSetting(totalTime.toString());
+                            return dto;
+                        });
+            })
+            .collectList()
+            .flatMap(deliveryInsureHistoryReqList -> {
 
-            dto.TotalTimeSetting(groupCallMapper.sumGroupCallTotalTime(call.getRiDriverId(), startTime, endTime).toString());
+                CountDto countDto;
 
-            deliveryInsureHistoryReqList.add(dto);
-        });
+                //레트로핏 만들어서 kb에 전달 - V2 10/01 레트로핏은 따로 테스트 필요
+                KBRetrofitConfig<DeliveryInsureHistoryReq> KBRetrofitConfig =
+                        new KBRetrofitConfig<>();
 
-        CountDto countDto = new CountDto();
+                try {
+                    countDto = KBRetrofitConfig
+                            .create(KbSendApi.class)
+                            .kbApi12Retrofit(deliveryInsureHistoryReqList)
+                            .execute()
+                            .body();
+                } catch (IOException e) {
+                    throw new BusinessException(ErrorCode.INTERNAL_SERVER_ERROR);
+                }
 
-        //레트로핏 만들어서 kb에 전달 - V2 10/01 레트로핏은 따로 테스트 필요
-        KBRetrofitConfig<DeliveryInsureHistoryReq> KBRetrofitConfig = new KBRetrofitConfig<>();
+                deliveryInsureHistoryReqList
+                        .forEach(d -> System.out.println("운행이력 : " + d.getCall_id()));
 
-        try {
-            countDto = KBRetrofitConfig.create(KbSendApi.class).kbApi12Retrofit(deliveryInsureHistoryReqList).execute().body();
-        } catch (IOException e) {
-            throw new BusinessException(ErrorCode.INTERNAL_SERVER_ERROR);
-        }
+                log.info("운행이력 전송 완료");
 
-        deliveryInsureHistoryReqList.stream().forEach(d-> System.out.println("운행이력 : " + d.getCall_id()));
-
-        log.info("운행이력 전송 완료");
-
-        return deliveryInsureHistoryReqList;
-    }
+                return Mono.just(deliveryInsureHistoryReqList);
+            });
+}
