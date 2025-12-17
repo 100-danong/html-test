@@ -1,5 +1,5 @@
 //@Scheduled(cron = "0 10 06 * * *")
-public Mono<List<DeliveryInsureHistoryReq>> getTotalDelivery() {
+public Flux<DeliveryInsureHistoryReq> getTotalDelivery() {
 
     LocalDateTime startTime = LocalDateTime.of(LocalDate.now(), LocalTime.of(6,0,0)).minusDays(2);
     LocalDateTime endTime   = LocalDateTime.of(LocalDate.now(), LocalTime.of(6,0,0)).minusDays(1);
@@ -20,7 +20,7 @@ public Mono<List<DeliveryInsureHistoryReq>> getTotalDelivery() {
                         });
             })
             .collectList()
-            .flatMap(deliveryInsureHistoryReqList -> {
+            .flatMapMany(deliveryInsureHistoryReqList -> {
 
                 CountDto countDto;
 
@@ -43,6 +43,6 @@ public Mono<List<DeliveryInsureHistoryReq>> getTotalDelivery() {
 
                 log.info("운행이력 전송 완료");
 
-                return Mono.just(deliveryInsureHistoryReqList);
+                return Flux.fromIterable(deliveryInsureHistoryReqList);
             });
 }
