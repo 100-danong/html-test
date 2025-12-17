@@ -1,63 +1,21 @@
-return riders
-    .flatMap(r -> {
+    public Mono<Integer> riderInsuranceHistoryEndoUpdateAll(List<RiderInsuranceDto> list) {
 
-        log.info("1");
+        log.info("1 : {}", list.toString());
 
-        if (r.getSiPolicyNumber() != null && !r.getSiPolicyNumber().isEmpty()) {
+        StringBuffer sql = new StringBuffer();
+        sql.append("UPDATE rider_insurance_history ")
+                .append("SET rih_endo_request_time = :endoRequestTime, ")
+                .append("    rih_upd_time = :updTime ")
+                .append("WHERE rih_id = :rihId");
 
-            return riderInsuranceHistoryMapper
-                .findByRiderId(r.getRiId(), r.getRiState())
-                .flatMap(riderInsurancedto -> {
-
-                    log.info("2");
-
-                    riderInsurancedto.updateEndorsementRequestTime();
-
-                    if (r.getRiState() == 4) {
-                        insuranceHistoriesRenew.add(riderInsurancedto);
-                    } else {
-                        log.info("3");
-                        insuranceHistories.add(riderInsurancedto);
-                    }
-
-                    log.info("4");
-
-                    KbSignUpReq kbSignUpReq = new KbSignUpReq(r);
-
-                    try {
-                        String rawSsn = ssnDecode(kbSignUpReq.getSsn());
-                        kbSignUpReq.updateSsn(kbSsnEncode(rawSsn));
-                        signUpRequests.add(kbSignUpReq);
-                    } catch (Exception e) {
-                        return Mono.error(new BusinessException(ErrorCode.INTERNAL_SERVER_ERROR));
-                    }
-
-                    return Mono.empty();
-                });
-        }
-
-        return Mono.empty();
-    })
-    .then(
-        Mono.defer(() -> {
-
-            log.info("기명등재 요청 대상 명단 : {}", signUpRequests);
-            log.info("기명등재 요청 대상 인원 : {}", signUpRequests.size());
-
-            Mono<Void> normal =
-                insuranceHistories.isEmpty()
-                    ? Mono.empty()
-                    : riderInsuranceHistoryMapper
-                        .riderInsuranceHistoryEndoUpdateAll(insuranceHistories)
-                        .then();
-
-            Mono<Void> renew =
-                insuranceHistoriesRenew.isEmpty()
-                    ? Mono.empty()
-                    : riderInsuranceHistoryMapper
-                        .riderInsuranceHistoryEndoUpdateAllRenew(insuranceHistoriesRenew)
-                        .then();
-
-            return Mono.when(normal, renew);
-        })
-    );
+        return Flux.fromIterable(list)
+                .flatMap(item ->
+                        databaseClient.sql(sql.toString())
+                                .bind("endoRequestTime", item.getRihEndoRequestTime())
+                                .bind("updTime", item.getRihUpdTime())
+                                .bind("rihId", item.getRihId())
+                                .fetch()
+                                .rowsUpdated()
+                )
+                .reduce(0, Integer::sum);
+    }
