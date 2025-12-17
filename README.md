@@ -1,60 +1,88 @@
-    //@Scheduled(cron = "00 45 20 * * *") //초 분 시 일 월 요일
-    public void signUpRequest() throws Exception {
-        Flux<RiderInfoDto> riders = riderMapper.findRequestsRiderByInsuranceStatusYesterday("051");
+//@Scheduled(cron = "00 45 20 * * *") //초 분 시 일 월 요일
+public Mono<Void> signUpRequest() {
 
-        List<KbSignUpReq> signUpRequests = new ArrayList<>();
-        List<RiderInsuranceDto> insuranceHistories = new ArrayList<>();
-        List<RiderInsuranceDto> insuranceHistoriesRenew = new ArrayList<>();
+    Flux<RiderInfoDto> riders =
+            riderMapper.findRequestsRiderByInsuranceStatusYesterday("051");
 
-        riders.forEach(r -> {
+    return riders
+            .filter(r -> r.getSiPolicyNumber() != null && !r.getSiPolicyNumber().isEmpty())
+            .flatMap(r -> {
 
-            // 증권번호가 있는 경우만 처리(추가 : 2025-04-18)
-            if (!r.getSiPolicyNumber().isEmpty()) {
+                // 보험 상태 업데이트
+                Mono<RiderInsuranceDto> insuranceMono =
+                        riderInsuranceHistoryMapper.findByRiderId(r.getRiId(), r.getRiState())
+                                .map(dto -> {
+                                    dto.updateEndorsementRequestTime();
+                                    return dto;
+                                });
 
-                //보험 상태 업데이트
-                Mono<RiderInsuranceDto> riderInsurancedto = riderInsuranceHistoryMapper.findByRiderId(r.getRiId(), r.getRiState());
-                if (riderInsurancedto != null) {
-                    riderInsurancedto.updateEndorsementRequestTime();
+                // 암호화 시작
+                Mono<KbSignUpReq> signUpReqMono = Mono.fromCallable(() -> {
+                    KbSignUpReq kbSignUpReq = new KbSignUpReq(r);
 
-                    if (r.getRiState() == 4) {
-                        insuranceHistoriesRenew.add(riderInsurancedto);
-                    } else {
-                        insuranceHistories.add(riderInsurancedto);
+                    String ssn = kbSignUpReq.getSsn();
+                    String rawSsn = ssnDecode(ssn);
+                    String encodeSsn = kbSsnEncode(rawSsn);
+
+                    kbSignUpReq.updateSsn(encodeSsn);
+                    return kbSignUpReq;
+                });
+
+                return Mono.zip(insuranceMono.defaultIfEmpty(null), signUpReqMono)
+                        .map(tuple -> new Object[] {
+                                r.getRiState(),
+                                tuple.getT1(),
+                                tuple.getT2()
+                        });
+            })
+            .collectList()
+            .flatMap(list -> {
+
+                List<KbSignUpReq> signUpRequests = new ArrayList<>();
+                List<RiderInsuranceDto> insuranceHistories = new ArrayList<>();
+                List<RiderInsuranceDto> insuranceHistoriesRenew = new ArrayList<>();
+
+                for (Object[] obj : list) {
+                    Integer riState = (Integer) obj[0];
+                    RiderInsuranceDto insuranceDto = (RiderInsuranceDto) obj[1];
+                    KbSignUpReq signUpReq = (KbSignUpReq) obj[2];
+
+                    signUpRequests.add(signUpReq);
+
+                    if (insuranceDto != null) {
+                        if (riState == 4) {
+                            insuranceHistoriesRenew.add(insuranceDto);
+                        } else {
+                            insuranceHistories.add(insuranceDto);
+                        }
                     }
                 }
 
-                //암호화 시작
-                KbSignUpReq kbSignUpReq = new KbSignUpReq(r);
+                log.info("기명등재 요청 대상 명단 : {}", signUpRequests);
+                log.info("기명등재 요청 대상 인원 : {}", signUpRequests.size());
 
-                String ssn = kbSignUpReq.getSsn();
-                String rawSsn = "";
-                try {
-                    rawSsn = ssnDecode(ssn);
-                    String encodeSsn = kbSsnEncode(rawSsn);
-                    kbSignUpReq.updateSsn(encodeSsn);
-                    signUpRequests.add(kbSignUpReq);
-                } catch (Exception e) {
-                    throw new BusinessException(ErrorCode.INTERNAL_SERVER_ERROR);
+                /*KBRetrofitConfig<KbSignUpReq> KBRetrofitConfig = new KBRetrofitConfig<>();
+
+                KBRetrofitConfig
+                        .create(KbSendApi.class)
+                        .kbApi5Retrofit(signUpRequests)
+                        .execute()
+                        .body();*/
+
+                if (insuranceHistories.isEmpty()) {
+                    log.info("(정규)기명요청신청 건 없음");
+                } else {
+                    riderInsuranceHistoryMapper
+                            .riderInsuranceHistoryEndoUpdateAll(insuranceHistories);
                 }
-            }
-        });
 
-        log.info("기명등재 요청 대상 명단 : {}", signUpRequests);
-        log.info("기명등재 요청 대상 인원 : {}", signUpRequests.size());
+                if (insuranceHistoriesRenew.isEmpty()) {
+                    log.info("(갱신)기명요청신청 건 없음");
+                } else {
+                    riderInsuranceHistoryMapper
+                            .riderInsuranceHistoryEndoUpdateAllRenew(insuranceHistoriesRenew);
+                }
 
-        /*KBRetrofitConfig<KbSignUpReq> KBRetrofitConfig = new KBRetrofitConfig<>();
-
-        KBRetrofitConfig.create(KbSendApi.class).kbApi5Retrofit(signUpRequests).execute().body();*/
-
-        if (insuranceHistories.isEmpty()) {
-            log.info("(정규)기명요청신청 건 없음");
-        } else {
-            riderInsuranceHistoryMapper.riderInsuranceHistoryEndoUpdateAll(insuranceHistories);
-        }
-
-        if (insuranceHistoriesRenew.isEmpty()) {
-            log.info("(갱신)기명요청신청 건 없음");
-        } else {
-            riderInsuranceHistoryMapper.riderInsuranceHistoryEndoUpdateAllRenew(insuranceHistoriesRenew);
-        }
-    }
+                return Mono.empty();
+            });
+}
