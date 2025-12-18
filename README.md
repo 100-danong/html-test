@@ -1,115 +1,148 @@
-오전 11:42:03: Executing ':new_GoPlanV1Application.main()'...
+    public CountDto signUpResult(List<KbApiSignResultDto> dto){
 
+        log.info("dto --> " + dto);
 
-> Task :compileJava
-Note: Some input files use unchecked or unsafe operations.
-Note: Recompile with -Xlint:unchecked for details.
+        // dto 값에서 드라이버 아이디 추출해서 리스트로 만듬
+        List<String> driverIds = dto.stream().map(KbApiSignResultDto::getDriver_id).distinct().collect(Collectors.toList());
 
-> Task :processResources UP-TO-DATE
-> Task :classes
+        //라이더들 다 찾아옴
+        List<RiderInfo> riders = (List<RiderInfo>) riderInfoRepository.findAllByDriverId(driverIds);
 
-> Task :new_GoPlanV1Application.main()
+        log.info("조회된 라이더들 " + riders);
 
-  .   ____          _            __ _ _
- /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
-( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
- \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
-  '  |____| .__|_| |_|_| |_\__, | / / / /
- =========|_|==============|___/=/_/_/_/
- :: Spring Boot ::               (v2.7.10)
+        List<HistoriesSaveDto> histories = new ArrayList<>();
+        List<HistoriesSaveDto> historiesRenew = new ArrayList<>();
+        String id = "";
 
-2025-12-18 11:42:28.737  INFO 4336 --- [           main] com.gogofnd.kb.new_GoPlanV1Application   : Starting new_GoPlanV1Application using Java 11.0.15 on Gogofnd002 with PID 4336 (C:\Users\user02gogof\Desktop\new_GoPlanV1\build\classes\java\main started by user02gogof in C:\Users\user02gogof\Desktop\new_GoPlanV1)
-2025-12-18 11:42:28.751 DEBUG 4336 --- [           main] com.gogofnd.kb.new_GoPlanV1Application   : Running with Spring Boot v2.7.10, Spring v5.3.26
-2025-12-18 11:42:28.754  INFO 4336 --- [           main] com.gogofnd.kb.new_GoPlanV1Application   : The following 4 profiles are active: "dev", "logging_daily", "logging_error", "logging_info"
-2025-12-18 11:42:50.658  INFO 4336 --- [           main] c.g.kb.global.config.SecurityConfig      : accessDeniedHandler
-2025-12-18 11:42:50.661  INFO 4336 --- [           main] c.g.kb.global.config.SecurityConfig      : authenticationEntryPoint
-2025-12-18 11:42:55.523  INFO 4336 --- [           main] com.gogofnd.kb.new_GoPlanV1Application   : Started new_GoPlanV1Application in 30.854 seconds (JVM running for 32.826)
-한글 테스트 Start
-2025-12-18 11:42:57.286  INFO 4336 --- [nio-8888-exec-1] c.g.k.I.service.InsuranceService         : dto --> [KbApiUnderWritingResult(proxy_driv_coorp_cmpcd=G01, driver_id=GG0000034041, vcno_hngl_nm=서울마포파4445, result=accepted, until=1773154800), KbApiUnderWritingResult(proxy_driv_coorp_cmpcd=G03, driver_id=GG0000034043, vcno_hngl_nm=서울마포파4445, result=accepted, until=1773154800), KbApiUnderWritingResult(proxy_driv_coorp_cmpcd=G01, driver_id=GG0000034042, vcno_hngl_nm=서울마포파4445, result=insure_needed, until=1773154800)]
-2025-12-18 11:42:57.377  INFO 4336 --- [nio-8888-exec-1] c.g.k.I.service.InsuranceService         : service size : 3
-2025-12-18 11:42:58.648  INFO 4336 --- [actor-tcp-nio-2] c.g.k.I.service.InsuranceService         : 언더라이팅 결과 시작 Result --> accepted
-2025-12-18 11:42:58.728  INFO 4336 --- [actor-tcp-nio-2] c.g.k.I.service.InsuranceService         : 언더라이팅 결과 시작 Result --> insure_needed
-2025-12-18 11:42:58.743  INFO 4336 --- [actor-tcp-nio-2] c.g.k.I.service.InsuranceService         : 언더라이팅 결과 시작 Result --> accepted
-2025-12-18 11:42:58.833  INFO 4336 --- [actor-tcp-nio-2] c.g.k.I.service.InsuranceService         : 언더라이팅 심사 승인 34041
-2025-12-18 11:42:58.879  INFO 4336 --- [actor-tcp-nio-2] c.g.k.I.service.InsuranceService         : 언더라이팅 심사 거절 34042
-2025-12-18 11:42:58.880  INFO 4336 --- [actor-tcp-nio-2] c.g.k.I.service.InsuranceService         : 언더라이팅 결과 끝 Result --> GG0000034042
-2025-12-18 11:42:58.887  INFO 4336 --- [actor-tcp-nio-2] c.g.k.I.service.InsuranceService         : 언더라이팅 심사 승인 34043
-2025-12-18 11:42:58.893  INFO 4336 --- [actor-tcp-nio-2] c.g.k.I.service.InsuranceService         : 언더라이팅 결과 끝 Result --> GG0000034041
-2025-12-18 11:42:58.898  INFO 4336 --- [actor-tcp-nio-2] c.g.k.I.service.InsuranceService         : 언더라이팅 결과 끝 Result --> GG0000034043
-2025-12-18 11:42:58.900  INFO 4336 --- [actor-tcp-nio-2] c.g.k.I.service.InsuranceService         : histories --> [com.gogofnd.kb.Insurance.dto.HistoriesSaveDto@7fb37944, com.gogofnd.kb.Insurance.dto.HistoriesSaveDto@7c35e6c0, com.gogofnd.kb.Insurance.dto.HistoriesSaveDto@3d011892]
-2025-12-18 11:42:58.900  INFO 4336 --- [actor-tcp-nio-2] c.g.k.I.service.InsuranceService         : historiesRenew --> []
-2025-12-18 11:42:59.026 ERROR 4336 --- [nio-8888-exec-2] o.a.c.c.C.[.[.[.[dispatcherServlet]      : Servlet.service() for servlet [dispatcherServlet] threw exception
+        //라이더 별로
+        riders.forEach(e->{
+            dto.forEach(d->{
+                // ri_driver_id와 증권번호가 KB수신값과 같고 상태값이 051,052인 라이더들
+                if((d.getDriver_id().equals(e.getRi_driver_id()) && d.getPolicy_number().equals(e.getSi_policy_number()))
+                        && (e.getRi_insu_status().equals("051") || e.getRi_insu_status().equals("052"))) {
+                    log.info("proxy_driv_coorp_cmpcd : {}",d.getProxy_driv_coorp_cmpcd());
+                    log.info("driver_id : {}",d.getDriver_id());
+                    log.info("Vcno_hngl_nm : {}",d.getVcno_hngl_nm());
+                    log.info("result : {}",d.getResult());
+                    log.info("effective_time : {}",d.getEffective_time());
+                    log.info("underwriting_after : {}",d.getUnderwriting_after());
 
-io.r2dbc.spi.R2dbcBadGrammarException: You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near 'rih_upd_time = '2025-12-18 11:42:58.893103' WHERE ri_id = 34041' at line 1
-	at org.mariadb.r2dbc.ExceptionFactory.createException(ExceptionFactory.java:44)
-	at org.mariadb.r2dbc.ExceptionFactory.createException(ExceptionFactory.java:25)
-	at org.mariadb.r2dbc.ExceptionFactory.from(ExceptionFactory.java:65)
-	at org.mariadb.r2dbc.MariadbResult.lambda$getRowsUpdated$0(MariadbResult.java:63)
-	at reactor.core.publisher.FluxHandleFuseable$HandleFuseableSubscriber.onNext(FluxHandleFuseable.java:176)
-	at reactor.core.publisher.FluxWindowPredicate$WindowFlux.drainRegular(FluxWindowPredicate.java:668)
-	at reactor.core.publisher.FluxWindowPredicate$WindowFlux.drain(FluxWindowPredicate.java:746)
-	at reactor.core.publisher.FluxWindowPredicate$WindowFlux.onNext(FluxWindowPredicate.java:788)
-	at reactor.core.publisher.FluxWindowPredicate$WindowPredicateMain.onNext(FluxWindowPredicate.java:266)
-	at reactor.core.publisher.FluxCreate$BufferAsyncSink.drain(FluxCreate.java:814)
-	at reactor.core.publisher.FluxCreate$BufferAsyncSink.next(FluxCreate.java:739)
-	at reactor.core.publisher.FluxCreate$SerializedFluxSink.next(FluxCreate.java:161)
-	at org.mariadb.r2dbc.client.MariadbPacketDecoder.handleBuffer(MariadbPacketDecoder.java:98)
-	at org.mariadb.r2dbc.client.MariadbPacketDecoder.decode(MariadbPacketDecoder.java:79)
-	at io.netty.handler.codec.ByteToMessageDecoder.decodeRemovalReentryProtection(ByteToMessageDecoder.java:529)
-	at io.netty.handler.codec.ByteToMessageDecoder.callDecode(ByteToMessageDecoder.java:468)
-	at io.netty.handler.codec.ByteToMessageDecoder.channelRead(ByteToMessageDecoder.java:290)
-	at io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:444)
-	at io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:420)
-	at io.netty.channel.AbstractChannelHandlerContext.fireChannelRead(AbstractChannelHandlerContext.java:412)
-	at io.netty.channel.DefaultChannelPipeline$HeadContext.channelRead(DefaultChannelPipeline.java:1410)
-	at io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:440)
-	at io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:420)
-	at io.netty.channel.DefaultChannelPipeline.fireChannelRead(DefaultChannelPipeline.java:919)
-	at io.netty.channel.nio.AbstractNioByteChannel$NioByteUnsafe.read(AbstractNioByteChannel.java:166)
-	at io.netty.channel.nio.NioEventLoop.processSelectedKey(NioEventLoop.java:788)
-	at io.netty.channel.nio.NioEventLoop.processSelectedKeysOptimized(NioEventLoop.java:724)
-	at io.netty.channel.nio.NioEventLoop.processSelectedKeys(NioEventLoop.java:650)
-	at io.netty.channel.nio.NioEventLoop.run(NioEventLoop.java:562)
-	at io.netty.util.concurrent.SingleThreadEventExecutor$4.run(SingleThreadEventExecutor.java:997)
-	at io.netty.util.internal.ThreadExecutorMap$2.run(ThreadExecutorMap.java:74)
-	at io.netty.util.concurrent.FastThreadLocalRunnable.run(FastThreadLocalRunnable.java:30)
-	at java.base/java.lang.Thread.run(Thread.java:829)
+                    // 기명 요청이 승인되지 않았을경우
+                    if (!d.getResult().equals("endorsed")) {
+                        if(d.getResult().equals("already_endorsed_driver_id")) {
+                            //////////// updateAll
+//                            HistoriesSaveDto update = historyMapper.findForUpdateById(e.getRiId(), e.getRiState());
+                            HistoriesSaveDto update = historyMapper.findForUpdateByPolicyNumber(e.getRi_id(), d.getPolicy_number()).block();
 
-2025-12-18 11:42:59.029 ERROR 4336 --- [nio-8888-exec-2] o.a.c.c.C.[.[.[.[dispatcherServlet]      : Servlet.service() for servlet [dispatcherServlet] in context with path [/api/goplanV1] threw exception [Request processing failed; nested exception is org.springframework.r2dbc.BadSqlGrammarException: execute; bad SQL grammar [UPDATE rider_insurance_history SET rih_under_complete_time = :rihUnderCompleteTime rih_upd_time = :rihUpdTime WHERE ri_id = :riId ]; nested exception is io.r2dbc.spi.R2dbcBadGrammarException: [1064] [42000] You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near 'rih_upd_time = '2025-12-18 11:42:58.893103' WHERE ri_id = 34041' at line 1] with root cause
+                            log.info("기명등재 ri_id 값 = " + e.getRi_id());
 
-io.r2dbc.spi.R2dbcBadGrammarException: You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near 'rih_upd_time = '2025-12-18 11:42:58.893103' WHERE ri_id = 34041' at line 1
-	at org.mariadb.r2dbc.ExceptionFactory.createException(ExceptionFactory.java:44)
-	at org.mariadb.r2dbc.ExceptionFactory.createException(ExceptionFactory.java:25)
-	at org.mariadb.r2dbc.ExceptionFactory.from(ExceptionFactory.java:65)
-	at org.mariadb.r2dbc.MariadbResult.lambda$getRowsUpdated$0(MariadbResult.java:63)
-	at reactor.core.publisher.FluxHandleFuseable$HandleFuseableSubscriber.onNext(FluxHandleFuseable.java:176)
-	at reactor.core.publisher.FluxWindowPredicate$WindowFlux.drainRegular(FluxWindowPredicate.java:668)
-	at reactor.core.publisher.FluxWindowPredicate$WindowFlux.drain(FluxWindowPredicate.java:746)
-	at reactor.core.publisher.FluxWindowPredicate$WindowFlux.onNext(FluxWindowPredicate.java:788)
-	at reactor.core.publisher.FluxWindowPredicate$WindowPredicateMain.onNext(FluxWindowPredicate.java:266)
-	at reactor.core.publisher.FluxCreate$BufferAsyncSink.drain(FluxCreate.java:814)
-	at reactor.core.publisher.FluxCreate$BufferAsyncSink.next(FluxCreate.java:739)
-	at reactor.core.publisher.FluxCreate$SerializedFluxSink.next(FluxCreate.java:161)
-	at org.mariadb.r2dbc.client.MariadbPacketDecoder.handleBuffer(MariadbPacketDecoder.java:98)
-	at org.mariadb.r2dbc.client.MariadbPacketDecoder.decode(MariadbPacketDecoder.java:79)
-	at io.netty.handler.codec.ByteToMessageDecoder.decodeRemovalReentryProtection(ByteToMessageDecoder.java:529)
-	at io.netty.handler.codec.ByteToMessageDecoder.callDecode(ByteToMessageDecoder.java:468)
-	at io.netty.handler.codec.ByteToMessageDecoder.channelRead(ByteToMessageDecoder.java:290)
-	at io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:444)
-	at io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:420)
-	at io.netty.channel.AbstractChannelHandlerContext.fireChannelRead(AbstractChannelHandlerContext.java:412)
-	at io.netty.channel.DefaultChannelPipeline$HeadContext.channelRead(DefaultChannelPipeline.java:1410)
-	at io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:440)
-	at io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:420)
-	at io.netty.channel.DefaultChannelPipeline.fireChannelRead(DefaultChannelPipeline.java:919)
-	at io.netty.channel.nio.AbstractNioByteChannel$NioByteUnsafe.read(AbstractNioByteChannel.java:166)
-	at io.netty.channel.nio.NioEventLoop.processSelectedKey(NioEventLoop.java:788)
-	at io.netty.channel.nio.NioEventLoop.processSelectedKeysOptimized(NioEventLoop.java:724)
-	at io.netty.channel.nio.NioEventLoop.processSelectedKeys(NioEventLoop.java:650)
-	at io.netty.channel.nio.NioEventLoop.run(NioEventLoop.java:562)
-	at io.netty.util.concurrent.SingleThreadEventExecutor$4.run(SingleThreadEventExecutor.java:997)
-	at io.netty.util.internal.ThreadExecutorMap$2.run(ThreadExecutorMap.java:74)
-	at io.netty.util.concurrent.FastThreadLocalRunnable.run(FastThreadLocalRunnable.java:30)
-	at java.base/java.lang.Thread.run(Thread.java:829)
+                            update.setIhInsuState("062");
 
+                            update.setIhApplyState("Y");
 
+                            update.setRiState(1);
+
+                            update.updateRejectCode(d.getResult());
+
+                            update.setRiId(e.getRi_id());
+
+                            // 심사 유효기간
+                            LocalDateTime changedTime = LocalDateTime.ofEpochSecond(d.getUnderwriting_after(), 0, ZoneOffset.ofTotalSeconds(60 * 60 * 9));
+                            update.setIhUntil(changedTime);
+
+                            update.updateTime();
+
+                            update.updateIshInsTime();
+
+                            log.info(d.getResult());
+
+                            SellerPolicyNumber sellerPolicyNumber = sellerPolicyNumberRepository.findSellerPolicyNumberByCmpcd(d.getProxy_driv_coorp_cmpcd(), "W").defaultIfEmpty(new SellerPolicyNumber()).block();
+
+                            // KB에서 반환한 결과의 값 중 증권번호가 갱신증권과 동일하면 갱신테이블 저장
+                            if (d.getPolicy_number().equals(sellerPolicyNumber.getSpnPolicyNumber())) {
+                                historiesRenew.add(update);
+                            } else {
+                                histories.add(update);
+                            }
+
+                        }
+                        else {
+                            //////////// updateAll
+//                            HistoriesSaveDto update = historyMapper.findForUpdateById(e.getRiId(), e.getRiState());
+                            HistoriesSaveDto update = historyMapper.findForUpdateByPolicyNumber(e.getRi_id(), d.getPolicy_number()).block();
+
+                            log.info("기명등재 거부 ri_id 값 = " + e.getRi_id());
+
+                            update.setIhInsuState("063");
+
+                            // 심사 유효기간
+                            LocalDateTime changedTime = LocalDateTime.ofEpochSecond(d.getUnderwriting_after(), 0, ZoneOffset.ofTotalSeconds(60 * 60 * 9));
+                            update.setIhUntil(changedTime);
+
+                            update.updateTime();
+
+                            update.updateIshInsTime();
+
+                            update.updateRejectCode(d.getResult());
+
+                            update.setRiId(e.getRi_id());
+
+                            SellerPolicyNumber sellerPolicyNumber = sellerPolicyNumberRepository.findSellerPolicyNumberByCmpcd(d.getProxy_driv_coorp_cmpcd(), "W").defaultIfEmpty(new SellerPolicyNumber()).block();
+
+//                            // KB에서 반환한 결과의 값 중 증권번호가 갱신증권과 동일하면 갱신테이블 저장
+                            if (d.getPolicy_number().equals(sellerPolicyNumber.getSpnPolicyNumber())) {
+                                historiesRenew.add(update);
+                            } else {
+                                histories.add(update);
+                            }
+                        }
+                    }
+                    // 승인된 경우
+                    else {
+                        //////////// updateAll
+//                        HistoriesSaveDto update = historyMapper.findForUpdateById(e.getRiId(), e.getRiState());
+                        HistoriesSaveDto update = historyMapper.findForUpdateByPolicyNumber(e.getRi_id(), d.getPolicy_number()).block();
+
+                        log.info("기명등재b ri_id 값 = " + e.getRi_id());
+
+                        update.setIhInsuState("062");
+
+                        update.setIhApplyState("Y");
+
+                        update.setRiState(1);
+
+                        update.updateRejectCode(d.getResult());
+
+                        update.setRiId(e.getRi_id());
+
+                        // 보험적용 유효기간, 심사 유효기간
+                        LocalDateTime changedTime = LocalDateTime.ofEpochSecond(d.getUnderwriting_after(), 0, ZoneOffset.ofTotalSeconds(60 * 60 * 9));
+                        update.updateEffectTime(convertDate(d.getEffective_time().get(0)), convertDate(d.getEffective_time().get(1)), changedTime);
+
+                        RiderInsuranceDto riderInsuranceDto = riderInsuranceHistoryMapper.findByRiderId(e.getRi_id(), e.getRi_state()).block();
+
+                        if(riderInsuranceDto != null){
+                            update.updateEndoCompl();
+                        }
+                        update.updateTime();
+
+                        update.updateIshInsTime();
+
+                        SellerPolicyNumber sellerPolicyNumber = sellerPolicyNumberRepository.findSellerPolicyNumberByCmpcd(d.getProxy_driv_coorp_cmpcd(), "W").defaultIfEmpty(new SellerPolicyNumber()).block();
+
+//                        // KB에서 반환한 결과의 값 중 증권번호가 갱신증권과 동일하면 갱신테이블 저장
+                        if (d.getPolicy_number().equals(sellerPolicyNumber.getSpnPolicyNumber())) {
+                            historiesRenew.add(update);
+                        } else {
+                            histories.add(update);
+                        }
+                    }
+                }
+            });
+        });
+
+        batchUpdateHistories(histories);
+        batchUpdateHistoriesRenew(historiesRenew);
+
+        return new CountDto(riders.size());
+    }
