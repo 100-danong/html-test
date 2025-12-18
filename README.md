@@ -1,135 +1,79 @@
-public Mono<CountDto> signUpResult(List<KbApiSignResultDto> dto) {
-        log.info("dto --> " + dto);
+public Mono<SellerPolicyNumber> findSellerPolicyNumberByCmpcd(String siCmpCode, String spnApplyState) {
 
-        List<String> driverIds = dto.stream().map(KbApiSignResultDto::getDriver_id).distinct().collect(Collectors.toList());
+        StringBuffer sb = new StringBuffer();
+        sb.append("SELECT * ");
+        sb.append("FROM seller_policy_number ");
+        sb.append("WHERE si_cmp_code = :siCmpCode ");
+        sb.append("AND spn_apply_state = :spnApplyState ");
 
-        return riderInfoRepository.findAllByDriverId(driverIds)
-                .collectList()
-                .flatMap(riders -> {
-                    log.info("조회된 라이더들 " + riders);
+        String sql = sb.toString();
 
-                    AtomicReference<List<HistoriesSaveDto>> histories = new AtomicReference<>(new ArrayList<>());
-                    AtomicReference<List<HistoriesSaveDto>> historiesRenew = new AtomicReference<>(new ArrayList<>());
+        return databaseClient.sql(sql)
+                .bind("siCmpCode", siCmpCode)
+                .bind("spnApplyState", spnApplyState)
+                .map((row, meta) -> {
 
-                    log.info(riders.toString());
+                    SellerPolicyNumber dto = new SellerPolicyNumber();
 
-                    return Flux.fromIterable(riders)
-                            .flatMap(e ->
-                                    Flux.fromIterable(dto)
-                                            .filter(d -> (d.getDriver_id().equals(e.getRi_driver_id()) && d.getPolicy_number().equals(e.getSi_policy_number()) && (e.getRi_insu_status().equals("051") || e.getRi_insu_status().equals("052"))))
-                                            .flatMap(d -> {
-                                                log.info("proxy_driv_coorp_cmpcd : {}", d.getProxy_driv_coorp_cmpcd());
-                                                log.info("driver_id : {}", d.getDriver_id());
-                                                log.info("Vcno_hngl_nm : {}", d.getVcno_hngl_nm());
-                                                log.info("result : {}", d.getResult());
-                                                log.info("effective_time : {}", d.getEffective_time());
-                                                log.info("underwriting_after : {}", d.getUnderwriting_after());
+                    dto.setSpnId(row.get("spn_id", Long.class));
+                    dto.setSiCmpCode(row.get("si_cmp_code", String.class));
+                    dto.setSpnPolicyNumber(row.get("spn_policy_number", String.class));
+                    dto.setSpnApplicationNumber(row.get("spn_application_number", String.class));
+                    dto.setSpnInsuImgpath(row.get("spn_insu_imgpath", String.class));
+                    dto.setSpnApplyState(row.get("spn_apply_state", String.class));
+                    dto.setSpnEffectStartdate(row.get("spn_effect_startdate", LocalDateTime.class));
+                    dto.setSpnEffectEnddate(row.get("spn_effect_enddate", LocalDateTime.class));
+                    dto.setSpnWriter(row.get("spn_writer", String.class));
+                    dto.setSpnState(row.get("spn_state", Integer.class));
+                    dto.setSpnInsTime(row.get("spn_ins_time", LocalDateTime.class));
+                    dto.setSpnUpdTime(row.get("spn_upd_time", LocalDateTime.class));
 
-                                                Mono<HistoriesSaveDto> historyMono = historyMapper.findForUpdateByPolicyNumber(e.getRi_id(), d.getPolicy_number());
-
-                                                // 기명 요청이 승인되지 않았을경우
-                                                if (!d.getResult().equals("endorsed")) {
-                                                    if (d.getResult().equals("already_endorsed_driver_id")) {
-                                                        return historyMono
-                                                                .flatMap(update -> {
-                                                                    log.info("기명등재 ri_id 값 = " + e.getRi_id());
-
-                                                                    update.setIhInsuState("062");
-                                                                    update.setIhApplyState("Y");
-                                                                    update.setRiState(1);
-                                                                    update.updateRejectCode(d.getResult());
-                                                                    update.setRiId(e.getRi_id());
-
-                                                                    LocalDateTime changedTime = LocalDateTime.ofEpochSecond(d.getUnderwriting_after(), 0, ZoneOffset.ofTotalSeconds(60 * 60 * 9));
-                                                                    update.setIhUntil(changedTime);
-                                                                    update.updateTime();
-                                                                    update.updateIshInsTime();
-
-                                                                    log.info(d.getResult());
-
-                                                                    return sellerPolicyNumberRepository.findSellerPolicyNumberByCmpcd(d.getProxy_driv_coorp_cmpcd(), "W")
-                                                                            .doOnNext(sellerPolicyNumber -> {
-                                                                                if (d.getPolicy_number().equals(sellerPolicyNumber.getSpnPolicyNumber())) {
-                                                                                    historiesRenew.get().add(update);
-                                                                                } else {
-                                                                                    histories.get().add(update);
-                                                                                }
-                                                                            })
-                                                                            .then();
-                                                                });
-                                                    } else {
-                                                        return historyMono
-                                                                .flatMap(update -> {
-                                                                    log.info("기명등재 거부 ri_id 값 = " + e.getRi_id());
-
-                                                                    update.setIhInsuState("063");
-                                                                    // 심사 유효기간
-                                                                    LocalDateTime changedTime = LocalDateTime.ofEpochSecond(d.getUnderwriting_after(), 0, ZoneOffset.ofTotalSeconds(60 * 60 * 9));
-                                                                    update.setIhUntil(changedTime);
-                                                                    update.updateTime();
-                                                                    update.updateIshInsTime();
-                                                                    update.updateRejectCode(d.getResult());
-                                                                    update.setRiId(e.getRi_id());
-
-                                                                    return sellerPolicyNumberRepository.findSellerPolicyNumberByCmpcd(d.getProxy_driv_coorp_cmpcd(), "W")
-                                                                            .doOnNext(sellerPolicyNumber -> {
-                                                                                if (d.getPolicy_number().equals(sellerPolicyNumber.getSpnPolicyNumber())) {
-                                                                                    historiesRenew.get().add(update);
-                                                                                } else {
-                                                                                    histories.get().add(update);
-                                                                                }
-                                                                            })
-                                                                            .then();
-                                                                });
-                                                    }
-                                                // 승인된 경우
-                                                } else {
-                                                    return historyMono
-                                                            .flatMap(update -> {
-                                                                log.info("기명등재b ri_id 값 = " + e.getRi_id());
-
-                                                                update.setIhInsuState("062");
-                                                                update.setIhApplyState("Y");
-                                                                update.setRiState(1);
-                                                                update.updateRejectCode(d.getResult());
-                                                                update.setRiId(e.getRi_id());
-
-                                                                LocalDateTime changedTime = LocalDateTime.ofEpochSecond(d.getUnderwriting_after(), 0, ZoneOffset.ofTotalSeconds(60 * 60 * 9));
-                                                                update.updateEffectTime(convertDate(d.getEffective_time().get(0)), convertDate(d.getEffective_time().get(1)), changedTime);
-
-                                                                return riderInsuranceHistoryMapper.findByRiderId(e.getRi_id(), e.getRi_state())
-                                                                        .doOnNext(riderInsuranceDto -> {
-                                                                            if (riderInsuranceDto != null) {
-                                                                                log.info("여기 들옴?");
-                                                                                update.updateEndoCompl();
-                                                                            }
-                                                                            update.updateTime();
-                                                                            update.updateIshInsTime();
-                                                                        })
-                                                                        .then(sellerPolicyNumberRepository.findSellerPolicyNumberByCmpcd(d.getProxy_driv_coorp_cmpcd(), "W")
-                                                                                .doOnNext(sellerPolicyNumber -> {
-                                                                                    log.info("여기는??");
-                                                                                    log.info("PolicyNumbar -> {}", d.getPolicy_number());
-                                                                                    log.info("PolicyNumbar -> {}", sellerPolicyNumber.getSpnPolicyNumber());
-                                                                                    log.info(sellerPolicyNumber.toString());
-                                                                                    if (d.getPolicy_number().equals(sellerPolicyNumber.getSpnPolicyNumber())) {
-                                                                                        historiesRenew.get().add(update);
-                                                                                    } else {
-                                                                                        histories.get().add(update);
-                                                                                    }
-                                                                                })
-                                                                                .then());
-                                                            });
-                                                }
-                                            })
-                            )
-                            .then(Mono.defer(() -> {
-                                log.info("histories --> {}", histories.get().toString());
-
-                                Mono<Void> normal = histories.get().isEmpty() ? Mono.empty() : batchUpdateHistories(histories.get());
-
-                                Mono<Void> renew = historiesRenew.get().isEmpty() ? Mono.empty() : batchUpdateHistoriesRenew(historiesRenew.get());
-                                return Mono.when(normal, renew).then(Mono.just(new CountDto(riders.size())));
-                            }));
-                });
+                    return dto;
+                })
+                .one();
     }
+
+    package com.gogofnd.kb.Insurance.entity;
+
+import com.google.auto.value.AutoValue;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.relational.core.mapping.Table;
+
+import java.time.LocalDateTime;
+
+@NoArgsConstructor
+@Getter
+@Setter
+@Table("seller_policy_number")
+@ToString
+public class SellerPolicyNumber {
+    @Id
+    private Long spnId = 0L;
+
+    private String siCmpCode;
+
+    private String spnPolicyNumber;
+
+    private String spnApplicationNumber;
+
+    private String spnInsuImgpath;
+
+    private String spnApplyState;
+
+    private LocalDateTime spnEffectStartdate;
+
+    private LocalDateTime spnEffectEnddate;
+
+    private String spnWriter;
+
+    private Integer spnState;
+
+    private LocalDateTime spnInsTime;
+
+    private LocalDateTime spnUpdTime;
+
+}
