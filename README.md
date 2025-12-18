@@ -27,7 +27,6 @@ public Mono<CountDto> signUpResult(List<KbApiSignResultDto> dto) {
                                                 log.info("underwriting_after : {}", d.getUnderwriting_after());
 
                                                 Mono<HistoriesSaveDto> historyMono = historyMapper.findForUpdateByPolicyNumber(e.getRi_id(), d.getPolicy_number());
-                                                Mono<SellerPolicyNumber> sellerMono = sellerPolicyNumberRepository.findSellerPolicyNumberByCmpcd(d.getProxy_driv_coorp_cmpcd(), "W");
 
                                                 // 기명 요청이 승인되지 않았을경우
                                                 if (!d.getResult().equals("endorsed")) {
@@ -49,7 +48,7 @@ public Mono<CountDto> signUpResult(List<KbApiSignResultDto> dto) {
 
                                                                     log.info(d.getResult());
 
-                                                                    return sellerMono
+                                                                    return sellerPolicyNumberRepository.findSellerPolicyNumberByCmpcd(d.getProxy_driv_coorp_cmpcd(), "W")
                                                                             .map(sellerPolicyNumber -> {
                                                                                 if (d.getPolicy_number().equals(sellerPolicyNumber.getSpnPolicyNumber())) {
                                                                                     historiesRenew.add(update);
@@ -74,7 +73,7 @@ public Mono<CountDto> signUpResult(List<KbApiSignResultDto> dto) {
                                                                     update.updateRejectCode(d.getResult());
                                                                     update.setRiId(e.getRi_id());
 
-                                                                    return sellerMono
+                                                                    return sellerPolicyNumberRepository.findSellerPolicyNumberByCmpcd(d.getProxy_driv_coorp_cmpcd(), "W")
                                                                             .map(sellerPolicyNumber -> {
                                                                                 if (d.getPolicy_number().equals(sellerPolicyNumber.getSpnPolicyNumber())) {
                                                                                     historiesRenew.add(update);
@@ -104,15 +103,19 @@ public Mono<CountDto> signUpResult(List<KbApiSignResultDto> dto) {
                                                                 return riderInsuranceHistoryMapper.findByRiderId(e.getRi_id(), e.getRi_state())
                                                                         .map(riderInsuranceDto -> {
                                                                             if (riderInsuranceDto != null) {
+                                                                                log.info("여기 들옴?");
                                                                                 update.updateEndoCompl();
                                                                             }
                                                                             update.updateTime();
                                                                             update.updateIshInsTime();
                                                                             return histories;
                                                                         })
-                                                                        .switchIfEmpty(Mono.empty())
-                                                                        .then(sellerMono
+                                                                        .then(sellerPolicyNumberRepository.findSellerPolicyNumberByCmpcd(d.getProxy_driv_coorp_cmpcd(), "W")
                                                                                 .map(sellerPolicyNumber -> {
+                                                                                    log.info("여기는??");
+                                                                                    log.info("PolicyNumbar -> {}", d.getPolicy_number());
+                                                                                    log.info("PolicyNumbar -> {}", sellerPolicyNumber.getSpnPolicyNumber());
+                                                                                    log.info(sellerPolicyNumber.toString());
                                                                                     if (d.getPolicy_number().equals(sellerPolicyNumber.getSpnPolicyNumber())) {
                                                                                         historiesRenew.add(update);
                                                                                     } else {
@@ -136,7 +139,7 @@ public Mono<CountDto> signUpResult(List<KbApiSignResultDto> dto) {
                 });
     }
 
-    오후 2:29:56: Executing ':new_GoPlanV1Application.main()'...
+오후 2:38:54: Executing ':new_GoPlanV1Application.main()'...
 
 
 > Task :compileJava
@@ -156,35 +159,43 @@ Note: Recompile with -Xlint:unchecked for details.
  =========|_|==============|___/=/_/_/_/
  :: Spring Boot ::               (v2.7.10)
 
-2025-12-18 14:30:19.871  INFO 2828 --- [           main] com.gogofnd.kb.new_GoPlanV1Application   : Starting new_GoPlanV1Application using Java 11.0.15 on Gogofnd002 with PID 2828 (C:\Users\user02gogof\Desktop\new_GoPlanV1\build\classes\java\main started by user02gogof in C:\Users\user02gogof\Desktop\new_GoPlanV1)
-2025-12-18 14:30:19.896 DEBUG 2828 --- [           main] com.gogofnd.kb.new_GoPlanV1Application   : Running with Spring Boot v2.7.10, Spring v5.3.26
-2025-12-18 14:30:19.898  INFO 2828 --- [           main] com.gogofnd.kb.new_GoPlanV1Application   : The following 4 profiles are active: "dev", "logging_daily", "logging_error", "logging_info"
-2025-12-18 14:30:37.943  INFO 2828 --- [           main] c.g.kb.global.config.SecurityConfig      : accessDeniedHandler
-2025-12-18 14:30:37.955  INFO 2828 --- [           main] c.g.kb.global.config.SecurityConfig      : authenticationEntryPoint
-2025-12-18 14:30:42.032  INFO 2828 --- [           main] com.gogofnd.kb.new_GoPlanV1Application   : Started new_GoPlanV1Application in 26.807 seconds (JVM running for 29.188)
+2025-12-18 14:39:14.092  INFO 11560 --- [           main] com.gogofnd.kb.new_GoPlanV1Application   : Starting new_GoPlanV1Application using Java 11.0.15 on Gogofnd002 with PID 11560 (C:\Users\user02gogof\Desktop\new_GoPlanV1\build\classes\java\main started by user02gogof in C:\Users\user02gogof\Desktop\new_GoPlanV1)
+2025-12-18 14:39:14.110 DEBUG 11560 --- [           main] com.gogofnd.kb.new_GoPlanV1Application   : Running with Spring Boot v2.7.10, Spring v5.3.26
+2025-12-18 14:39:14.112  INFO 11560 --- [           main] com.gogofnd.kb.new_GoPlanV1Application   : The following 4 profiles are active: "dev", "logging_daily", "logging_error", "logging_info"
+2025-12-18 14:39:27.309  INFO 11560 --- [           main] c.g.kb.global.config.SecurityConfig      : accessDeniedHandler
+2025-12-18 14:39:27.317  INFO 11560 --- [           main] c.g.kb.global.config.SecurityConfig      : authenticationEntryPoint
+2025-12-18 14:39:30.631  INFO 11560 --- [           main] com.gogofnd.kb.new_GoPlanV1Application   : Started new_GoPlanV1Application in 20.287 seconds (JVM running for 22.898)
 한글 테스트 Start
-2025-12-18 14:30:46.288  INFO 2828 --- [nio-8888-exec-1] c.g.k.I.service.InsuranceService         : dto --> [KbApiSignResultDto(proxy_driv_coorp_cmpcd=G01, driver_id=GG0000034041, vcno_hngl_nm=서울마포파4445, result=endorsed, policy_number=20252732953, effective_time=[1765486800, 1777496400], underwriting_after=1775401200), KbApiSignResultDto(proxy_driv_coorp_cmpcd=G01, driver_id=GG0000034042, vcno_hngl_nm=서울마포파4445, result=endorsed, policy_number=20252732953, effective_time=[1765486800, 1777496400], underwriting_after=1775401200), KbApiSignResultDto(proxy_driv_coorp_cmpcd=G03, driver_id=GG0000034043, vcno_hngl_nm=서울마포파4445, result=endorsed, policy_number=20252724146, effective_time=[1765486800, 1777496400], underwriting_after=1775401200)]
-2025-12-18 14:30:48.209  INFO 2828 --- [actor-tcp-nio-2] c.g.k.I.service.InsuranceService         : 조회된 라이더들 [RiderInfo(ri_id=34041, ri_name=null, ri_phone=null, ri_birthdate=null, ri_gender=0, ri_ss_number=null, ri_bike_number=null, ri_driver_id=GG0000034041, ri_active_area=null, ri_userid=null, ri_insu_status=051, ri_compinsu_enddate=null, ri_operpurp_code=null, ri_insu_startdate=null, ri_insu_enddate=null, ri_insu_imgpath=null, si_id=null, ri_total_webview_url=null, ri_balance=0, ri_pay_status=null, ri_received_driver_id=null, ri_ctcagreyn=null, ri_ins_time=null, ri_upd_time=null, ri_state=1, si_policy_number=20252732953), RiderInfo(ri_id=34042, ri_name=null, ri_phone=null, ri_birthdate=null, ri_gender=0, ri_ss_number=null, ri_bike_number=null, ri_driver_id=GG0000034042, ri_active_area=null, ri_userid=null, ri_insu_status=051, ri_compinsu_enddate=null, ri_operpurp_code=null, ri_insu_startdate=null, ri_insu_enddate=null, ri_insu_imgpath=null, si_id=null, ri_total_webview_url=null, ri_balance=0, ri_pay_status=null, ri_received_driver_id=null, ri_ctcagreyn=null, ri_ins_time=null, ri_upd_time=null, ri_state=1, si_policy_number=20252732953), RiderInfo(ri_id=34043, ri_name=null, ri_phone=null, ri_birthdate=null, ri_gender=0, ri_ss_number=null, ri_bike_number=null, ri_driver_id=GG0000034043, ri_active_area=null, ri_userid=null, ri_insu_status=051, ri_compinsu_enddate=null, ri_operpurp_code=null, ri_insu_startdate=null, ri_insu_enddate=null, ri_insu_imgpath=null, si_id=null, ri_total_webview_url=null, ri_balance=0, ri_pay_status=null, ri_received_driver_id=null, ri_ctcagreyn=null, ri_ins_time=null, ri_upd_time=null, ri_state=1, si_policy_number=20252724146)]
-2025-12-18 14:30:48.246  INFO 2828 --- [actor-tcp-nio-2] c.g.k.I.service.InsuranceService         : [RiderInfo(ri_id=34041, ri_name=null, ri_phone=null, ri_birthdate=null, ri_gender=0, ri_ss_number=null, ri_bike_number=null, ri_driver_id=GG0000034041, ri_active_area=null, ri_userid=null, ri_insu_status=051, ri_compinsu_enddate=null, ri_operpurp_code=null, ri_insu_startdate=null, ri_insu_enddate=null, ri_insu_imgpath=null, si_id=null, ri_total_webview_url=null, ri_balance=0, ri_pay_status=null, ri_received_driver_id=null, ri_ctcagreyn=null, ri_ins_time=null, ri_upd_time=null, ri_state=1, si_policy_number=20252732953), RiderInfo(ri_id=34042, ri_name=null, ri_phone=null, ri_birthdate=null, ri_gender=0, ri_ss_number=null, ri_bike_number=null, ri_driver_id=GG0000034042, ri_active_area=null, ri_userid=null, ri_insu_status=051, ri_compinsu_enddate=null, ri_operpurp_code=null, ri_insu_startdate=null, ri_insu_enddate=null, ri_insu_imgpath=null, si_id=null, ri_total_webview_url=null, ri_balance=0, ri_pay_status=null, ri_received_driver_id=null, ri_ctcagreyn=null, ri_ins_time=null, ri_upd_time=null, ri_state=1, si_policy_number=20252732953), RiderInfo(ri_id=34043, ri_name=null, ri_phone=null, ri_birthdate=null, ri_gender=0, ri_ss_number=null, ri_bike_number=null, ri_driver_id=GG0000034043, ri_active_area=null, ri_userid=null, ri_insu_status=051, ri_compinsu_enddate=null, ri_operpurp_code=null, ri_insu_startdate=null, ri_insu_enddate=null, ri_insu_imgpath=null, si_id=null, ri_total_webview_url=null, ri_balance=0, ri_pay_status=null, ri_received_driver_id=null, ri_ctcagreyn=null, ri_ins_time=null, ri_upd_time=null, ri_state=1, si_policy_number=20252724146)]
-2025-12-18 14:30:48.265  INFO 2828 --- [actor-tcp-nio-2] c.g.k.I.service.InsuranceService         : proxy_driv_coorp_cmpcd : G01
-2025-12-18 14:30:48.274  INFO 2828 --- [actor-tcp-nio-2] c.g.k.I.service.InsuranceService         : driver_id : GG0000034041
-2025-12-18 14:30:48.275  INFO 2828 --- [actor-tcp-nio-2] c.g.k.I.service.InsuranceService         : Vcno_hngl_nm : 서울마포파4445
-2025-12-18 14:30:48.278  INFO 2828 --- [actor-tcp-nio-2] c.g.k.I.service.InsuranceService         : result : endorsed
-2025-12-18 14:30:48.279  INFO 2828 --- [actor-tcp-nio-2] c.g.k.I.service.InsuranceService         : effective_time : [1765486800, 1777496400]
-2025-12-18 14:30:48.280  INFO 2828 --- [actor-tcp-nio-2] c.g.k.I.service.InsuranceService         : underwriting_after : 1775401200
-2025-12-18 14:30:48.309  INFO 2828 --- [actor-tcp-nio-2] c.g.k.I.service.InsuranceService         : proxy_driv_coorp_cmpcd : G01
-2025-12-18 14:30:48.342  INFO 2828 --- [actor-tcp-nio-2] c.g.k.I.service.InsuranceService         : driver_id : GG0000034042
-2025-12-18 14:30:48.343  INFO 2828 --- [actor-tcp-nio-2] c.g.k.I.service.InsuranceService         : Vcno_hngl_nm : 서울마포파4445
-2025-12-18 14:30:48.343  INFO 2828 --- [actor-tcp-nio-2] c.g.k.I.service.InsuranceService         : result : endorsed
-2025-12-18 14:30:48.343  INFO 2828 --- [actor-tcp-nio-2] c.g.k.I.service.InsuranceService         : effective_time : [1765486800, 1777496400]
-2025-12-18 14:30:48.344  INFO 2828 --- [actor-tcp-nio-2] c.g.k.I.service.InsuranceService         : underwriting_after : 1775401200
-2025-12-18 14:30:48.345  INFO 2828 --- [actor-tcp-nio-2] c.g.k.I.service.InsuranceService         : proxy_driv_coorp_cmpcd : G03
-2025-12-18 14:30:48.346  INFO 2828 --- [actor-tcp-nio-2] c.g.k.I.service.InsuranceService         : driver_id : GG0000034043
-2025-12-18 14:30:48.348  INFO 2828 --- [actor-tcp-nio-2] c.g.k.I.service.InsuranceService         : Vcno_hngl_nm : 서울마포파4445
-2025-12-18 14:30:48.354  INFO 2828 --- [actor-tcp-nio-2] c.g.k.I.service.InsuranceService         : result : endorsed
-2025-12-18 14:30:48.355  INFO 2828 --- [actor-tcp-nio-2] c.g.k.I.service.InsuranceService         : effective_time : [1765486800, 1777496400]
-2025-12-18 14:30:48.356  INFO 2828 --- [actor-tcp-nio-2] c.g.k.I.service.InsuranceService         : underwriting_after : 1775401200
-2025-12-18 14:30:48.396  INFO 2828 --- [actor-tcp-nio-2] c.g.k.I.service.InsuranceService         : 기명등재b ri_id 값 = 34041
-2025-12-18 14:30:48.454  INFO 2828 --- [actor-tcp-nio-2] c.g.k.I.service.InsuranceService         : 기명등재b ri_id 값 = 34042
-2025-12-18 14:30:48.496  INFO 2828 --- [actor-tcp-nio-2] c.g.k.I.service.InsuranceService         : 기명등재b ri_id 값 = 34043
-2025-12-18 14:30:48.561  INFO 2828 --- [actor-tcp-nio-2] c.g.k.I.service.InsuranceService         : histories --> []
+2025-12-18 14:39:38.789  INFO 11560 --- [nio-8888-exec-1] c.g.k.I.service.InsuranceService         : dto --> [KbApiSignResultDto(proxy_driv_coorp_cmpcd=G01, driver_id=GG0000034041, vcno_hngl_nm=서울마포파4445, result=endorsed, policy_number=20252732953, effective_time=[1765486800, 1777496400], underwriting_after=1775401200), KbApiSignResultDto(proxy_driv_coorp_cmpcd=G01, driver_id=GG0000034042, vcno_hngl_nm=서울마포파4445, result=endorsed, policy_number=20252732953, effective_time=[1765486800, 1777496400], underwriting_after=1775401200), KbApiSignResultDto(proxy_driv_coorp_cmpcd=G03, driver_id=GG0000034043, vcno_hngl_nm=서울마포파4445, result=endorsed, policy_number=20252724146, effective_time=[1765486800, 1777496400], underwriting_after=1775401200)]
+2025-12-18 14:39:40.246  INFO 11560 --- [actor-tcp-nio-2] c.g.k.I.service.InsuranceService         : 조회된 라이더들 [RiderInfo(ri_id=34041, ri_name=null, ri_phone=null, ri_birthdate=null, ri_gender=0, ri_ss_number=null, ri_bike_number=null, ri_driver_id=GG0000034041, ri_active_area=null, ri_userid=null, ri_insu_status=051, ri_compinsu_enddate=null, ri_operpurp_code=null, ri_insu_startdate=null, ri_insu_enddate=null, ri_insu_imgpath=null, si_id=null, ri_total_webview_url=null, ri_balance=0, ri_pay_status=null, ri_received_driver_id=null, ri_ctcagreyn=null, ri_ins_time=null, ri_upd_time=null, ri_state=1, si_policy_number=20252732953), RiderInfo(ri_id=34042, ri_name=null, ri_phone=null, ri_birthdate=null, ri_gender=0, ri_ss_number=null, ri_bike_number=null, ri_driver_id=GG0000034042, ri_active_area=null, ri_userid=null, ri_insu_status=051, ri_compinsu_enddate=null, ri_operpurp_code=null, ri_insu_startdate=null, ri_insu_enddate=null, ri_insu_imgpath=null, si_id=null, ri_total_webview_url=null, ri_balance=0, ri_pay_status=null, ri_received_driver_id=null, ri_ctcagreyn=null, ri_ins_time=null, ri_upd_time=null, ri_state=1, si_policy_number=20252732953), RiderInfo(ri_id=34043, ri_name=null, ri_phone=null, ri_birthdate=null, ri_gender=0, ri_ss_number=null, ri_bike_number=null, ri_driver_id=GG0000034043, ri_active_area=null, ri_userid=null, ri_insu_status=051, ri_compinsu_enddate=null, ri_operpurp_code=null, ri_insu_startdate=null, ri_insu_enddate=null, ri_insu_imgpath=null, si_id=null, ri_total_webview_url=null, ri_balance=0, ri_pay_status=null, ri_received_driver_id=null, ri_ctcagreyn=null, ri_ins_time=null, ri_upd_time=null, ri_state=1, si_policy_number=20252724146)]
+2025-12-18 14:39:40.272  INFO 11560 --- [actor-tcp-nio-2] c.g.k.I.service.InsuranceService         : [RiderInfo(ri_id=34041, ri_name=null, ri_phone=null, ri_birthdate=null, ri_gender=0, ri_ss_number=null, ri_bike_number=null, ri_driver_id=GG0000034041, ri_active_area=null, ri_userid=null, ri_insu_status=051, ri_compinsu_enddate=null, ri_operpurp_code=null, ri_insu_startdate=null, ri_insu_enddate=null, ri_insu_imgpath=null, si_id=null, ri_total_webview_url=null, ri_balance=0, ri_pay_status=null, ri_received_driver_id=null, ri_ctcagreyn=null, ri_ins_time=null, ri_upd_time=null, ri_state=1, si_policy_number=20252732953), RiderInfo(ri_id=34042, ri_name=null, ri_phone=null, ri_birthdate=null, ri_gender=0, ri_ss_number=null, ri_bike_number=null, ri_driver_id=GG0000034042, ri_active_area=null, ri_userid=null, ri_insu_status=051, ri_compinsu_enddate=null, ri_operpurp_code=null, ri_insu_startdate=null, ri_insu_enddate=null, ri_insu_imgpath=null, si_id=null, ri_total_webview_url=null, ri_balance=0, ri_pay_status=null, ri_received_driver_id=null, ri_ctcagreyn=null, ri_ins_time=null, ri_upd_time=null, ri_state=1, si_policy_number=20252732953), RiderInfo(ri_id=34043, ri_name=null, ri_phone=null, ri_birthdate=null, ri_gender=0, ri_ss_number=null, ri_bike_number=null, ri_driver_id=GG0000034043, ri_active_area=null, ri_userid=null, ri_insu_status=051, ri_compinsu_enddate=null, ri_operpurp_code=null, ri_insu_startdate=null, ri_insu_enddate=null, ri_insu_imgpath=null, si_id=null, ri_total_webview_url=null, ri_balance=0, ri_pay_status=null, ri_received_driver_id=null, ri_ctcagreyn=null, ri_ins_time=null, ri_upd_time=null, ri_state=1, si_policy_number=20252724146)]
+2025-12-18 14:39:40.381  INFO 11560 --- [actor-tcp-nio-2] c.g.k.I.service.InsuranceService         : proxy_driv_coorp_cmpcd : G01
+2025-12-18 14:39:40.418  INFO 11560 --- [actor-tcp-nio-2] c.g.k.I.service.InsuranceService         : driver_id : GG0000034041
+2025-12-18 14:39:40.419  INFO 11560 --- [actor-tcp-nio-2] c.g.k.I.service.InsuranceService         : Vcno_hngl_nm : 서울마포파4445
+2025-12-18 14:39:40.422  INFO 11560 --- [actor-tcp-nio-2] c.g.k.I.service.InsuranceService         : result : endorsed
+2025-12-18 14:39:40.423  INFO 11560 --- [actor-tcp-nio-2] c.g.k.I.service.InsuranceService         : effective_time : [1765486800, 1777496400]
+2025-12-18 14:39:40.424  INFO 11560 --- [actor-tcp-nio-2] c.g.k.I.service.InsuranceService         : underwriting_after : 1775401200
+2025-12-18 14:39:40.469  INFO 11560 --- [actor-tcp-nio-2] c.g.k.I.service.InsuranceService         : proxy_driv_coorp_cmpcd : G01
+2025-12-18 14:39:40.469  INFO 11560 --- [actor-tcp-nio-2] c.g.k.I.service.InsuranceService         : driver_id : GG0000034042
+2025-12-18 14:39:40.472  INFO 11560 --- [actor-tcp-nio-2] c.g.k.I.service.InsuranceService         : Vcno_hngl_nm : 서울마포파4445
+2025-12-18 14:39:40.473  INFO 11560 --- [actor-tcp-nio-2] c.g.k.I.service.InsuranceService         : result : endorsed
+2025-12-18 14:39:40.473  INFO 11560 --- [actor-tcp-nio-2] c.g.k.I.service.InsuranceService         : effective_time : [1765486800, 1777496400]
+2025-12-18 14:39:40.474  INFO 11560 --- [actor-tcp-nio-2] c.g.k.I.service.InsuranceService         : underwriting_after : 1775401200
+2025-12-18 14:39:40.475  INFO 11560 --- [actor-tcp-nio-2] c.g.k.I.service.InsuranceService         : proxy_driv_coorp_cmpcd : G03
+2025-12-18 14:39:40.476  INFO 11560 --- [actor-tcp-nio-2] c.g.k.I.service.InsuranceService         : driver_id : GG0000034043
+2025-12-18 14:39:40.480  INFO 11560 --- [actor-tcp-nio-2] c.g.k.I.service.InsuranceService         : Vcno_hngl_nm : 서울마포파4445
+2025-12-18 14:39:40.495  INFO 11560 --- [actor-tcp-nio-2] c.g.k.I.service.InsuranceService         : result : endorsed
+2025-12-18 14:39:40.496  INFO 11560 --- [actor-tcp-nio-2] c.g.k.I.service.InsuranceService         : effective_time : [1765486800, 1777496400]
+2025-12-18 14:39:40.496  INFO 11560 --- [actor-tcp-nio-2] c.g.k.I.service.InsuranceService         : underwriting_after : 1775401200
+2025-12-18 14:39:40.525  INFO 11560 --- [actor-tcp-nio-2] c.g.k.I.service.InsuranceService         : 기명등재b ri_id 값 = 34041
+2025-12-18 14:39:40.565  INFO 11560 --- [actor-tcp-nio-2] c.g.k.I.service.InsuranceService         : 기명등재b ri_id 값 = 34042
+2025-12-18 14:39:40.607  INFO 11560 --- [actor-tcp-nio-2] c.g.k.I.service.InsuranceService         : 기명등재b ri_id 값 = 34043
+2025-12-18 14:39:40.620  INFO 11560 --- [actor-tcp-nio-2] c.g.k.I.service.InsuranceService         : 여기 들옴?
+2025-12-18 14:39:40.672  INFO 11560 --- [actor-tcp-nio-2] c.g.k.I.service.InsuranceService         : 여기 들옴?
+2025-12-18 14:39:40.693  INFO 11560 --- [actor-tcp-nio-2] c.g.k.I.service.InsuranceService         : 여기 들옴?
+2025-12-18 14:39:40.702  INFO 11560 --- [actor-tcp-nio-2] c.g.k.I.service.InsuranceService         : histories --> []
+
+
+
+
+    
