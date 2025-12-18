@@ -1,8 +1,27 @@
-오전 11:12:15: Executing ':new_GoPlanV1Application.main()'...
+    public Mono<Void> updateAllUnderComp(List<HistoriesSaveDto> list) {
+
+        StringBuffer sb = new StringBuffer();
+
+        for (HistoriesSaveDto r : list) {
+            sb.append("UPDATE rider_insurance_history SET ");
+            sb.append("rih_under_complete_time = '").append(r.getRihUnderCompleteTime()).append("', ");
+            sb.append("rih_upd_time = '").append(r.getIhUpdTime()).append("' ");
+            sb.append("WHERE ri_id = ").append(r.getRiId()).append("; ");
+        }
+
+        String sql = sb.toString();
+
+        return databaseClient.sql(sql)
+                .then(); // 실행 후 결과 반환 없음 (Mono<Void>)
+    }
+
+	오전 11:28:29: Executing ':new_GoPlanV1Application.main()'...
 
 
 > Task :compileJava
-Note: C:\Users\user02gogof\Desktop\new_GoPlanV1\src\main\java\com\gogofnd\kb\Insurance\controller\InsuranceApi.java uses unchecked or unsafe operations.
+Note: C:\Users\user02gogof\Desktop\new_GoPlanV1\src\main\java\com\gogofnd\kb\Insurance\repository\HistoryRepository.java uses or overrides a deprecated API.
+Note: Recompile with -Xlint:deprecation for details.
+Note: Some input files use unchecked or unsafe operations.
 Note: Recompile with -Xlint:unchecked for details.
 
 > Task :processResources UP-TO-DATE
@@ -18,77 +37,41 @@ Note: Recompile with -Xlint:unchecked for details.
  =========|_|==============|___/=/_/_/_/
  :: Spring Boot ::               (v2.7.10)
 
-2025-12-18 11:12:48.614  INFO 10884 --- [           main] com.gogofnd.kb.new_GoPlanV1Application   : Starting new_GoPlanV1Application using Java 11.0.15 on Gogofnd002 with PID 10884 (C:\Users\user02gogof\Desktop\new_GoPlanV1\build\classes\java\main started by user02gogof in C:\Users\user02gogof\Desktop\new_GoPlanV1)
-2025-12-18 11:12:48.630 DEBUG 10884 --- [           main] com.gogofnd.kb.new_GoPlanV1Application   : Running with Spring Boot v2.7.10, Spring v5.3.26
-2025-12-18 11:12:48.633  INFO 10884 --- [           main] com.gogofnd.kb.new_GoPlanV1Application   : The following 4 profiles are active: "dev", "logging_daily", "logging_error", "logging_info"
-2025-12-18 11:13:24.003  INFO 10884 --- [           main] c.g.kb.global.config.SecurityConfig      : accessDeniedHandler
-2025-12-18 11:13:24.019  INFO 10884 --- [           main] c.g.kb.global.config.SecurityConfig      : authenticationEntryPoint
-2025-12-18 11:13:33.975  INFO 10884 --- [           main] com.gogofnd.kb.new_GoPlanV1Application   : Started new_GoPlanV1Application in 57.261 seconds (JVM running for 63.629)
+2025-12-18 11:29:00.076  INFO 7804 --- [           main] com.gogofnd.kb.new_GoPlanV1Application   : Starting new_GoPlanV1Application using Java 11.0.15 on Gogofnd002 with PID 7804 (C:\Users\user02gogof\Desktop\new_GoPlanV1\build\classes\java\main started by user02gogof in C:\Users\user02gogof\Desktop\new_GoPlanV1)
+2025-12-18 11:29:00.108 DEBUG 7804 --- [           main] com.gogofnd.kb.new_GoPlanV1Application   : Running with Spring Boot v2.7.10, Spring v5.3.26
+2025-12-18 11:29:00.117  INFO 7804 --- [           main] com.gogofnd.kb.new_GoPlanV1Application   : The following 4 profiles are active: "dev", "logging_daily", "logging_error", "logging_info"
+2025-12-18 11:29:16.413  INFO 7804 --- [           main] c.g.kb.global.config.SecurityConfig      : accessDeniedHandler
+2025-12-18 11:29:16.423  INFO 7804 --- [           main] c.g.kb.global.config.SecurityConfig      : authenticationEntryPoint
+2025-12-18 11:29:20.674  INFO 7804 --- [           main] com.gogofnd.kb.new_GoPlanV1Application   : Started new_GoPlanV1Application in 23.97 seconds (JVM running for 25.86)
 한글 테스트 Start
-2025-12-18 11:14:48.579  INFO 10884 --- [nio-8888-exec-1] c.g.k.I.service.InsuranceService         : dto --> [KbApiUnderWritingResult(proxy_driv_coorp_cmpcd=G01, driver_id=GG0000034041, vcno_hngl_nm=서울마포파4445, result=accepted, until=1773154800)]
-2025-12-18 11:14:48.864  INFO 10884 --- [nio-8888-exec-1] c.g.k.I.service.InsuranceService         : service size : 1
-2025-12-18 11:14:50.591  INFO 10884 --- [actor-tcp-nio-2] c.g.k.I.service.InsuranceService         : 언더라이팅 결과 시작 Result --> accepted
-2025-12-18 11:14:50.667  INFO 10884 --- [actor-tcp-nio-2] c.g.k.I.service.InsuranceService         : 언더라이팅 심사 승인 34041
-2025-12-18 11:14:50.796  INFO 10884 --- [actor-tcp-nio-2] c.g.k.I.service.InsuranceService         : 언더라이팅 결과 끝 Result --> GG0000034041
-2025-12-18 11:14:50.797  INFO 10884 --- [actor-tcp-nio-2] c.g.k.I.service.InsuranceService         : histories --> [com.gogofnd.kb.Insurance.dto.HistoriesSaveDto@1a2919a5]
-2025-12-18 11:14:50.830  INFO 10884 --- [actor-tcp-nio-2] c.g.k.I.service.InsuranceService         : historiesRenew --> []
-2025-12-18 11:14:50.930 ERROR 10884 --- [nio-8888-exec-2] o.a.c.c.C.[.[.[.[dispatcherServlet]      : Servlet.service() for servlet [dispatcherServlet] threw exception
+2025-12-18 11:29:22.884  INFO 7804 --- [nio-8888-exec-1] c.g.k.I.service.InsuranceService         : dto --> [KbApiUnderWritingResult(proxy_driv_coorp_cmpcd=G01, driver_id=GG0000034041, vcno_hngl_nm=서울마포파4445, result=accepted, until=1773154800)]
+2025-12-18 11:29:22.923  INFO 7804 --- [nio-8888-exec-1] c.g.k.I.service.InsuranceService         : service size : 1
+2025-12-18 11:29:24.761  INFO 7804 --- [actor-tcp-nio-2] c.g.k.I.service.InsuranceService         : 언더라이팅 결과 시작 Result --> accepted
+2025-12-18 11:29:25.018  INFO 7804 --- [actor-tcp-nio-2] c.g.k.I.service.InsuranceService         : 언더라이팅 심사 승인 34041
+2025-12-18 11:29:25.072  INFO 7804 --- [actor-tcp-nio-2] c.g.k.I.service.InsuranceService         : 언더라이팅 결과 끝 Result --> GG0000034041
+2025-12-18 11:29:25.076  INFO 7804 --- [actor-tcp-nio-2] c.g.k.I.service.InsuranceService         : histories --> [com.gogofnd.kb.Insurance.dto.HistoriesSaveDto@1f8e89f7]
+2025-12-18 11:29:25.079  INFO 7804 --- [actor-tcp-nio-2] c.g.k.I.service.InsuranceService         : historiesRenew --> []
+2025-12-18 11:32:50.368  INFO 7804 --- [nio-8888-exec-4] c.g.k.I.service.InsuranceService         : dto --> [KbApiUnderWritingResult(proxy_driv_coorp_cmpcd=G01, driver_id=GG0000034041, vcno_hngl_nm=서울마포파4445, result=accepted, until=1773154800), KbApiUnderWritingResult(proxy_driv_coorp_cmpcd=G03, driver_id=GG0000034043, vcno_hngl_nm=서울마포파4445, result=accepted, until=1773154800), KbApiUnderWritingResult(proxy_driv_coorp_cmpcd=G01, driver_id=GG0000034042, vcno_hngl_nm=서울마포파4445, result=insure_needed, until=1773154800)]
+2025-12-18 11:32:50.376  INFO 7804 --- [nio-8888-exec-4] c.g.k.I.service.InsuranceService         : service size : 3
+2025-12-18 11:32:50.441  INFO 7804 --- [actor-tcp-nio-2] c.g.k.I.service.InsuranceService         : 언더라이팅 결과 시작 Result --> accepted
+2025-12-18 11:32:50.447  INFO 7804 --- [actor-tcp-nio-2] c.g.k.I.service.InsuranceService         : 언더라이팅 결과 시작 Result --> insure_needed
+2025-12-18 11:32:50.452  INFO 7804 --- [actor-tcp-nio-2] c.g.k.I.service.InsuranceService         : 언더라이팅 결과 시작 Result --> accepted
+2025-12-18 11:32:50.458  INFO 7804 --- [actor-tcp-nio-2] c.g.k.I.service.InsuranceService         : 언더라이팅 심사 승인 34041
+2025-12-18 11:32:50.465  INFO 7804 --- [actor-tcp-nio-2] c.g.k.I.service.InsuranceService         : 언더라이팅 심사 승인 34043
+2025-12-18 11:32:50.478  INFO 7804 --- [actor-tcp-nio-2] c.g.k.I.service.InsuranceService         : 언더라이팅 심사 거절 34042
+2025-12-18 11:32:50.478  INFO 7804 --- [actor-tcp-nio-2] c.g.k.I.service.InsuranceService         : 언더라이팅 결과 끝 Result --> GG0000034042
+2025-12-18 11:32:50.487  INFO 7804 --- [actor-tcp-nio-2] c.g.k.I.service.InsuranceService         : 언더라이팅 결과 끝 Result --> GG0000034041
+2025-12-18 11:32:50.490  INFO 7804 --- [actor-tcp-nio-2] c.g.k.I.service.InsuranceService         : 언더라이팅 결과 끝 Result --> GG0000034043
+2025-12-18 11:32:50.491  INFO 7804 --- [actor-tcp-nio-2] c.g.k.I.service.InsuranceService         : histories --> [com.gogofnd.kb.Insurance.dto.HistoriesSaveDto@6ea5603c, com.gogofnd.kb.Insurance.dto.HistoriesSaveDto@30ed4d73, com.gogofnd.kb.Insurance.dto.HistoriesSaveDto@7ddfa297]
+2025-12-18 11:32:50.491  INFO 7804 --- [actor-tcp-nio-2] c.g.k.I.service.InsuranceService         : historiesRenew --> []
+2025-12-18 11:32:50.593 ERROR 7804 --- [nio-8888-exec-5] o.a.c.c.C.[.[.[.[dispatcherServlet]      : Servlet.service() for servlet [dispatcherServlet] threw exception
 
-java.lang.IllegalArgumentException: Value for parameter ihEffectStartdate must not be null. Use bindNull(…) instead.
-	at org.springframework.util.Assert.notNull(Assert.java:219)
-	at org.springframework.r2dbc.core.DefaultDatabaseClient$DefaultGenericExecuteSpec.bind(DefaultDatabaseClient.java:274)
-	at org.springframework.r2dbc.core.DefaultDatabaseClient$DefaultGenericExecuteSpec.bind(DefaultDatabaseClient.java:216)
-	at com.gogofnd.kb.Insurance.repository.HistoryRepository.lambda$updateAll$1(HistoryRepository.java:161)
-	at reactor.core.publisher.FluxFlatMap$FlatMapMain.onNext(FluxFlatMap.java:386)
-	at reactor.core.publisher.FluxIterable$IterableSubscription.slowPath(FluxIterable.java:335)
-	at reactor.core.publisher.FluxIterable$IterableSubscription.request(FluxIterable.java:294)
-	at reactor.core.publisher.FluxFlatMap$FlatMapMain.onSubscribe(FluxFlatMap.java:371)
-	at reactor.core.publisher.FluxIterable.subscribe(FluxIterable.java:201)
-	at reactor.core.publisher.FluxIterable.subscribe(FluxIterable.java:83)
-	at reactor.core.publisher.Mono.subscribe(Mono.java:4490)
-	at reactor.core.publisher.MonoIgnoreThen$ThenIgnoreMain.subscribeNext(MonoIgnoreThen.java:263)
-	at reactor.core.publisher.MonoIgnoreThen.subscribe(MonoIgnoreThen.java:51)
-	at reactor.core.publisher.Mono.subscribe(Mono.java:4490)
-	at reactor.core.publisher.FluxConcatMap$ConcatMapImmediate.drain(FluxConcatMap.java:451)
-	at reactor.core.publisher.FluxConcatMap$ConcatMapImmediate.onSubscribe(FluxConcatMap.java:219)
-	at reactor.core.publisher.FluxIterable.subscribe(FluxIterable.java:201)
-	at reactor.core.publisher.FluxIterable.subscribe(FluxIterable.java:83)
-	at reactor.core.publisher.Mono.subscribe(Mono.java:4490)
-	at reactor.core.publisher.MonoWhen$WhenCoordinator.subscribe(MonoWhen.java:160)
-	at reactor.core.publisher.MonoWhen.subscribe(MonoWhen.java:99)
-	at reactor.core.publisher.Mono.subscribe(Mono.java:4490)
-	at reactor.core.publisher.MonoIgnoreThen$ThenIgnoreMain.subscribeNext(MonoIgnoreThen.java:263)
-	at reactor.core.publisher.MonoIgnoreThen.subscribe(MonoIgnoreThen.java:51)
-	at reactor.core.publisher.MonoDefer.subscribe(MonoDefer.java:52)
-	at reactor.core.publisher.MonoIgnoreThen$ThenIgnoreMain.subscribeNext(MonoIgnoreThen.java:240)
-	at reactor.core.publisher.MonoIgnoreThen$ThenIgnoreMain.onComplete(MonoIgnoreThen.java:203)
-	at reactor.core.publisher.FluxFlatMap$FlatMapMain.checkTerminated(FluxFlatMap.java:847)
-	at reactor.core.publisher.FluxFlatMap$FlatMapMain.drainLoop(FluxFlatMap.java:609)
-	at reactor.core.publisher.FluxFlatMap$FlatMapMain.innerComplete(FluxFlatMap.java:895)
-	at reactor.core.publisher.FluxFlatMap$FlatMapInner.onComplete(FluxFlatMap.java:998)
-	at reactor.core.publisher.MonoIgnoreThen$ThenIgnoreMain.onComplete(MonoIgnoreThen.java:209)
-	at reactor.core.publisher.MonoIgnoreThen$ThenIgnoreMain.subscribeNext(MonoIgnoreThen.java:238)
-	at reactor.core.publisher.MonoIgnoreThen$ThenIgnoreMain.onComplete(MonoIgnoreThen.java:203)
-	at reactor.core.publisher.FluxFlatMap$FlatMapMain.checkTerminated(FluxFlatMap.java:847)
-	at reactor.core.publisher.FluxFlatMap$FlatMapMain.drainLoop(FluxFlatMap.java:609)
-	at reactor.core.publisher.FluxFlatMap$FlatMapMain.innerComplete(FluxFlatMap.java:895)
-	at reactor.core.publisher.FluxFlatMap$FlatMapInner.onComplete(FluxFlatMap.java:998)
-	at reactor.core.publisher.Operators$MonoSubscriber.complete(Operators.java:1840)
-	at reactor.core.publisher.MonoFlatMap$FlatMapInner.onNext(MonoFlatMap.java:249)
-	at reactor.core.publisher.MonoIgnoreThen$ThenIgnoreMain.complete(MonoIgnoreThen.java:292)
-	at reactor.core.publisher.MonoIgnoreThen$ThenIgnoreMain.onNext(MonoIgnoreThen.java:187)
-	at reactor.core.publisher.MonoIgnoreThen$ThenIgnoreMain.subscribeNext(MonoIgnoreThen.java:236)
-	at reactor.core.publisher.MonoIgnoreThen$ThenIgnoreMain.onComplete(MonoIgnoreThen.java:203)
-	at reactor.core.publisher.FluxPeek$PeekSubscriber.onComplete(FluxPeek.java:260)
-	at reactor.core.publisher.MonoNext$NextSubscriber.onComplete(MonoNext.java:102)
-	at reactor.core.publisher.MonoNext$NextSubscriber.onNext(MonoNext.java:83)
-	at reactor.core.publisher.FluxMap$MapSubscriber.onNext(FluxMap.java:122)
-	at reactor.core.publisher.FluxOnErrorResume$ResumeSubscriber.onNext(FluxOnErrorResume.java:79)
-	at reactor.core.publisher.FluxUsingWhen$UsingWhenSubscriber.onNext(FluxUsingWhen.java:345)
-	at reactor.core.publisher.FluxFlatMap$FlatMapMain.tryEmit(FluxFlatMap.java:544)
-	at reactor.core.publisher.FluxFlatMap$FlatMapInner.onNext(FluxFlatMap.java:985)
-	at reactor.core.publisher.FluxHandle$HandleSubscriber.onNext(FluxHandle.java:126)
-	at reactor.core.publisher.FluxTakeUntil$TakeUntilPredicateSubscriber.onNext(FluxTakeUntil.java:84)
+io.r2dbc.spi.R2dbcBadGrammarException: Incorrect datetime value: 'null' for column `goplanV1`.`rider_insurance_history`.`rih_under_complete_time` at row 1
+	at org.mariadb.r2dbc.ExceptionFactory.createException(ExceptionFactory.java:44)
+	at org.mariadb.r2dbc.ExceptionFactory.createException(ExceptionFactory.java:25)
+	at org.mariadb.r2dbc.ExceptionFactory.from(ExceptionFactory.java:65)
+	at org.mariadb.r2dbc.MariadbResult.lambda$getRowsUpdated$0(MariadbResult.java:63)
+	at reactor.core.publisher.FluxHandleFuseable$HandleFuseableSubscriber.onNext(FluxHandleFuseable.java:176)
 	at reactor.core.publisher.FluxWindowPredicate$WindowFlux.drainRegular(FluxWindowPredicate.java:668)
 	at reactor.core.publisher.FluxWindowPredicate$WindowFlux.drain(FluxWindowPredicate.java:746)
 	at reactor.core.publisher.FluxWindowPredicate$WindowFlux.onNext(FluxWindowPredicate.java:788)
@@ -118,63 +101,14 @@ java.lang.IllegalArgumentException: Value for parameter ihEffectStartdate must n
 	at io.netty.util.concurrent.FastThreadLocalRunnable.run(FastThreadLocalRunnable.java:30)
 	at java.base/java.lang.Thread.run(Thread.java:829)
 
-2025-12-18 11:14:50.950 ERROR 10884 --- [nio-8888-exec-2] o.a.c.c.C.[.[.[.[dispatcherServlet]      : Servlet.service() for servlet [dispatcherServlet] in context with path [/api/goplanV1] threw exception [Request processing failed; nested exception is java.lang.IllegalArgumentException: Value for parameter ihEffectStartdate must not be null. Use bindNull(…) instead.] with root cause
+2025-12-18 11:32:50.600 ERROR 7804 --- [nio-8888-exec-5] o.a.c.c.C.[.[.[.[dispatcherServlet]      : Servlet.service() for servlet [dispatcherServlet] in context with path [/api/goplanV1] threw exception [Request processing failed; nested exception is org.springframework.r2dbc.BadSqlGrammarException: execute; bad SQL grammar [UPDATE rider_insurance_history SET rih_under_complete_time = 'null', rih_upd_time = '2025-12-18T11:32:50.478738600' WHERE ri_id = 34042; UPDATE rider_insurance_history SET rih_under_complete_time = '2025-12-18T11:32:50.487740100', rih_upd_time = '2025-12-18T11:32:50.487740100' WHERE ri_id = 34041; UPDATE rider_insurance_history SET rih_under_complete_time = '2025-12-18T11:32:50.490739900', rih_upd_time = '2025-12-18T11:32:50.490739900' WHERE ri_id = 34043; ]; nested exception is io.r2dbc.spi.R2dbcBadGrammarException: [1292] [22007] Incorrect datetime value: 'null' for column `goplanV1`.`rider_insurance_history`.`rih_under_complete_time` at row 1] with root cause
 
-java.lang.IllegalArgumentException: Value for parameter ihEffectStartdate must not be null. Use bindNull(…) instead.
-	at org.springframework.util.Assert.notNull(Assert.java:219)
-	at org.springframework.r2dbc.core.DefaultDatabaseClient$DefaultGenericExecuteSpec.bind(DefaultDatabaseClient.java:274)
-	at org.springframework.r2dbc.core.DefaultDatabaseClient$DefaultGenericExecuteSpec.bind(DefaultDatabaseClient.java:216)
-	at com.gogofnd.kb.Insurance.repository.HistoryRepository.lambda$updateAll$1(HistoryRepository.java:161)
-	at reactor.core.publisher.FluxFlatMap$FlatMapMain.onNext(FluxFlatMap.java:386)
-	at reactor.core.publisher.FluxIterable$IterableSubscription.slowPath(FluxIterable.java:335)
-	at reactor.core.publisher.FluxIterable$IterableSubscription.request(FluxIterable.java:294)
-	at reactor.core.publisher.FluxFlatMap$FlatMapMain.onSubscribe(FluxFlatMap.java:371)
-	at reactor.core.publisher.FluxIterable.subscribe(FluxIterable.java:201)
-	at reactor.core.publisher.FluxIterable.subscribe(FluxIterable.java:83)
-	at reactor.core.publisher.Mono.subscribe(Mono.java:4490)
-	at reactor.core.publisher.MonoIgnoreThen$ThenIgnoreMain.subscribeNext(MonoIgnoreThen.java:263)
-	at reactor.core.publisher.MonoIgnoreThen.subscribe(MonoIgnoreThen.java:51)
-	at reactor.core.publisher.Mono.subscribe(Mono.java:4490)
-	at reactor.core.publisher.FluxConcatMap$ConcatMapImmediate.drain(FluxConcatMap.java:451)
-	at reactor.core.publisher.FluxConcatMap$ConcatMapImmediate.onSubscribe(FluxConcatMap.java:219)
-	at reactor.core.publisher.FluxIterable.subscribe(FluxIterable.java:201)
-	at reactor.core.publisher.FluxIterable.subscribe(FluxIterable.java:83)
-	at reactor.core.publisher.Mono.subscribe(Mono.java:4490)
-	at reactor.core.publisher.MonoWhen$WhenCoordinator.subscribe(MonoWhen.java:160)
-	at reactor.core.publisher.MonoWhen.subscribe(MonoWhen.java:99)
-	at reactor.core.publisher.Mono.subscribe(Mono.java:4490)
-	at reactor.core.publisher.MonoIgnoreThen$ThenIgnoreMain.subscribeNext(MonoIgnoreThen.java:263)
-	at reactor.core.publisher.MonoIgnoreThen.subscribe(MonoIgnoreThen.java:51)
-	at reactor.core.publisher.MonoDefer.subscribe(MonoDefer.java:52)
-	at reactor.core.publisher.MonoIgnoreThen$ThenIgnoreMain.subscribeNext(MonoIgnoreThen.java:240)
-	at reactor.core.publisher.MonoIgnoreThen$ThenIgnoreMain.onComplete(MonoIgnoreThen.java:203)
-	at reactor.core.publisher.FluxFlatMap$FlatMapMain.checkTerminated(FluxFlatMap.java:847)
-	at reactor.core.publisher.FluxFlatMap$FlatMapMain.drainLoop(FluxFlatMap.java:609)
-	at reactor.core.publisher.FluxFlatMap$FlatMapMain.innerComplete(FluxFlatMap.java:895)
-	at reactor.core.publisher.FluxFlatMap$FlatMapInner.onComplete(FluxFlatMap.java:998)
-	at reactor.core.publisher.MonoIgnoreThen$ThenIgnoreMain.onComplete(MonoIgnoreThen.java:209)
-	at reactor.core.publisher.MonoIgnoreThen$ThenIgnoreMain.subscribeNext(MonoIgnoreThen.java:238)
-	at reactor.core.publisher.MonoIgnoreThen$ThenIgnoreMain.onComplete(MonoIgnoreThen.java:203)
-	at reactor.core.publisher.FluxFlatMap$FlatMapMain.checkTerminated(FluxFlatMap.java:847)
-	at reactor.core.publisher.FluxFlatMap$FlatMapMain.drainLoop(FluxFlatMap.java:609)
-	at reactor.core.publisher.FluxFlatMap$FlatMapMain.innerComplete(FluxFlatMap.java:895)
-	at reactor.core.publisher.FluxFlatMap$FlatMapInner.onComplete(FluxFlatMap.java:998)
-	at reactor.core.publisher.Operators$MonoSubscriber.complete(Operators.java:1840)
-	at reactor.core.publisher.MonoFlatMap$FlatMapInner.onNext(MonoFlatMap.java:249)
-	at reactor.core.publisher.MonoIgnoreThen$ThenIgnoreMain.complete(MonoIgnoreThen.java:292)
-	at reactor.core.publisher.MonoIgnoreThen$ThenIgnoreMain.onNext(MonoIgnoreThen.java:187)
-	at reactor.core.publisher.MonoIgnoreThen$ThenIgnoreMain.subscribeNext(MonoIgnoreThen.java:236)
-	at reactor.core.publisher.MonoIgnoreThen$ThenIgnoreMain.onComplete(MonoIgnoreThen.java:203)
-	at reactor.core.publisher.FluxPeek$PeekSubscriber.onComplete(FluxPeek.java:260)
-	at reactor.core.publisher.MonoNext$NextSubscriber.onComplete(MonoNext.java:102)
-	at reactor.core.publisher.MonoNext$NextSubscriber.onNext(MonoNext.java:83)
-	at reactor.core.publisher.FluxMap$MapSubscriber.onNext(FluxMap.java:122)
-	at reactor.core.publisher.FluxOnErrorResume$ResumeSubscriber.onNext(FluxOnErrorResume.java:79)
-	at reactor.core.publisher.FluxUsingWhen$UsingWhenSubscriber.onNext(FluxUsingWhen.java:345)
-	at reactor.core.publisher.FluxFlatMap$FlatMapMain.tryEmit(FluxFlatMap.java:544)
-	at reactor.core.publisher.FluxFlatMap$FlatMapInner.onNext(FluxFlatMap.java:985)
-	at reactor.core.publisher.FluxHandle$HandleSubscriber.onNext(FluxHandle.java:126)
-	at reactor.core.publisher.FluxTakeUntil$TakeUntilPredicateSubscriber.onNext(FluxTakeUntil.java:84)
+io.r2dbc.spi.R2dbcBadGrammarException: Incorrect datetime value: 'null' for column `goplanV1`.`rider_insurance_history`.`rih_under_complete_time` at row 1
+	at org.mariadb.r2dbc.ExceptionFactory.createException(ExceptionFactory.java:44)
+	at org.mariadb.r2dbc.ExceptionFactory.createException(ExceptionFactory.java:25)
+	at org.mariadb.r2dbc.ExceptionFactory.from(ExceptionFactory.java:65)
+	at org.mariadb.r2dbc.MariadbResult.lambda$getRowsUpdated$0(MariadbResult.java:63)
+	at reactor.core.publisher.FluxHandleFuseable$HandleFuseableSubscriber.onNext(FluxHandleFuseable.java:176)
 	at reactor.core.publisher.FluxWindowPredicate$WindowFlux.drainRegular(FluxWindowPredicate.java:668)
 	at reactor.core.publisher.FluxWindowPredicate$WindowFlux.drain(FluxWindowPredicate.java:746)
 	at reactor.core.publisher.FluxWindowPredicate$WindowFlux.onNext(FluxWindowPredicate.java:788)
