@@ -1,12 +1,4 @@
-
-## GA
-
-CREATE USER 'callpass'@'121.125.76.196' identified by 'zhfvotm12290#';
-CREATE USER 'callpass'@'coself-2686.cafe24.com' identified by 'zhfvotm12290#';
-CREATE USER 'callpass'@'localhost' identified by 'zhfvotm12290#';
-
-GRANT SELECT , INSERT , UPDATE , DELETE , CREATE , DROP , INDEX , ALTER , CREATE TEMPORARY TABLES , TRIGGER, CREATE VIEW , SHOW VIEW , CREATE ROUTINE, ALTER ROUTINE, EXECUTE ON `DB_CALLPASS` . * TO 'callpass'@'121.125.76.196';
-GRANT SELECT , INSERT , UPDATE , DELETE , CREATE , DROP , INDEX , ALTER , CREATE TEMPORARY TABLES , TRIGGER, CREATE VIEW , SHOW VIEW , CREATE ROUTINE, ALTER ROUTINE, EXECUTE ON `DB_CALLPASS` . * TO 'callpass'@'localhost';
-GRANT SELECT , INSERT , UPDATE , DELETE , CREATE , DROP , INDEX , ALTER , CREATE TEMPORARY TABLES , TRIGGER, CREATE VIEW , SHOW VIEW , CREATE ROUTINE, ALTER ROUTINE, EXECUTE ON `DB_CALLPASS` . * TO 'callpass'@'coself-2686.cafe24.com';
-FLUSH PRIVILEGES;
-
+firewall-cmd --add-port=8100/tcp --permanent
+firewall-cmd --add-port=8120/tcp --permanent
+firewall-cmd --reload
+firewall-cmd --list-ports
