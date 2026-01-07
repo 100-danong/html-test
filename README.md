@@ -15,4 +15,9 @@
    WHERE ri.ri_phone = sch_ri_phone;
 
 
-https://ga.navers.co.kr:3150/static/photo/bike/57/declaration57.jpeg
+[https://ga.navers.co.kr:3150/static/photo/bike/57/declaration57.jpeg](https://ga.navers.co.kr:8100/api/callpass/image/static/photo/bike/57/declaration57.jpeg)
+
+{
+  "error": "Unauthorized",
+  "message": "Unknown error occurred"
+}
