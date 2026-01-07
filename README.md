@@ -13,3 +13,6 @@
    INNER JOIN call_info AS ci ON ah.ah_call_id = ci.ci_id
    INNER JOIN rider_info AS ri ON ci.ri_id = ri.ri_id
    WHERE ri.ri_phone = sch_ri_phone;
+
+
+https://ga.navers.co.kr:3150/static/photo/bike/57/declaration57.jpeg
